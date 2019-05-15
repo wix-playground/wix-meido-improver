@@ -22,64 +22,52 @@ a.__ITDXER_order_button:hover {
 
 
 /* OTHER STYLES */
-.container #cart .cart {
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  background: #f9f9f9;
-  z-index: 10000;
+body .suppliers .container #cart {
+  display: none;
 }
 
-.cart__limit,
-.cart__total,
-.cart__title {
-  /*  display: none;*/
-  margin: 0 !important;
-  padding: 0 !important;
-  opacity: 0.15;
+body .suppliers .tab-content {
+  margin: 0 auto;
 }
 
-.cart__title {
-  height: 1px;
-  overflow: hidden;
+body .suppliers .tab-content a.btn.btn-success.buy {
+  display: none;
 }
 
-.menu-item__content,
-.container #cart .cart {
+body .suppliers .menu-item__content {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   border: solid 1px #dfdfdf;
   border-radius: 10px;
 }
 
-.menu-item__content:hover {
+body .suppliers .menu-item__content:hover {
   border: solid 1px #ddd;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
 }
 
-.calendar .btn {
+body .suppliers .calendar .btn {
   width: 100%;
 }
 
-.calendar .btn:hover {
+body .suppliers .calendar .btn:hover {
   background: #eee;
 }
 
-.new-tabs .active,
-.restaurants__nav .active {
+body .suppliers .new-tabs .active,
+body .suppliers .restaurants__nav .active {
   background: #c7e5fc;
-  border-radius: 10px;
 }
 
-.new-tabs .active a {
+body .suppliers .new-tabs .active a {
   background: #c7e5fc !important;
   text-decoration: underline;
 }
 
-.new-tabs a {
+body .suppliers .new-tabs a {
   text-decoration: underline;
 }
 
-.menu-item__content > h4 > img[src="/images/vegan.png"] {
+body .suppliers .menu-item__content > h4 > img[src="/images/vegan.png"] {
   position: absolute;
   height: 80px;
   width: 80px;
@@ -88,7 +76,7 @@ a.__ITDXER_order_button:hover {
   border-radius: 50%;
 }
 
-.menu-item__hidden {
+body .suppliers .menu-item__hidden {
   height: auto;
   min-height: 0;
   max-height: none;
@@ -97,22 +85,23 @@ a.__ITDXER_order_button:hover {
   font-style: inherit;
 }
 
-.hidden-show {
+body .suppliers .hidden-show {
   display: none;
 }
 
-.menu-item__info {
+body .suppliers .menu-item__info {
   padding: 0;
   border: 0 none;
 }
 
-.menu-item__content > img {
+body .suppliers .menu-item__content > img {
   float: left;
   width: 170px;
 }
 
-.menu-item__content > img[src="/images/no-image.png"] {
+body .suppliers .menu-item__content > img[src="/images/no-image.png"] {
   height: 120px;
+  opacity: 0.4;
 }
 
 a.one-click-buy,
@@ -122,42 +111,36 @@ a.buy {
   padding: 7px 50px;
 }
 
-/* --eperiment-- in row */
-.menu-item {
-  width: 90%;
-  padding-right: 30px;
+/* --experiment-- in row */
+body .suppliers .menu-item {
+  width: 100%;
 }
 
-.menu-item__content > img {
+body .suppliers .menu-item__content > img {
   margin-top: -35px;
 }
 
-.menu-item__content > h4 {
+body .suppliers .menu-item__content > h4 {
   min-height: 0;
   margin-right: 40px;
 }
 
-.menu-item__content > h4,
-.menu-item__content > .menu-item__hidden,
-.menu-item__content > .menu-item__info {
+body .suppliers .menu-item__content > h4,
+body .suppliers .menu-item__content > .menu-item__hidden,
+body .suppliers .menu-item__content > .menu-item__info {
   margin-left: 190px;
 }
 
-.menu-item__info > span:nth-child(2) {
+body .suppliers .menu-item__info > span:nth-child(2) {
   display: none;
 }
 
-.menu-item__hidden {
+body .suppliers .menu-item__hidden {
   padding-bottom: 0;
   color: #555;
 }
 
-a.one-click-buy,
-a.buy {
-  float: none !important;
-}
-
-.menu-item__content > h4 > img[src="/images/vegan.png"] {
+body .suppliers .menu-item__content > h4 > img[src="/images/vegan.png"] {
   position: absolute;
   height: 60px;
   width: 60px;
@@ -167,8 +150,8 @@ a.buy {
 }
 
 /** --experiment-- delimiter **/
-.menu-item__content:hover,
-.menu-item__content {
+body .suppliers .menu-item__content:hover,
+body .suppliers .menu-item__content {
   border: 0 none;
   box-shadow: none;
   border-bottom: 1px solid #ddd;
@@ -177,6 +160,41 @@ a.buy {
   padding: 30px 10px;
 }
 
-.menu-item__content:hover {
+body .suppliers .menu-item__content:hover {
   background: #f9f9f9;
 }
+
+/** TABS **/
+body .suppliers .restaurants {
+  padding: 0;
+}
+
+body .suppliers .restaurants__nav {
+  display: flex
+}
+
+body .suppliers .restaurants__nav li:first-child,
+body .suppliers .restaurants__nav li:last-child,
+body .suppliers .restaurants__nav li {
+  line-height: 1;
+  padding: 20px 30px;
+}
+
+body .suppliers .restaurants__nav li > a[href^="/order?"] {
+  line-height: 1.5;
+  font-weight: 600;
+}
+
+body .suppliers .nav.nav-tabs.new-tabs {
+  display: block;
+}
+
+body .suppliers .nav.nav-tabs.new-tabs > li {
+  display: inline-block;
+  border-radius: 10px;
+}
+
+body .suppliers .nav.nav-tabs.new-tabs > li:first-child {
+  padding-left: 30px;
+}
+
