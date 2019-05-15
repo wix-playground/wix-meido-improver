@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "wix-meido-improver",
+  "version": "1.0.0",
+  "browser_action": {
+    "default_icon": "icons/icon128.png"
+  },
+  "icons": {
+    "128": "icons/icon128.png",
+    "48": "icons/icon48.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://wix.getmeido.com/*"],
+      "css": ["content/styles.css"],
+      "js": ["content/script.js"],
+      "run_at": "document_end"
+    }
+  ]
+}

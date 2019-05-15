@@ -1,0 +1,182 @@
+/* SYSTEM STYLES */
+a.__ITDXER_order_button {
+  cursor: pointer;
+  color: #fff;
+  background: #54ae53;
+  border-radius: 15px;
+  text-decoration: none;
+  text-transform: none;
+  padding: 2px 8px;
+  display: inline-block;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+  -webkit-box-shadow: 0 0 9px rgba(0, 0, 0, 0.2);
+}
+
+a.__ITDXER_order_button:hover {
+  background: #62d135;
+  -webkit-transform: scale(1.06);
+  transform: scale(1.06);
+  box-shadow: 0 0 9px rgba(0, 0, 0, 0.2);
+}
+
+
+/* OTHER STYLES */
+.container #cart .cart {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  background: #f9f9f9;
+  z-index: 10000;
+}
+
+.cart__limit,
+.cart__total,
+.cart__title {
+  /*  display: none;*/
+  margin: 0 !important;
+  padding: 0 !important;
+  opacity: 0.15;
+}
+
+.cart__title {
+  height: 1px;
+  overflow: hidden;
+}
+
+.menu-item__content,
+.container #cart .cart {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  border: solid 1px #dfdfdf;
+  border-radius: 10px;
+}
+
+.menu-item__content:hover {
+  border: solid 1px #ddd;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.calendar .btn {
+  width: 100%;
+}
+
+.calendar .btn:hover {
+  background: #eee;
+}
+
+.new-tabs .active,
+.restaurants__nav .active {
+  background: #c7e5fc;
+  border-radius: 10px;
+}
+
+.new-tabs .active a {
+  background: #c7e5fc !important;
+  text-decoration: underline;
+}
+
+.new-tabs a {
+  text-decoration: underline;
+}
+
+.menu-item__content > h4 > img[src="/images/vegan.png"] {
+  position: absolute;
+  height: 80px;
+  width: 80px;
+  bottom: -10px;
+  left: -10px;
+  border-radius: 50%;
+}
+
+.menu-item__hidden {
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  font-size: inherit;
+  color: inherit;
+  font-style: inherit;
+}
+
+.hidden-show {
+  display: none;
+}
+
+.menu-item__info {
+  padding: 0;
+  border: 0 none;
+}
+
+.menu-item__content > img {
+  float: left;
+  width: 170px;
+}
+
+.menu-item__content > img[src="/images/no-image.png"] {
+  height: 120px;
+}
+
+a.one-click-buy,
+a.buy {
+  font-size: 1em;
+  border-radius: 10px;
+  padding: 7px 50px;
+}
+
+/* --eperiment-- in row */
+.menu-item {
+  width: 90%;
+  padding-right: 30px;
+}
+
+.menu-item__content > img {
+  margin-top: -35px;
+}
+
+.menu-item__content > h4 {
+  min-height: 0;
+  margin-right: 40px;
+}
+
+.menu-item__content > h4,
+.menu-item__content > .menu-item__hidden,
+.menu-item__content > .menu-item__info {
+  margin-left: 190px;
+}
+
+.menu-item__info > span:nth-child(2) {
+  display: none;
+}
+
+.menu-item__hidden {
+  padding-bottom: 0;
+  color: #555;
+}
+
+a.one-click-buy,
+a.buy {
+  float: none !important;
+}
+
+.menu-item__content > h4 > img[src="/images/vegan.png"] {
+  position: absolute;
+  height: 60px;
+  width: 60px;
+  bottom: 20px;
+  left: 0;
+  border-radius: 50%;
+}
+
+/** --experiment-- delimiter **/
+.menu-item__content:hover,
+.menu-item__content {
+  border: 0 none;
+  box-shadow: none;
+  border-bottom: 1px solid #ddd;
+  border-radius: 0;
+  margin: 0;
+  padding: 30px 10px;
+}
+
+.menu-item__content:hover {
+  background: #f9f9f9;
+}
