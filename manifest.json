@@ -14,7 +14,7 @@
       "matches": ["https://wix.getmeido.com/*"],
       "css": ["content/styles.css"],
       "js": ["content/script.js"],
-      "run_at": "document_end"
+      "run_at": "document_start"
     }
   ]
 }
