@@ -4,6 +4,14 @@ const FILTERS_CLASS = '__ITDXER_filters';
 const ORDER_BUTTON_CLASS = '__ITDXER_order_button';
 const ONE_CLICK_BUY_CLASS = '__ITDXER_oneClickBuy';
 
+window.addEventListener('DOMContentLoaded', () => {
+  render();
+  openFirstDay();
+});
+
+function openFirstDay() {
+  document.querySelector('.suppliers .container .nav.nav-tabs.new-tabs li:first-child a').click();
+}
 
 function render() {
   const data = getData();
@@ -26,8 +34,6 @@ function render() {
   renderFilters(filterFavorite, filterVegan);
   renderOrderTable();
 }
-
-render();
 
 function renderStar(content, pid, isFavorite) {
   const stars = getStarElement(content);
