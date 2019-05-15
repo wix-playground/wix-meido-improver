@@ -79,7 +79,7 @@ function renderFilters(filterFavorite, filterVegan) {
     }
   ));
   filters.append(getCheckbox(
-    '&nbsp;<img src="/images/vegan.png" style="height: 1em"/> Show only vegetarian',
+    '&nbsp;<img alt="vegan" src="/images/vegan.png" style="height: 1em"/> Show only vegetarian',
     filterVegan,
     (event) => {
       updateData(() => ({filterVegan: event.target.checked}));
@@ -89,12 +89,9 @@ function renderFilters(filterFavorite, filterVegan) {
 }
 
 function renderOrderTable() {
-  console.log("window.location.href", window.location.href, typeof window.location.href)
   if (window.location.href.endsWith('/fast')) {
-    console.log("1")
     waitForSelector('.modal-open .modal-footer button.submit')
       .then(submitButton => {
-        console.log("submitButton", submitButton, typeof submitButton);
         submitButton.style.display = 'none';
 
         ([...document.querySelectorAll('#calendar.table.calendar tbody td')])
@@ -108,8 +105,8 @@ function renderOrderTable() {
             orderButton.className = ORDER_BUTTON_CLASS;
 
             orderButton.onclick = () => {
-              label.click()
-              submitButton.click()
+              label.click();
+              submitButton.click();
             };
             td.appendChild(orderButton);
           });
@@ -184,8 +181,7 @@ function getOneClickBuyElement(content) {
   if (!oneClick) {
     oneClick = document.createElement('a');
     oneClick.innerText = 'One Click Buy';
-    oneClick.className = [ONE_CLICK_BUY_CLASS, 'btn btn-success one-click-buy'].join(' ');
-    oneClick.style = 'margin-left: 10px';
+    oneClick.className = [ONE_CLICK_BUY_CLASS, 'btn btn-success'].join(' ');
     oneClick.dataset.vendor = buy.dataset.vendor;
     oneClick.href = buy.href;
     itemInfo.appendChild(oneClick);
@@ -194,7 +190,6 @@ function getOneClickBuyElement(content) {
 }
 
 function waitForSelector(selector) {
-  console.log(new Date())
   return new Promise(resolve => {
     const el = document.querySelector(selector);
     if (el) {
@@ -219,7 +214,6 @@ function waitForEmptySelector(selector) {
 
 function removeAllCartItems() {
   const items = [...document.querySelectorAll('#cart .cart__delete')];
-  console.log("cart delete button", items);
   return items.length
     ? Promise.resolve()
       .then(() => items.forEach(item => item.click()))

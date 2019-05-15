@@ -104,11 +104,15 @@ body .suppliers .menu-item__content > img[src="/images/no-image.png"] {
   opacity: 0.4;
 }
 
-a.one-click-buy,
-a.buy {
+body .suppliers .__ITDXER_oneClickBuy {
   font-size: 1em;
   border-radius: 10px;
   padding: 7px 50px;
+  transition: none;
+}
+
+body .suppliers .__ITDXER_oneClickBuy:hover {
+  transform: none;
 }
 
 /* --experiment-- in row */
