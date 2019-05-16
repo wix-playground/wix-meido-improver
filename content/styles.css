@@ -230,3 +230,7 @@ body .suppliers .__ITDXER_search_input {
   width: 100%;
   max-width: 500px;
 }
+
+.__HIGHLIGHTED {
+  background-color: #ff0;
+}

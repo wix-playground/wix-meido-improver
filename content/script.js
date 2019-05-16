@@ -31,7 +31,8 @@ function render() {
     const isFavorite = !!data[pid];
     const isVegan = !!content.querySelector('img[src="/images/vegan.png"]');
 
-    const display = (!filterText || includes(content.innerText, filterText))
+    unhighlight(content);
+    const display = (!filterText || searchAndHiglight(content, filterText))
       && (!filterFavorite || data[pid])
       && (!filterVegan || isVegan);
 
@@ -281,12 +282,17 @@ function updateData(fn) {
 }
 
 
-function includes(whereText, filterText) {
+function searchAndHiglight(whereElement, filterText) {
   const filters = (filterText || '').toLowerCase().split(',')
     .map(part => part.split(' ').filter(Boolean))
     .filter(part => part.length !== 0);
-  const where = whereText.toLowerCase();
+  const where = whereElement.innerText.toLowerCase();
+
   return filters.some(
-    part => part.every(filter => where.includes(filter))
+    parts => {
+      const found = parts.every(filter => where.includes(filter));
+      highlight(whereElement, parts);
+      return found;
+    }
   );
 }
