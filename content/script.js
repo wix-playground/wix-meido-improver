@@ -5,6 +5,8 @@ const ORDER_BUTTON_CLASS = '__ITDXER_order_button';
 const ONE_CLICK_BUY_CLASS = '__ITDXER_oneClickBuy';
 const CHECKBOX_LABEL_FAVORITE = '__ITDXER_checkbox_label_favorite';
 const CHECKBOX_LABEL_VEGAN = '__ITDXER_checkbox_label_vegan';
+const SEARCH_INPUT_CLASS = '__ITDXER_search_input';
+
 
 window.addEventListener('DOMContentLoaded', () => {
   render();
@@ -17,7 +19,7 @@ function openFirstDay() {
 
 function render() {
   const data = getData();
-  const {filterFavorite, filterVegan} = data;
+  const {filterFavorite, filterVegan, filterText} = data;
 
   const items = document.querySelectorAll('.menu-item');
   [...items].forEach(item => {
@@ -29,16 +31,20 @@ function render() {
     const isFavorite = !!data[pid];
     const isVegan = !!content.querySelector('img[src="/images/vegan.png"]');
 
+    const display = (!filterText || includes(content.innerText, filterText))
+      && (!filterFavorite || data[pid])
+      && (!filterVegan || isVegan);
+
+    item.style.display = display
+      ? 'block'
+      : 'none';
+
     renderStar(content, pid, isFavorite);
     renderOneClickBuy(content);
-
-    item.style.display = (filterFavorite && !data[pid]) || (filterVegan && !isVegan)
-      ? 'none'
-      : 'block';
   });
 
   const suppliersContent = document.querySelector('.suppliers-content');
-  renderFilters(suppliersContent, filterFavorite, filterVegan);
+  renderFilters(suppliersContent, filterFavorite, filterVegan, filterText);
   renderOrderTable();
 }
 
@@ -96,7 +102,7 @@ function createOneClickBuyElement(buy) {
 }
 
 
-function renderFilters(suppliersContent, filterFavorite, filterVegan) {
+function renderFilters(suppliersContent, filterFavorite, filterVegan, filterText) {
   let filters = suppliersContent.querySelector('.' + FILTERS_CLASS);
   if (!filters) {
     filters = createFiltersElement();
@@ -105,6 +111,7 @@ function renderFilters(suppliersContent, filterFavorite, filterVegan) {
 
   renderFavoriteCheckbox(filters, filterFavorite);
   renderVeganCheckbox(filters, filterVegan);
+  renderSearchInput(filters, filterText)
 }
 
 function createFiltersElement() {
@@ -151,6 +158,33 @@ function renderVeganCheckbox(filters, filterVegan) {
 
   checkboxLabel.querySelector('input').checked = filterVegan;
 }
+
+
+function renderSearchInput(filters, filterText) {
+  let searchInput = filters.querySelector('.' + SEARCH_INPUT_CLASS);
+
+  if (!searchInput) {
+    searchInput = createSearchInput();
+    filters.prepend(searchInput);
+  }
+
+  searchInput.value = filterText || '';
+}
+
+function createSearchInput() {
+  const searchInput = document.createElement('input');
+
+  searchInput.className = SEARCH_INPUT_CLASS;
+  searchInput.placeholder = 'Search... Example: Кур овоч, суп горох';
+  searchInput.autofocus = true;
+  searchInput.onkeyup = event => {
+    updateData(() => ({filterText: event.target.value}));
+    render();
+  };
+
+  return searchInput;
+}
+
 
 function renderOrderTable() {
   if (window.location.href.endsWith('/fast')) {
@@ -244,4 +278,15 @@ function saveData(data) {
 function updateData(fn) {
   const data = getData();
   return saveData({...data, ...fn(data)});
+}
+
+
+function includes(whereText, filterText) {
+  const filters = (filterText || '').toLowerCase().split(',')
+    .map(part => part.split(' ').filter(Boolean))
+    .filter(part => part.length !== 0);
+  const where = whereText.toLowerCase();
+  return filters.some(
+    part => part.every(filter => where.includes(filter))
+  );
 }

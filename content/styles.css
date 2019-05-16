@@ -219,3 +219,14 @@ body .suppliers .__ITDXER_filters {
   padding: 0 40px;
   text-align: center;
 }
+
+body .suppliers .__ITDXER_search_input {
+  display: block;
+  font-size: 1.5rem;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  padding: 5px 10px;
+  margin: auto auto 15px;
+  width: 100%;
+  max-width: 500px;
+}
