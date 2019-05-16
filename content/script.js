@@ -3,6 +3,8 @@ const STAR_CLASS = '__ITDXER_star';
 const FILTERS_CLASS = '__ITDXER_filters';
 const ORDER_BUTTON_CLASS = '__ITDXER_order_button';
 const ONE_CLICK_BUY_CLASS = '__ITDXER_oneClickBuy';
+const CHECKBOX_LABEL_FAVORITE = '__ITDXER_checkbox_label_favorite';
+const CHECKBOX_LABEL_VEGAN = '__ITDXER_checkbox_label_vegan';
 
 window.addEventListener('DOMContentLoaded', () => {
   render();
@@ -16,14 +18,17 @@ function openFirstDay() {
 function render() {
   const data = getData();
   const {filterFavorite, filterVegan} = data;
+
   const items = document.querySelectorAll('.menu-item');
   [...items].forEach(item => {
     const content = item.querySelector('.menu-item__content');
     const button = content.querySelector('a.btn.buy');
-    const hrefParts = button.href.split('/');
+    const hrefParts = button.href.split('/'); //.pop();
     const pid = hrefParts[hrefParts.length - 1];
+
     const isFavorite = !!data[pid];
     const isVegan = !!content.querySelector('img[src="/images/vegan.png"]');
+
     renderStar(content, pid, isFavorite);
     renderOneClickBuy(content);
 
@@ -31,61 +36,120 @@ function render() {
       ? 'none'
       : 'block';
   });
-  renderFilters(filterFavorite, filterVegan);
+
+  const suppliersContent = document.querySelector('.suppliers-content');
+  renderFilters(suppliersContent, filterFavorite, filterVegan);
   renderOrderTable();
 }
 
 function renderStar(content, pid, isFavorite) {
-  const stars = getStarElement(content);
-  stars.innerHTML = '';
+  let star = content.querySelector('.' + STAR_CLASS);
 
-  const button = document.createElement('button');
+  if (!star) {
+    star = document.createElement('div');
+    star.className = STAR_CLASS;
+
+    const button = document.createElement('button');
+    button.onclick = () => {
+      updateData(data => ({[pid]: !data[pid]}));
+      render();
+    };
+
+    star.appendChild(button);
+    content.appendChild(star);
+  }
+
+  const button = star.querySelector('button');
   button.innerText = isFavorite ? '★' : '☆';
-  button.style = `background: transparent; border: 0 none; font-size: 2em; color: orange; opacity: ${isFavorite ? '1' : '0.3'}`;
-  button.onclick = () => {
-    updateData(data => ({[pid]: !data[pid]}));
-    render();
-  };
-  stars.appendChild(button);
+  button.style = `opacity: ${isFavorite ? '1' : '0.3'}`;
 }
 
 function renderOneClickBuy(content) {
-  const oneClick = getOneClickBuyElement(content);
-  const buy = content.querySelector('.menu-item__info a.buy');
+  const itemInfo = content.querySelector('.menu-item__info');
+  let oneClick = itemInfo.querySelector('.' + ONE_CLICK_BUY_CLASS);
+
+  if (!oneClick) {
+    const buy = itemInfo.querySelector('.menu-item__info a.buy');
+    oneClick = createOneClickBuyElement(buy);
+    itemInfo.appendChild(oneClick);
+  }
+}
+
+function createOneClickBuyElement(buy) {
+  const oneClick = document.createElement('a');
+
+  oneClick.innerText = 'One Click Buy';
+  oneClick.className = [ONE_CLICK_BUY_CLASS, 'btn btn-success'].join(' ');
+  oneClick.href = buy.href;
+  oneClick.dataset.vendor = buy.dataset.vendor;
 
   oneClick.onclick = (event) => {
     event.preventDefault();
     Promise.resolve()
-      .then(showSpinner)
       .then(() => removeAllCartItems())
       .then(() => buy.click())
       .then(() => waitForSelector('#cart .cart__button > a'))
-      .then(() => document.querySelector('#cart .cart__button > a').click())
-      .catch(console.error)
-      .then(hideSpinner)
-  }
+      .then(() => document.querySelector('#cart .cart__button > a').click());
+  };
+
+  return oneClick;
 }
 
-function renderFilters(filterFavorite, filterVegan) {
-  const filters = getFiltersElement();
-  filters.innerHTML = `<span style="padding: 0 20px;"></span>`;
 
-  filters.prepend(getCheckbox(
-    '&nbsp;<span style="color: orange">★</span> Show only favorite',
-    filterFavorite,
-    (event) => {
-      updateData(() => ({filterFavorite: event.target.checked}));
-      render();
-    }
-  ));
-  filters.append(getCheckbox(
-    '&nbsp;<img alt="vegan" src="/images/vegan.png" style="height: 1em"/> Show only vegetarian',
-    filterVegan,
-    (event) => {
-      updateData(() => ({filterVegan: event.target.checked}));
-      render();
-    }
-  ));
+function renderFilters(suppliersContent, filterFavorite, filterVegan) {
+  let filters = suppliersContent.querySelector('.' + FILTERS_CLASS);
+  if (!filters) {
+    filters = createFiltersElement();
+    suppliersContent.prepend(filters);
+  }
+
+  renderFavoriteCheckbox(filters, filterFavorite);
+  renderVeganCheckbox(filters, filterVegan);
+}
+
+function createFiltersElement() {
+  const filters = document.createElement('div');
+  filters.className = FILTERS_CLASS;
+  filters.innerHTML = `<span style="padding: 0 20px;"></span>`;
+  return filters;
+}
+
+function renderFavoriteCheckbox(filters, filterFavorite) {
+  let checkboxLabel = filters.querySelector('.' + CHECKBOX_LABEL_FAVORITE);
+
+  if (!checkboxLabel) {
+    checkboxLabel = createCheckboxInLabel(
+      '&nbsp;<span style="color: orange">★</span> Show only favorite',
+      CHECKBOX_LABEL_FAVORITE,
+      (event) => {
+        updateData(() => ({filterFavorite: event.target.checked}));
+        render();
+      }
+    );
+
+    filters.prepend(checkboxLabel);
+  }
+
+  checkboxLabel.querySelector('input').checked = filterFavorite;
+}
+
+function renderVeganCheckbox(filters, filterVegan) {
+  let checkboxLabel = filters.querySelector('.' + CHECKBOX_LABEL_VEGAN);
+
+  if (!checkboxLabel) {
+    checkboxLabel = createCheckboxInLabel(
+      '&nbsp;<img alt="vegan" src="/images/vegan.png" style="height: 1em"/> Show only vegetarian',
+      CHECKBOX_LABEL_VEGAN,
+      (event) => {
+        updateData(() => ({filterVegan: event.target.checked}));
+        render();
+      }
+    );
+
+    filters.append(checkboxLabel);
+  }
+
+  checkboxLabel.querySelector('input').checked = filterVegan;
 }
 
 function renderOrderTable() {
@@ -114,16 +178,47 @@ function renderOrderTable() {
   }
 }
 
-function getCheckbox(labelHTML, checked, onChange) {
+function createCheckboxInLabel(labelHTML, className, onChange) {
   const label = document.createElement('label');
   const checkbox = document.createElement('input');
   checkbox.type = 'checkbox';
   checkbox.onchange = onChange;
-  checkbox.checked = checked;
-
   label.innerHTML = labelHTML;
+  label.className = className;
   label.prepend(checkbox);
   return label;
+}
+
+function waitForSelector(selector) {
+  return new Promise(resolve => {
+    const el = document.querySelector(selector);
+    if (el) {
+      resolve(el);
+    } else {
+      setTimeout(() => resolve(waitForSelector(selector)), 100)
+    }
+  })
+}
+
+function waitForEmptySelector(selector) {
+  return new Promise(resolve => {
+    const el = document.querySelector(selector);
+    if (el) {
+      setTimeout(() => resolve(waitForEmptySelector(selector)), 100)
+    } else {
+      resolve(el);
+    }
+  })
+}
+
+function removeAllCartItems() {
+  const items = [...document.querySelectorAll('#cart .cart__delete')];
+  return items.length
+    ? Promise.resolve()
+      .then(() => items.forEach(item => item.click()))
+      .then(() => waitForEmptySelector('#cart .cart__delete'))
+    : Promise.resolve();
+
 }
 
 function getData() {
@@ -149,89 +244,4 @@ function saveData(data) {
 function updateData(fn) {
   const data = getData();
   return saveData({...data, ...fn(data)});
-}
-
-function getStarElement(content) {
-  let stars = content.querySelector('.' + STAR_CLASS);
-  if (!stars) {
-    stars = document.createElement('div');
-    stars.className = STAR_CLASS;
-    stars.style = 'top: 20px;right:20px;position: absolute;';
-    content.appendChild(stars);
-  }
-  return stars;
-}
-
-function getFiltersElement() {
-  const suppliersContent = document.querySelector('.suppliers-content');
-  let filters = suppliersContent.querySelector('.' + FILTERS_CLASS);
-  if (!filters) {
-    filters = document.createElement('div');
-    filters.className = FILTERS_CLASS;
-    filters.style = 'padding: 0 40px; text-align: center;';
-    suppliersContent.prepend(filters);
-  }
-  return filters;
-}
-
-function getOneClickBuyElement(content) {
-  const buy = content.querySelector('.menu-item__info a.buy');
-  const itemInfo = content.querySelector('.menu-item__info');
-  let oneClick = itemInfo.querySelector('.' + ONE_CLICK_BUY_CLASS);
-  if (!oneClick) {
-    oneClick = document.createElement('a');
-    oneClick.innerText = 'One Click Buy';
-    oneClick.className = [ONE_CLICK_BUY_CLASS, 'btn btn-success'].join(' ');
-    oneClick.dataset.vendor = buy.dataset.vendor;
-    oneClick.href = buy.href;
-    itemInfo.appendChild(oneClick);
-  }
-  return oneClick;
-}
-
-function waitForSelector(selector) {
-  return new Promise(resolve => {
-    const el = document.querySelector(selector);
-    if (el) {
-      resolve(el);
-    } else {
-      setTimeout(() => resolve(waitForSelector(selector)), 100)
-    }
-  })
-}
-
-function waitForEmptySelector(selector) {
-  return new Promise(resolve => {
-    const el = document.querySelector(selector);
-    if (el) {
-      setTimeout(() => resolve(waitForEmptySelector(selector)), 100)
-    } else {
-      resolve(el);
-    }
-  })
-}
-
-
-function removeAllCartItems() {
-  const items = [...document.querySelectorAll('#cart .cart__delete')];
-  return items.length
-    ? Promise.resolve()
-      .then(() => items.forEach(item => item.click()))
-      .then(() => waitForEmptySelector('#cart .cart__delete'))
-    : Promise.resolve();
-
-}
-
-let spinnersCount = 0;
-
-function showSpinner() {
-  spinnersCount++;
-  document.body.style.cursor = "wait";
-}
-
-function hideSpinner() {
-  spinnersCount--;
-  if (spinnersCount === 0) {
-    document.body.style.cursor = "default";
-  }
 }
