@@ -284,7 +284,7 @@ function updateData(fn) {
 
 function searchAndHiglight(whereElement, filterText) {
   const filters = (filterText || '').toLowerCase().split(',')
-    .map(part => part.split(' ').filter(Boolean))
+    .map(part => part.split(' ').map(p => p.trim()).filter(Boolean))
     .filter(part => part.length !== 0);
   const where = whereElement.innerText.toLowerCase();
 

@@ -11,7 +11,7 @@ function highlight(elem, keywords) {
   unionTextNodes(elem);
 
   Array.from(elem.childNodes).forEach(child => {
-    const keywordRegex = RegExp(keywords.filter(Boolean).join('|'), 'gi');
+    const keywordRegex = RegExp(keywords.map(escapeRegExp).join('|'), 'gi');
     if (child.nodeType !== NODE_TYPE_TEXT) {
       highlight(child, keywords);
     } else if (keywordRegex.test(child.textContent)) {
@@ -65,4 +65,8 @@ function unionTextNodes(elem) {
       }
     }
   }
+}
+
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
