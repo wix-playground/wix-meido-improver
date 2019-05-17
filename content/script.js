@@ -13,7 +13,10 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function openFirstDay() {
-  document.querySelector('.suppliers .container .nav.nav-tabs.new-tabs li:first-child a').click();
+  const firstDayTab = document.querySelector('.suppliers .container .nav.nav-tabs.new-tabs li:first-child a')
+  if (firstDayTab) {
+    firstDayTab.click();
+  }
 }
 
 function render() {

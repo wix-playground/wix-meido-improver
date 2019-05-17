@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "wix-meido-improver",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "browser_action": {
     "default_icon": "icons/icon128.png"
   },
