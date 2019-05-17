@@ -1,4 +1,3 @@
-const STORAGE_KEY = '__ITDXER_storage';
 const STAR_CLASS = '__ITDXER_star';
 const FILTERS_CLASS = '__ITDXER_filters';
 const ORDER_BUTTON_CLASS = '__ITDXER_order_button';
@@ -25,14 +24,13 @@ function render() {
   [...items].forEach(item => {
     const content = item.querySelector('.menu-item__content');
     const button = content.querySelector('a.btn.buy');
-    const hrefParts = button.href.split('/'); //.pop();
-    const pid = hrefParts[hrefParts.length - 1];
+    const pid = button.href.split('/').pop();
 
     const isFavorite = !!data[pid];
     const isVegan = !!content.querySelector('img[src="/images/vegan.png"]');
 
     unhighlight(content);
-    const display = (!filterText || searchAndHiglight(content, filterText))
+    const display = (!filterText || searchAndHighlight(content, filterText))
       && (!filterFavorite || data[pid])
       && (!filterVegan || isVegan);
 
@@ -224,27 +222,6 @@ function createCheckboxInLabel(labelHTML, className, onChange) {
   return label;
 }
 
-function waitForSelector(selector) {
-  return new Promise(resolve => {
-    const el = document.querySelector(selector);
-    if (el) {
-      resolve(el);
-    } else {
-      setTimeout(() => resolve(waitForSelector(selector)), 100)
-    }
-  })
-}
-
-function waitForEmptySelector(selector) {
-  return new Promise(resolve => {
-    const el = document.querySelector(selector);
-    if (el) {
-      setTimeout(() => resolve(waitForEmptySelector(selector)), 100)
-    } else {
-      resolve(el);
-    }
-  })
-}
 
 function removeAllCartItems() {
   const items = [...document.querySelectorAll('#cart .cart__delete')];
@@ -256,33 +233,7 @@ function removeAllCartItems() {
 
 }
 
-function getData() {
-  let data = null;
-
-  try {
-    data = JSON.parse(window.localStorage.getItem(STORAGE_KEY));
-  } catch (error) {
-    console.log(error);
-  }
-
-  return data || {};
-}
-
-function saveData(data) {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-function updateData(fn) {
-  const data = getData();
-  return saveData({...data, ...fn(data)});
-}
-
-
-function searchAndHiglight(whereElement, filterText) {
+function searchAndHighlight(whereElement, filterText) {
   const filters = (filterText || '').toLowerCase().split(',')
     .map(part => part.split(' ').map(p => p.trim()).filter(Boolean))
     .filter(part => part.length !== 0);
