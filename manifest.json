@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "wix-meido-improver",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "browser_action": {
     "default_icon": "icons/icon128.png"
   },
@@ -11,7 +11,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://wix.getmeido.com/*"],
+      "matches": ["https://wix.getmeido.com/order*"],
       "css": ["content/styles.css"],
       "js": ["modules/waitForSelector.js", "modules/storage.js", "modules/highlight.js", "content/script.js"],
       "run_at": "document_start"
