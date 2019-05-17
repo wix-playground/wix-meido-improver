@@ -29,14 +29,21 @@ function render() {
     const isFavorite = !!data[pid];
     const isVegan = !!content.querySelector('img[src="/images/vegan.png"]');
 
-    unhighlight(content);
-    const display = (!filterText || searchAndHighlight(content, filterText))
+    const filters = (filterText || '')
+      .toLowerCase()
+      .split(',')
+      .map(part => part.split(' ').map(p => p.trim()).filter(Boolean))
+      .filter(part => part.length !== 0);
+
+    const display = (!filterText || includes(content, filters))
       && (!filterFavorite || data[pid])
       && (!filterVegan || isVegan);
 
     item.style.display = display
       ? 'block'
       : 'none';
+
+    setTimeout(() => renderHighlights(content, [].concat(...filters), display), 0);
 
     renderStar(content, pid, isFavorite);
     renderOneClickBuy(content);
@@ -233,17 +240,17 @@ function removeAllCartItems() {
 
 }
 
-function searchAndHighlight(whereElement, filterText) {
-  const filters = (filterText || '').toLowerCase().split(',')
-    .map(part => part.split(' ').map(p => p.trim()).filter(Boolean))
-    .filter(part => part.length !== 0);
+function includes(whereElement, filters) {
   const where = whereElement.innerText.toLowerCase();
 
   return filters.some(
-    parts => {
-      const found = parts.every(filter => where.includes(filter));
-      highlight(whereElement, parts);
-      return found;
-    }
+    parts => parts.every(filter => where.includes(filter))
   );
 }
+
+const renderHighlights = ((elem, keywords, shouldHighlight) => {
+  unhighlight(elem);
+  if (shouldHighlight && keywords.length !== 0) {
+    highlight(elem, keywords);
+  }
+});
