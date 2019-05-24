@@ -126,7 +126,6 @@ function renderFilters(suppliersContent, filterFavorite, filterVegan, filterText
 function createFiltersElement() {
   const filters = document.createElement('div');
   filters.className = FILTERS_CLASS;
-  filters.innerHTML = `<span style="padding: 0 20px;"></span>`;
   return filters;
 }
 

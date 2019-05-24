@@ -234,3 +234,8 @@ body .suppliers .__ITDXER_search_input {
 .__HIGHLIGHTED {
   background-color: #ff0;
 }
+
+.__ITDXER_checkbox_label_vegan,
+.__ITDXER_checkbox_label_favorite {
+  padding: 0 10px;
+}
