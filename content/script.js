@@ -13,8 +13,9 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function openFirstDay() {
-  const firstDayTab = document.querySelector('.suppliers .container .nav.nav-tabs.new-tabs li:first-child a')
-  if (firstDayTab) {
+  const firstDayTabSelected = !!document.querySelector('.suppliers .container .nav.nav-tabs.new-tabs li.active');
+  const firstDayTab = document.querySelector('.suppliers .container .nav.nav-tabs.new-tabs li:first-child a');
+  if (!firstDayTabSelected && firstDayTab) {
     firstDayTab.click();
   }
 }
