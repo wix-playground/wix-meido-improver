@@ -8,15 +8,17 @@ const SEARCH_INPUT_CLASS = '__ITDXER_search_input';
 
 
 window.addEventListener('DOMContentLoaded', () => {
+  addCategoryAll();
+  openFirstCategory();
   render();
-  openFirstDay();
 });
 
-function openFirstDay() {
-  const firstDayTabSelected = !!document.querySelector('.suppliers .container .nav.nav-tabs.new-tabs li.active');
-  const firstDayTab = document.querySelector('.suppliers .container .nav.nav-tabs.new-tabs li:first-child a');
-  if (!firstDayTabSelected && firstDayTab) {
-    firstDayTab.click();
+function openFirstCategory() {
+  const firstCategoryTabSelected = !!document.querySelector('.suppliers .container .nav.nav-tabs.new-tabs li.active');
+  const firstCategoryTab = document.querySelector('.suppliers .container .nav.nav-tabs.new-tabs li:first-child a');
+
+  if (!firstCategoryTabSelected && firstCategoryTab || document.cookie.includes('activeTab=category_all')) {
+    firstCategoryTab.click();
   }
 }
 

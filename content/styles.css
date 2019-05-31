@@ -237,3 +237,19 @@ body .suppliers .__ITDXER_search_input {
 .__ITDXER_checkbox_label_favorite {
   padding: 0 10px;
 }
+
+
+.__ITDXER_menu-item__categories {
+  margin-left: 190px;
+  margin-bottom: 10px;
+}
+
+.__ITDXER_menu-item__category {
+  background: #c7e5fc;
+  border-radius: 15px;
+  padding: 0 10px;
+  color: #333;
+  display: inline-block;
+  margin-right: 1rem;
+  cursor: pointer;
+}
