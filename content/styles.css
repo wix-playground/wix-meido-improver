@@ -98,6 +98,7 @@ body .suppliers .menu-item__content > img {
 body .suppliers .menu-item__content > img[src="/images/no-image.png"] {
   height: 120px;
   opacity: 0.4;
+  z-index: 1;
 }
 
 body .suppliers .__ITDXER_oneClickBuy {
@@ -147,6 +148,7 @@ body .suppliers .menu-item__content > h4 > img[src="/images/vegan.png"] {
   bottom: 20px;
   left: 0;
   border-radius: 50%;
+  z-index: 1;
 }
 
 /** --experiment-- delimiter **/
