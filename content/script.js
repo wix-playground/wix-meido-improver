@@ -196,7 +196,7 @@ function createSearchInput() {
 
 
 function renderOrderTable() {
-  if (window.location.href.endsWith('/fast')) {
+  if (window.location.pathname.endsWith('/fast')) {
     waitForSelector('.modal-open .modal-footer button.submit')
       .then(submitButton => {
         submitButton.style.display = 'none';

@@ -7,16 +7,12 @@ a.__ITDXER_order_button {
   text-decoration: none;
   text-transform: none;
   padding: 2px 8px;
-  display: inline-block;
-  -webkit-transition: all .2s ease-in-out;
-  transition: all .2s ease-in-out;
+  display: block;
   -webkit-box-shadow: 0 0 9px rgba(0, 0, 0, 0.2);
 }
 
 a.__ITDXER_order_button:hover {
   background: #62d135;
-  -webkit-transform: scale(1.06);
-  transform: scale(1.06);
   box-shadow: 0 0 9px rgba(0, 0, 0, 0.2);
 }
 
