@@ -270,3 +270,12 @@ body .suppliers .__ITDXER_search_input {
   border-radius: 5px;
   margin: 4px;
 }
+
+.__ITDXER_contractor_count {
+  display: inline-block;
+  background: #eee;
+  padding: 2px 4px;
+  margin-left: 5px;
+  border-radius: 5px;
+
+}

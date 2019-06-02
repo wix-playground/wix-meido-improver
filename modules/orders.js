@@ -1,4 +1,5 @@
 const DISH_COUNT_CLASS = '__ITDXER_dish_count';
+const CONTRACTOR_COUNT_CLASS = '__ITDXER_contractor_count';
 
 async function fetchOrderIds() {
   const ids = new Set();
@@ -73,12 +74,25 @@ async function renderOrderedDishes() {
     {}
   );
 
-  const ontractorTab = document.querySelector('.suppliers .restaurants__nav li.active a');
+  const contractorTab = document.querySelectorAll('.suppliers .restaurants__nav li a');
+  [...contractorTab].forEach(link => {
+    const contractorName = link.innerText.trim();
+    const count = Object.keys(dishesByContractor[contractorName] || {}).length;
+
+    if (count > 0) {
+      const countElem = document.createElement('div');
+      countElem.innerText = count;
+      countElem.className = CONTRACTOR_COUNT_CLASS;
+      countElem.title = `You made ${count} orders in this restaurant`;
+      link.parentNode.insertBefore(countElem, link.nextSibling);
+    }
+  });
+
   const activeContractorTab = document.querySelector('.suppliers .restaurants__nav li.active a');
 
   if (activeContractorTab) {
-    const activeContractoName = activeContractorTab.innerText.trim();
-    const activeDishes = dishesByContractor[activeContractoName];
+    const activeContractorName = activeContractorTab.innerText.trim();
+    const activeDishes = dishesByContractor[activeContractorName];
     const dishesCount = new Map();
     activeDishes.forEach(dishName => {
       if (!dishesCount.has(dishName)) {
