@@ -111,7 +111,7 @@ async function renderOrderedDishes(callback) {
         countElem.innerText = dishesCount.get(dishName);
         countElem.className = DISH_COUNT_CLASS;
         countElem.title = `You bought this dish ${dishesCount.get(dishName)} times`;
-        content.append(countElem);
+        content.querySelector('.menu-item__info').append(countElem);
       }
     })
   }

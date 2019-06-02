@@ -258,17 +258,15 @@ body .suppliers .__ITDXER_search_input {
 }
 
 .__ITDXER_dish_count {
-  position: absolute;
-  top: 20px;
-  right: 60px;
-  width: 32px;
-  height: 32px;
+  min-width: 37px;
+  height: 37px;
   background: #eee;
-  line-height: 1.8em;
+  line-height: 2.2em;
   text-align: center;
   font-size: 1.7rem;
-  border-radius: 5px;
-  margin: 4px;
+  border-radius: 10px;
+  margin-right: 5px;
+  float: right;
 }
 
 .__ITDXER_contractor_count {
