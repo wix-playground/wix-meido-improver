@@ -123,7 +123,7 @@ body .suppliers .menu-item__content > img {
 
 body .suppliers .menu-item__content > h4 {
   min-height: 0;
-  margin-right: 40px;
+  margin-right: 80px;
 }
 
 body .suppliers .menu-item__content > h4,
@@ -211,6 +211,7 @@ body .suppliers .__ITDXER_star > button {
   border: 0 none;
   font-size: 2em;
   color: orange;
+  padding: 0 6px;
 }
 
 body .suppliers .__ITDXER_filters {
@@ -242,6 +243,7 @@ body .suppliers .__ITDXER_search_input {
 .__ITDXER_menu-item__categories {
   margin-left: 190px;
   margin-bottom: 10px;
+  line-height: 2;
 }
 
 .__ITDXER_menu-item__category {
@@ -250,6 +252,21 @@ body .suppliers .__ITDXER_search_input {
   padding: 0 10px;
   color: #333;
   display: inline-block;
-  margin-right: 1rem;
+  margin-right: 6px;
   cursor: pointer;
+  line-height: 1.5;
+}
+
+.__ITDXER_dish_count {
+  position: absolute;
+  top: 20px;
+  right: 60px;
+  width: 32px;
+  height: 32px;
+  background: #eee;
+  line-height: 1.8em;
+  text-align: center;
+  font-size: 1.7rem;
+  border-radius: 5px;
+  margin: 4px;
 }

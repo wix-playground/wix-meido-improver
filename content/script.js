@@ -11,6 +11,7 @@ window.addEventListener('DOMContentLoaded', () => {
   addCategoryAll();
   openFirstCategory();
   render();
+  renderOrderedDishes();
 });
 
 function openFirstCategory() {
@@ -26,7 +27,7 @@ function render() {
   const data = getData();
   const {filterFavorite, filterVegan, filterText} = data;
 
-  const items = document.querySelectorAll('.menu-item');
+  const items = document.querySelectorAll('.tab-content > .tab-pane > .menu-item');
   [...items].forEach(item => {
     const content = item.querySelector('.menu-item__content');
     const button = content.querySelector('a.btn.buy');
@@ -216,6 +217,7 @@ function renderOrderTable() {
             orderButton.onclick = () => {
               label.click();
               submitButton.click();
+              unvalidateOrderedDishesCache();
             };
             td.appendChild(orderButton);
           });
