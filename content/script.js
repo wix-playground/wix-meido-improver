@@ -85,8 +85,8 @@ function renderStar(content, pid, isFavorite) {
   }
 
   const button = star.querySelector('button');
-  button.innerText = isFavorite ? '★' : '☆';
-  button.style = `opacity: ${isFavorite ? '1' : '0.3'}`;
+  button.innerText = '❤️';
+  button.style = `opacity: ${isFavorite ? '1' : '0.1'}`;
 }
 
 function renderOneClickBuy(content) {
@@ -146,7 +146,7 @@ function renderFavoriteCheckbox(filters, filterFavorite) {
 
   if (!checkboxLabel) {
     checkboxLabel = createCheckboxInLabel(
-      '&nbsp;<span style="color: orange">★</span> Show only favorite',
+      '&nbsp;<span>❤️</span> Show only favorite',
       CHECKBOX_LABEL_FAVORITE,
       event => updateData(() => ({filterFavorite: event.target.checked}))
     );
