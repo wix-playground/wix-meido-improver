@@ -6,13 +6,16 @@ const CHECKBOX_LABEL_FAVORITE = '__ITDXER_checkbox_label_favorite';
 const CHECKBOX_LABEL_VEGAN = '__ITDXER_checkbox_label_vegan';
 const SEARCH_INPUT_CLASS = '__ITDXER_search_input';
 
-
 window.addEventListener('DOMContentLoaded', () => {
   addCategoryAll();
   openFirstCategory();
-  render();
   renderOrderedDishes();
+
+  const data = getData();
+  subscribeForStorageChanges(render);
+  render(data);
 });
+
 
 function openFirstCategory() {
   const firstCategoryTabSelected = !!document.querySelector('.suppliers .container .nav.nav-tabs.new-tabs li.active');
@@ -23,8 +26,7 @@ function openFirstCategory() {
   }
 }
 
-function render() {
-  const data = getData();
+function render(data) {
   const {filterFavorite, filterVegan, filterText} = data;
 
   const items = document.querySelectorAll('.tab-content > .tab-pane > .menu-item');
@@ -69,10 +71,7 @@ function renderStar(content, pid, isFavorite) {
     star.className = STAR_CLASS;
 
     const button = document.createElement('button');
-    button.onclick = () => {
-      updateData(data => ({[pid]: !data[pid]}));
-      render();
-    };
+    button.onclick = () => updateData(data => ({[pid]: !data[pid]}));
 
     star.appendChild(button);
     content.appendChild(star);
@@ -140,10 +139,7 @@ function renderFavoriteCheckbox(filters, filterFavorite) {
     checkboxLabel = createCheckboxInLabel(
       '&nbsp;<span style="color: orange">★</span> Show only favorite',
       CHECKBOX_LABEL_FAVORITE,
-      (event) => {
-        updateData(() => ({filterFavorite: event.target.checked}));
-        render();
-      }
+      event => updateData(() => ({filterFavorite: event.target.checked}))
     );
 
     filters.prepend(checkboxLabel);
@@ -159,10 +155,7 @@ function renderVeganCheckbox(filters, filterVegan) {
     checkboxLabel = createCheckboxInLabel(
       '&nbsp;<img alt="vegan" src="/images/vegan.png" style="height: 1em"/> Show only vegetarian',
       CHECKBOX_LABEL_VEGAN,
-      (event) => {
-        updateData(() => ({filterVegan: event.target.checked}));
-        render();
-      }
+      event => updateData(() => ({filterVegan: event.target.checked}))
     );
 
     filters.append(checkboxLabel);
@@ -189,10 +182,7 @@ function createSearchInput() {
   searchInput.className = SEARCH_INPUT_CLASS;
   searchInput.placeholder = 'Search... Example: Кур овоч, суп горох';
   searchInput.autofocus = true;
-  searchInput.onkeyup = event => {
-    updateData(() => ({filterText: event.target.value}));
-    render();
-  };
+  searchInput.onkeyup = event => updateData(() => ({filterText: event.target.value}));
 
   return searchInput;
 }
