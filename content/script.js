@@ -2,6 +2,8 @@ const STAR_CLASS = '__ITDXER_star';
 const FILTERS_CLASS = '__ITDXER_filters';
 const ORDER_BUTTON_CLASS = '__ITDXER_order_button';
 const ONE_CLICK_BUY_CLASS = '__ITDXER_oneClickBuy';
+const CHECKBOX_ICON_ORDERED = '__ITDXER_checkbox_icon_ordered';
+const CHECKBOX_LABEL_ORDERED = '__ITDXER_checkbox_label_ordered';
 const CHECKBOX_LABEL_FAVORITE = '__ITDXER_checkbox_label_favorite';
 const CHECKBOX_LABEL_VEGAN = '__ITDXER_checkbox_label_vegan';
 const SEARCH_INPUT_CLASS = '__ITDXER_search_input';
@@ -9,13 +11,16 @@ const SEARCH_INPUT_CLASS = '__ITDXER_search_input';
 window.addEventListener('DOMContentLoaded', () => {
   addCategoryAll();
   openFirstCategory();
-  renderOrderedDishes();
 
-  const data = getData();
   subscribeForStorageChanges(render);
-  render(data);
+  renderOrderedDishes(renderWithData);
+  renderWithData();
 });
 
+function renderWithData() {
+  const data = getData();
+  render(data);
+}
 
 function openFirstCategory() {
   const firstCategoryTabSelected = !!document.querySelector('.suppliers .container .nav.nav-tabs.new-tabs li.active');
@@ -27,7 +32,7 @@ function openFirstCategory() {
 }
 
 function render(data) {
-  const {filterFavorite, filterVegan, filterText} = data;
+  const {filterOrdered, filterFavorite, filterVegan, filterText} = data;
 
   const items = document.querySelectorAll('.tab-content > .tab-pane > .menu-item');
   [...items].forEach(item => {
@@ -37,6 +42,7 @@ function render(data) {
 
     const isFavorite = !!data[pid];
     const isVegan = !!content.querySelector('img[src="/images/vegan.png"]');
+    const isOrdered = !!content.querySelector('.'+DISH_COUNT_CLASS);
 
     const filters = (filterText || '')
       .toLowerCase()
@@ -45,6 +51,7 @@ function render(data) {
       .filter(part => part.length !== 0);
 
     const display = (!filterText || includes(content, filters))
+      && (!filterOrdered || isOrdered)
       && (!filterFavorite || data[pid])
       && (!filterVegan || isVegan);
 
@@ -59,7 +66,7 @@ function render(data) {
   });
 
   const suppliersContent = document.querySelector('.suppliers-content');
-  renderFilters(suppliersContent, filterFavorite, filterVegan, filterText);
+  renderFilters(suppliersContent, filterOrdered, filterFavorite, filterVegan, filterText);
   renderOrderTable();
 }
 
@@ -114,7 +121,7 @@ function createOneClickBuyElement(buy) {
 }
 
 
-function renderFilters(suppliersContent, filterFavorite, filterVegan, filterText) {
+function renderFilters(suppliersContent, filterOrdered, filterFavorite, filterVegan, filterText) {
   let filters = suppliersContent.querySelector('.' + FILTERS_CLASS);
   if (!filters) {
     filters = createFiltersElement();
@@ -123,6 +130,8 @@ function renderFilters(suppliersContent, filterFavorite, filterVegan, filterText
 
   renderFavoriteCheckbox(filters, filterFavorite);
   renderVeganCheckbox(filters, filterVegan);
+  renderOrderedCheckbox(filters, filterOrdered);
+
   renderSearchInput(filters, filterText)
 }
 
@@ -162,6 +171,22 @@ function renderVeganCheckbox(filters, filterVegan) {
   }
 
   checkboxLabel.querySelector('input').checked = filterVegan;
+}
+
+function renderOrderedCheckbox(filters, filterOrdered) {
+  let checkboxLabel = filters.querySelector('.' + CHECKBOX_LABEL_ORDERED);
+
+  if (!checkboxLabel) {
+    checkboxLabel = createCheckboxInLabel(
+      `&nbsp;<div class="${CHECKBOX_ICON_ORDERED}">n</div> Show only ordered`,
+      CHECKBOX_LABEL_ORDERED,
+      event => updateData(() => ({filterOrdered: event.target.checked}))
+    );
+
+    filters.prepend(checkboxLabel);
+  }
+
+  checkboxLabel.querySelector('input').checked = filterOrdered;
 }
 
 

@@ -64,7 +64,7 @@ function isDateBeforeYesterday(date) {
   return new Date(date) < yesterday;
 }
 
-async function renderOrderedDishes() {
+async function renderOrderedDishes(callback) {
   const allDishes = await getOrderedDishes();
   const dishesByContractor = allDishes.reduce(
     (by, {dish, contractor}) => ({
@@ -115,4 +115,6 @@ async function renderOrderedDishes() {
       }
     })
   }
+
+  callback();
 }

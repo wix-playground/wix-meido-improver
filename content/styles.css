@@ -234,6 +234,7 @@ body .suppliers .__ITDXER_search_input {
   background-color: #ff0;
 }
 
+.__ITDXER_checkbox_label_ordered,
 .__ITDXER_checkbox_label_vegan,
 .__ITDXER_checkbox_label_favorite {
   padding: 0 10px;
@@ -277,5 +278,12 @@ body .suppliers .__ITDXER_search_input {
   padding: 2px 4px;
   margin-left: 5px;
   border-radius: 5px;
+}
 
+.__ITDXER_checkbox_icon_ordered {
+  background: #eee;
+  border-radius: 3px;
+  display: inline-block;
+  font-weight: normal;
+  padding: 0 5px;
 }
