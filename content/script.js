@@ -7,6 +7,7 @@ const CHECKBOX_LABEL_ORDERED = '__ITDXER_checkbox_label_ordered';
 const CHECKBOX_LABEL_FAVORITE = '__ITDXER_checkbox_label_favorite';
 const CHECKBOX_LABEL_VEGAN = '__ITDXER_checkbox_label_vegan';
 const SEARCH_INPUT_CLASS = '__ITDXER_search_input';
+const PARTIALLY_MATCHED_CLASS = '__ITDXER_first_partially_matched';
 
 window.addEventListener('DOMContentLoaded', () => {
   addCategoryAll();
@@ -15,6 +16,7 @@ window.addEventListener('DOMContentLoaded', () => {
   subscribeForStorageChanges(render);
   renderOrderedDishes(renderWithData);
   renderWithData();
+  renderOrderTable();
 });
 
 function renderWithData() {
@@ -34,40 +36,62 @@ function openFirstCategory() {
 function render(data) {
   const {filterOrdered, filterFavorite, filterVegan, filterText} = data;
 
-  const items = document.querySelectorAll('.tab-content > .tab-pane > .menu-item');
-  [...items].forEach(item => {
-    const content = item.querySelector('.menu-item__content');
-    const button = content.querySelector('a.btn.buy');
-    const pid = button.href.split('/').pop();
+  const filters = (filterText || '')
+    .toLowerCase()
+    .split(',')
+    .map(part => part.split(' ').map(p => p.trim()).filter(Boolean))
+    .filter(part => part.length !== 0);
 
-    const isFavorite = !!data[pid];
-    const isVegan = !!content.querySelector('img[src="/images/vegan.png"]');
-    const isOrdered = !!content.querySelector('.'+DISH_COUNT_CLASS);
+  const panes = document.querySelectorAll('.suppliers-content .container > .tab-content > .tab-pane');
+  [...panes].forEach(pane => {
+    let firstPartiallyMatchedFound = false;
 
-    const filters = (filterText || '')
-      .toLowerCase()
-      .split(',')
-      .map(part => part.split(' ').map(p => p.trim()).filter(Boolean))
-      .filter(part => part.length !== 0);
+    [...pane.children]
+      .map(item => {
+        const content = item.querySelector('.menu-item__content');
+        const button = content.querySelector('a.btn.buy');
+        const pid = button.href.split('/').pop();
+        const orderedElem = content.querySelector('.' + DISH_COUNT_CLASS);
+        const orderedTimes = orderedElem ? parseInt(orderedElem.innerText) : 0;
 
-    const display = (!filterText || includes(content, filters))
-      && (!filterOrdered || isOrdered)
-      && (!filterFavorite || data[pid])
-      && (!filterVegan || isVegan);
+        return ({
+          item,
+          content,
+          pid,
+          includesFilters: includes(content, filters),
+          isFavorite: !!data[pid],
+          isVegan: !!content.querySelector('img[src="/images/vegan.png"]'),
+          orderedTimes,
+        });
+      })
+      .map(({includesFilters, pid, isFavorite, isVegan, orderedTimes, content, item}) => ({
+        orderArr: [
+          filters.length > 0 ? includesFilters : -1,
+          filterFavorite ? (data[pid] ? 1 : 0) : -1,
+          filterVegan ? (isVegan ? 1 : 0) : -1,
+          filterOrdered ? orderedTimes : -1
+        ],
+        includesFilters, item, content, pid, isFavorite
+      }))
+      .sort((a, b) => sortCompareArrays(a.orderArr, b.orderArr))
+      .forEach(({orderArr, item, content, pid, isFavorite, includesFilters}, order) => {
+        if (orderArr.some(a => a === 0) && !firstPartiallyMatchedFound) {
+          item.classList.add(PARTIALLY_MATCHED_CLASS);
+          firstPartiallyMatchedFound = true;
+        } else {
+          item.classList.remove(PARTIALLY_MATCHED_CLASS);
+        }
+        item.style.order = String(order + 1);
 
-    item.style.display = display
-      ? 'block'
-      : 'none';
+        setTimeout(() => renderHighlights(content, [].concat(...filters), includesFilters > 0), 0);
 
-    setTimeout(() => renderHighlights(content, [].concat(...filters), display), 0);
-
-    renderStar(content, pid, isFavorite);
-    renderOneClickBuy(content);
+        renderStar(content, pid, isFavorite);
+        renderOneClickBuy(content);
+      });
   });
 
   const suppliersContent = document.querySelector('.suppliers-content');
   renderFilters(suppliersContent, filterOrdered, filterFavorite, filterVegan, filterText);
-  renderOrderTable();
 }
 
 function renderStar(content, pid, isFavorite) {
@@ -146,12 +170,12 @@ function renderFavoriteCheckbox(filters, filterFavorite) {
 
   if (!checkboxLabel) {
     checkboxLabel = createCheckboxInLabel(
-      '&nbsp;<span>❤️</span> Show only favorite',
+      '&nbsp;<span>❤️</span> favorite',
       CHECKBOX_LABEL_FAVORITE,
       event => updateData(() => ({filterFavorite: event.target.checked}))
     );
 
-    filters.prepend(checkboxLabel);
+    filters.append(checkboxLabel);
   }
 
   checkboxLabel.querySelector('input').checked = filterFavorite;
@@ -162,7 +186,7 @@ function renderVeganCheckbox(filters, filterVegan) {
 
   if (!checkboxLabel) {
     checkboxLabel = createCheckboxInLabel(
-      '&nbsp;<img alt="vegan" src="/images/vegan.png" style="height: 1em"/> Show only vegetarian',
+      '&nbsp;<img alt="vegan" src="/images/vegan.png" style="height: 1em"/> vegetarian',
       CHECKBOX_LABEL_VEGAN,
       event => updateData(() => ({filterVegan: event.target.checked}))
     );
@@ -178,12 +202,12 @@ function renderOrderedCheckbox(filters, filterOrdered) {
 
   if (!checkboxLabel) {
     checkboxLabel = createCheckboxInLabel(
-      `&nbsp;<div class="${CHECKBOX_ICON_ORDERED}">n</div> Show only ordered`,
+      `&nbsp;<div class="${CHECKBOX_ICON_ORDERED}">n</div> ordered`,
       CHECKBOX_LABEL_ORDERED,
       event => updateData(() => ({filterOrdered: event.target.checked}))
     );
 
-    filters.prepend(checkboxLabel);
+    filters.append(checkboxLabel);
   }
 
   checkboxLabel.querySelector('input').checked = filterOrdered;
@@ -265,9 +289,10 @@ function removeAllCartItems() {
 function includes(whereElement, filters) {
   const where = whereElement.innerText.toLowerCase();
 
-  return filters.some(
-    parts => parts.every(filter => where.includes(filter))
-  );
+  return filters
+    .map(parts => parts.filter(filter => where.includes(filter)).length)
+    .filter(Boolean)
+    .reduce((sum, len) => sum + len, 0);
 }
 
 const renderHighlights = ((elem, keywords, shouldHighlight) => {
@@ -276,3 +301,13 @@ const renderHighlights = ((elem, keywords, shouldHighlight) => {
     highlight(elem, keywords);
   }
 });
+
+
+function sortCompareArrays(arr1, arr2) {
+  const longest = Math.max(arr1.length, arr2.length);
+  const union = new Array(longest)
+    .fill(0)
+    .map((_, index) => [arr1[index] || 0, arr2[index] || 0]);
+
+  return union.reduce((comp, [first, second]) => comp || (second - first), 0);
+}

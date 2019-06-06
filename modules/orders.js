@@ -101,8 +101,6 @@ async function renderOrderedDishes(callback) {
       dishesCount.set(dishName, dishesCount.get(dishName) + 1);
     });
 
-    console.log([...dishesCount.entries()]);
-
     const contents = document.querySelectorAll('.tab-content > .tab-pane > .menu-item > .menu-item__content');
     [...contents].forEach(content => {
       const dishName = content.querySelector('h4').innerText.trim();

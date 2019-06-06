@@ -3,18 +3,20 @@ const CATEGORY_CLASS = '__ITDXER_menu-item__category';
 
 function addCategoryAll() {
   const categoryTabs = document.querySelector('.suppliers .container .nav.nav-tabs.new-tabs');
-  const li = document.createElement('li');
-  const link = document.createElement('a');
-  link.innerText = 'SHOW ALL';
-  link.dataset.toggle = "tab";
-  link.href = "#category_all";
-  link.setAttribute('onclick', "saveTabPosition('category_all')");
-  link.setAttribute('aria-controls', "category_all");
-  link.setAttribute('role', "tab");
-  li.appendChild(link);
+  if (categoryTabs) {
+    const li = document.createElement('li');
+    const link = document.createElement('a');
+    link.innerText = 'SHOW ALL';
+    link.dataset.toggle = "tab";
+    link.href = "#category_all";
+    link.setAttribute('onclick', "saveTabPosition('category_all')");
+    link.setAttribute('aria-controls', "category_all");
+    link.setAttribute('role', "tab");
+    li.appendChild(link);
 
-  renderCategoryAll();
-  categoryTabs.prepend(li);
+    renderCategoryAll();
+    categoryTabs.prepend(li);
+  }
 }
 
 function renderCategoryAll() {
