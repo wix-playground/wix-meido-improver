@@ -129,8 +129,6 @@ function createOneClickBuyElement(buy) {
 
   oneClick.innerText = 'One Click Buy';
   oneClick.className = [ONE_CLICK_BUY_CLASS, 'btn btn-success'].join(' ');
-  oneClick.href = buy.href;
-  oneClick.dataset.vendor = buy.dataset.vendor;
 
   oneClick.onclick = (event) => {
     event.preventDefault();
