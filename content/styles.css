@@ -261,12 +261,13 @@ body .suppliers .__ITDXER_search_input {
   min-width: 37px;
   height: 37px;
   background: #eee;
-  line-height: 2.2em;
+  line-height: 2em;
   text-align: center;
   font-size: 1.7rem;
   border-radius: 10px;
   margin-right: 5px;
   float: right;
+  border: 2px solid #398439;
 }
 
 .__ITDXER_contractor_count {
@@ -282,7 +283,9 @@ body .suppliers .__ITDXER_search_input {
   border-radius: 3px;
   display: inline-block;
   font-weight: normal;
-  padding: 0 5px;
+  padding: 0 4px;
+  border: 1px solid #398439;
+  line-height: 1.2;
 }
 
 .suppliers .suppliers-content .container > .tab-content > .tab-pane.active {
