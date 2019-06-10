@@ -28,7 +28,7 @@ function openFirstCategory() {
   const firstCategoryTabSelected = !!document.querySelector('.suppliers .container .nav.nav-tabs.new-tabs li.active');
   const firstCategoryTab = document.querySelector('.suppliers .container .nav.nav-tabs.new-tabs li:first-child a');
 
-  if (!firstCategoryTabSelected && firstCategoryTab || document.cookie.includes('activeTab=category_all')) {
+  if ((!firstCategoryTabSelected || document.cookie.includes('activeTab=category_all')) && firstCategoryTab) {
     firstCategoryTab.click();
   }
 }
