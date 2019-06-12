@@ -91,7 +91,9 @@ function render(data) {
   });
 
   const suppliersContent = document.querySelector('.suppliers-content');
-  renderFilters(suppliersContent, filterOrdered, filterFavorite, filterVegan, filterText);
+  if (suppliersContent) {
+    renderFilters(suppliersContent, filterOrdered, filterFavorite, filterVegan, filterText);
+  }
 }
 
 function renderStar(content, pid, isFavorite) {

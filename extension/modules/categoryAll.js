@@ -54,6 +54,12 @@ function renderCategoryAll() {
   Object.values(allItems).forEach(item => {
     const cloned = item.node.cloneNode();
     cloned.innerHTML = item.node.innerHTML;
+    const oldBuyButton = item.node.querySelector('.menu-item__info > a.btn.btn-success.buy');
+    const clonedBuyButton = cloned.querySelector('.menu-item__info > a.btn.btn-success.buy');
+    clonedBuyButton.onclick = event => {
+      event.preventDefault();
+      oldBuyButton.click();
+    };
     const content = cloned.querySelector('.menu-item__content');
     const info = content.querySelector('.menu-item__info');
     const categories = document.createElement('div');
