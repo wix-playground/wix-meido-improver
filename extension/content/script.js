@@ -91,9 +91,7 @@ function render(data) {
   });
 
   const suppliersContent = document.querySelector('.suppliers-content');
-  if (suppliersContent) {
-    renderFilters(suppliersContent, filterOrdered, filterFavorite, filterVegan, filterText);
-  }
+  renderFilters(suppliersContent, filterOrdered, filterFavorite, filterVegan, filterText);
 }
 
 function renderStar(content, pid, isFavorite) {
@@ -132,14 +130,11 @@ function createOneClickBuyElement(buy) {
   oneClick.innerText = 'One Click Buy';
   oneClick.className = [ONE_CLICK_BUY_CLASS, 'btn btn-success'].join(' ');
 
-  const url = buy.href;
-  const vendor = buy.dataset.vendor;
-
   oneClick.onclick = (event) => {
     event.preventDefault();
     Promise.resolve()
       .then(() => removeAllCartItems())
-      .then(() => callBuy(url, vendor))
+      .then(() => buy.click())
       .then(() => waitForSelector('#cart .cart__button > a'))
       .then(() => document.querySelector('#cart .cart__button > a').click());
   };
@@ -147,16 +142,6 @@ function createOneClickBuyElement(buy) {
   return oneClick;
 }
 
-function callBuy(url, vendor) {
-  const vendors = { // WARNING: this var is copied from meido sources and can be changed in future!
-    16: [{id: "2", title: "Обед"}],
-    19: [{id: "2", title: "Обед"}],
-    22: [{id: "2", title: "Обед"}],
-    23: [{id: "1", title: "Завтрак"}]
-  };
-
-  window.location = `javascript:callBuy(${JSON.stringify(url)}, ${JSON.stringify(vendors[vendor][0].id)});void 0;`;
-}
 
 function renderFilters(suppliersContent, filterOrdered, filterFavorite, filterVegan, filterText) {
   let filters = suppliersContent.querySelector('.' + FILTERS_CLASS);
