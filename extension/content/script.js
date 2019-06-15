@@ -59,7 +59,7 @@ function render(data) {
           content,
           pid,
           includesFilters: includes(content, filters),
-          isFavorite: !!data[pid],
+          isFavorite: isFavorite(pid),
           isVegan: !!content.querySelector('img[src="/images/vegan.png"]'),
           orderedTimes,
         });
@@ -104,7 +104,7 @@ function renderStar(content, pid, isFavorite) {
     star.className = STAR_CLASS;
 
     const button = document.createElement('button');
-    button.onclick = () => setFavorite(!isFavorite(pid));
+    button.onclick = () => setFavorite(pid, !isFavorite);
 
     star.appendChild(button);
     content.appendChild(star);
