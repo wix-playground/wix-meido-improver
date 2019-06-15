@@ -13,7 +13,7 @@
     {
       "matches": ["https://wix.getmeido.com/order*"],
       "css": ["content/styles.css"],
-      "js": ["modules/waitForSelector.js", "modules/storage.js", "modules/database.js", "modules/orders.js", "modules/categoryAll.js", "modules/highlight.js", "content/script.js"],
+      "js": ["modules/waitForSelector.js", "modules/localStorage.js", "modules/database.js", "modules/orders.js", "modules/categoryAll.js", "modules/highlight.js", "content/script.js"],
       "run_at": "document_start"
     }
   ],
