@@ -1,11 +1,15 @@
-subscribeForStorageChanges(data => saveFavorites(data.favorites));
+subscribeForStorageChanges((data, prevData) => {
+  if (JSON.stringify(data.favorites) !== JSON.stringify(prevData.favorites)) {
+    saveFavorites(data.favorites);
+  }
+});
 
 
 syncFavorites();
 
 function syncFavorites() {
   const {...data} = getData();
-  const favorites = {...(data.favorites || {})};
+  const favorites = {};
 
   Object.entries(data).forEach(([key, value]) => {
     if (parseInt(key).toString() === key) {
@@ -15,7 +19,7 @@ function syncFavorites() {
   });
 
   if (Object.keys(favorites).length > 0) {
-    saveData({...data, favorites});
+    saveData({...data, favorites: {...data.favorites, ...favorites}});
   } else {
     fetchFavorites().then(favorites => {
       if (favorites) {

@@ -15,17 +15,19 @@ function getData() {
 }
 
 function saveData(data) {
+  const prevData = getData();
+
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    listeners.forEach(listener => listener(data));
+    listeners.forEach(listener => listener(data, prevData));
   } catch (error) {
     console.log(error);
   }
 }
 
 function updateData(fn) {
-  const data = getData();
-  saveData({...data, ...fn(data)});
+  const prevData = getData();
+  saveData({...prevData, ...fn(prevData)});
 }
 
 function subscribeForStorageChanges(handler) {
