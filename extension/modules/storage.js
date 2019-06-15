@@ -25,9 +25,26 @@ function saveData(data) {
 
 function updateData(fn) {
   const data = getData();
-  return saveData({...data, ...fn(data)});
+  saveData({...data, ...fn(data)});
 }
 
 function subscribeForStorageChanges(handler) {
   listeners.push(handler);
+}
+
+function isFavorite(dishId) {
+  const data = getData();
+
+  return typeof data.favorites[dishId] === "undefined"
+    ? !!data[dishId]
+    : data.favorites[dishId];
+}
+
+function setFavorite(dishId, isFavorite) {
+  updateData(data => ({
+    favorites: {
+      ...data.favorites,
+      [dishId]: isFavorite
+    }
+  }));
 }

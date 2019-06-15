@@ -104,7 +104,7 @@ function renderStar(content, pid, isFavorite) {
     star.className = STAR_CLASS;
 
     const button = document.createElement('button');
-    button.onclick = () => updateData(data => ({[pid]: !data[pid]}));
+    button.onclick = () => setFavorite(!isFavorite(pid));
 
     star.appendChild(button);
     content.appendChild(star);
