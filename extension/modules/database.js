@@ -25,9 +25,10 @@ async function doRequest(method, endpoint, params) {
   const isGetMethod = method.toUpperCase() === 'GET';
   const searchParams = new URLSearchParams(isGetMethod ? data : {}).toString();
   const body = isGetMethod ? null : JSON.stringify(data);
+  const headers = isGetMethod ? {} : {'Content-Type': 'application/json'};
 
   const url = 'https://www.wix.com/_serverless/wix-meido-improver' + endpoint + '?' + searchParams;
-  const response = await fetch(url, {method, body});
+  const response = await fetch(url, {method, body, headers});
 
   const responseData = await response.text()
     .then(text => {

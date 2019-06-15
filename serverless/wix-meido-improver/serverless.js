@@ -1,4 +1,5 @@
 const https = require('https');
+const {HttpError} = require('@wix/serverless-api');
 
 module.exports = functionsBuilder =>
   functionsBuilder
@@ -26,9 +27,7 @@ async function setFavorites(ctx, userId, favorites) {
 async function tryAuthAndGetUserId(req) {
   const authCookie = getAuthCookie(req);
   const userId = getUserIdFromAuthCookie(authCookie);
-  const headers = {
-    'Cookie': authCookie,
-  };
+  const headers = {'Cookie': authCookie,};
 
   return new Promise(
     (resolve, reject) => https.get(
@@ -43,7 +42,7 @@ async function tryAuthAndGetUserId(req) {
           if (userId === getUserIdFromHtmlPage(data)) {
             resolve(userId);
           } else {
-            reject(new Error('UserIdFromAuthCookie !== UserIdFromHtmlPage'))
+            reject(new HttpError({status: 403, message: 'UserIdFromAuthCookie !== UserIdFromHtmlPage'}))
           }
         });
       }).on("error", reject)
@@ -52,7 +51,7 @@ async function tryAuthAndGetUserId(req) {
 
 function getAuthCookie(req) {
   const {authCookie} = req.method === 'GET' ? req.query : req.body;
-  return authCookie;
+  return authCookie || '';
 }
 
 function getUserIdFromAuthCookie(authCookie) {
