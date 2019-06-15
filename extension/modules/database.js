@@ -29,7 +29,14 @@ async function doRequest(method, endpoint, params) {
   const url = 'https://www.wix.com/_serverless/wix-meido-improver' + endpoint + '?' + searchParams;
   const response = await fetch(url, {method, body});
 
-  const responseData = await response.json().catch(() => response.text());
+  const responseData = await response.text()
+    .then(text => {
+      try {
+        return JSON.parse(text)
+      } catch (error) {
+        return text;
+      }
+    });
 
   if (response.ok) {
     return responseData;

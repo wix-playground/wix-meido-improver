@@ -49,11 +49,13 @@ function getAuthCookie(req) {
 
 function getUserIdFromAuthCookie(authCookie) {
   const decoded = decodeURIComponent(authCookie);
-  const reg = /^:{i:0;s:\d+:"(\d+)"/;
-  return decoded.match(reg)[1];
+  const reg = /:{i:0;s:\d+:"(\d+)"/;
+  const matches = decoded.match(reg) || [];
+  return matches[1] || '';
 }
 
 function getUserIdFromHtmlPage(html) {
-  const req = /<input id="user-id" value="(\d+)"/;
-  return html.match(req)[1];
+  const reg = /<input id="user-id" value="(\d+)"/;
+  const matches = html.match(reg) || [];
+  return matches[1] || '';
 }
