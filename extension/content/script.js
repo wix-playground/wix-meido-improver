@@ -67,7 +67,7 @@ function render(data) {
       .map(({includesFilters, pid, isFavorite, isVegan, orderedTimes, content, item}) => ({
         orderArr: [
           filters.length > 0 ? includesFilters : -1,
-          filterFavorite ? (data[pid] ? 1 : 0) : -1,
+          filterFavorite ? isFavorite ? 1 : 0 : -1,
           filterVegan ? (isVegan ? 1 : 0) : -1,
           filterOrdered ? orderedTimes : -1
         ],

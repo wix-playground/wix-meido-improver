@@ -1,4 +1,9 @@
-subscribeForStorageChanges(data => saveFavorites(data.favorites));
+subscribeForStorageChanges(data => {
+  console.log('Function: [anonymous],', 'Line: 2,', 'Type:', typeof data, '\n', "data:",
+    data
+  );
+  return saveFavorites(data.favorites);
+});
 fetchFavorites().then(favorites => {
   if (favorites) {
     updateData(() => ({favorites}));
