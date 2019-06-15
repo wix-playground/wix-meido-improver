@@ -303,3 +303,10 @@ body .suppliers .__ITDXER_search_input {
   border-bottom: 1px solid #ddd;
   font-weight: 600;
 }
+
+#bs-example-navbar-collapse-1 .cart-container {
+  width: 0;
+  padding: 0;
+  overflow: hidden;
+  margin: 0 10px;
+}
