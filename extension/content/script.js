@@ -1,4 +1,4 @@
-const STAR_CLASS = '__ITDXER_star';
+const HEART_CLASS = '__ITDXER_heart';
 const FILTERS_CLASS = '__ITDXER_filters';
 const ORDER_BUTTON_CLASS = '__ITDXER_order_button';
 const ONE_CLICK_BUY_CLASS = '__ITDXER_oneClickBuy';
@@ -85,7 +85,7 @@ function render(data) {
 
         setTimeout(() => renderHighlights(content, [].concat(...filters), includesFilters > 0), 0);
 
-        renderStar(content, pid, isFavorite);
+        renderHeart(content, pid, isFavorite);
         renderOneClickBuy(content);
       });
   });
@@ -96,22 +96,22 @@ function render(data) {
   }
 }
 
-function renderStar(content, pid, isFavorite) {
-  let star = content.querySelector('.' + STAR_CLASS);
+function renderHeart(content, pid, isFavorite) {
+  let heart = content.querySelector('.' + HEART_CLASS);
 
-  if (!star) {
-    star = document.createElement('div');
-    star.className = STAR_CLASS;
+  if (!heart) {
+    heart = document.createElement('div');
+    heart.className = HEART_CLASS;
 
     const button = document.createElement('button');
+    button.innerText = '❤️';
     button.onclick = () => setFavorite(pid, !isFavorite);
 
-    star.appendChild(button);
-    content.appendChild(star);
+    heart.appendChild(button);
+    content.appendChild(heart);
   }
 
-  const button = star.querySelector('button');
-  button.innerText = '❤️';
+  const button = heart.querySelector('button');
   button.style = `opacity: ${isFavorite ? '1' : '0.1'}`;
 }
 

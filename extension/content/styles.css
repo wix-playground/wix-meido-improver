@@ -201,13 +201,13 @@ body .suppliers .nav.nav-tabs.new-tabs > li:first-child {
   padding-left: 30px;
 }
 
-body .suppliers .__ITDXER_star {
+body .suppliers .__ITDXER_heart {
   top: 20px;
   right: 20px;
   position: absolute;
 }
 
-body .suppliers .__ITDXER_star > button {
+body .suppliers .__ITDXER_heart > button {
   background: transparent;
   border: 0 none;
   font-size: 2em;
