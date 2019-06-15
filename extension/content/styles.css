@@ -189,6 +189,7 @@ body .suppliers .restaurants__nav li > a[href^="/order?"] {
 
 body .suppliers .nav.nav-tabs.new-tabs {
   display: block;
+  line-height: 2em;
 }
 
 body .suppliers .nav.nav-tabs.new-tabs > li {

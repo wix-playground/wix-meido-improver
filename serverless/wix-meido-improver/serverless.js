@@ -5,15 +5,23 @@ module.exports = functionsBuilder =>
     .withContextPath('wix-meido-improver')
     .addWebFunction('GET', '/favorites', async (ctx, req) => {
       const userId = await tryAuthAndGetUserId(req);
-      const favorites = await ctx.datastore.get('favorites');
-      return favorites[userId] || {};
+      return getFavorites(ctx, userId);
     })
     .addWebFunction('POST', '/favorites', async (ctx, req) => {
       const userId = await tryAuthAndGetUserId(req);
-      const favorites = await ctx.datastore.get('favorites');
-      await ctx.datastore.set('favorites', {...favorites, [userId]: req.body.favorites});
+      await setFavorites(ctx, userId, req.body.favorites);
     });
 
+
+async function getFavorites(ctx, userId) {
+  const favorites = await ctx.datastore.get('favorites') || {};
+  return favorites[userId] || {}
+}
+
+async function setFavorites(ctx, userId, favorites) {
+  const otherFavorites = await ctx.datastore.get('favorites') || {};
+  await ctx.datastore.put('favorites', {...otherFavorites, [userId]: favorites});
+}
 
 async function tryAuthAndGetUserId(req) {
   const authCookie = getAuthCookie(req);
