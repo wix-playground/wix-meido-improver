@@ -2,24 +2,6 @@ const STORAGE_KEY = '__ITDXER_storage';
 
 const listeners = [];
 
-syncFavorites();
-
-function syncFavorites() {
-  const {...data} = getData();
-  const favorites = {...(data.favorites || {})};
-
-  Object.entries(data).forEach(([key, value]) => {
-    if (parseInt(key).toString() === key) {
-      favorites[key] = value;
-      delete data[key];
-    }
-  });
-
-  if (Object.keys(favorites).length > 0) {
-    saveData({...data, favorites});
-  }
-}
-
 function getData() {
   let data = null;
 

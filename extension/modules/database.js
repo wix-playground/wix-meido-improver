@@ -1,11 +1,29 @@
 subscribeForStorageChanges(data => saveFavorites(data.favorites));
 
-fetchFavorites().then(favorites => {
-  if (favorites) {
-    updateData(() => ({favorites}));
-  }
-});
 
+syncFavorites();
+
+function syncFavorites() {
+  const {...data} = getData();
+  const favorites = {...(data.favorites || {})};
+
+  Object.entries(data).forEach(([key, value]) => {
+    if (parseInt(key).toString() === key) {
+      favorites[key] = value;
+      delete data[key];
+    }
+  });
+
+  if (Object.keys(favorites).length > 0) {
+    saveData({...data, favorites});
+  } else {
+    fetchFavorites().then(favorites => {
+      if (favorites) {
+        updateData(() => ({favorites}));
+      }
+    });
+  }
+}
 
 function getAuthCookie() {
   const reg = /(^|; )([a-z0-9]{32}=[^;]*)/;
