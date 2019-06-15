@@ -17,6 +17,11 @@
       "run_at": "document_start"
     }
   ],
+  "background": {
+    "scripts": [
+      "background/script.js"
+    ]
+  },
   "permissions": [
     "https://www.wix.com/_serverless/wix-meido-improver/*"
   ]

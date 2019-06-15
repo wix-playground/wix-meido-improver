@@ -1,9 +1,5 @@
-subscribeForStorageChanges(data => {
-  console.log('Function: [anonymous],', 'Line: 2,', 'Type:', typeof data, '\n', "data:",
-    data
-  );
-  return saveFavorites(data.favorites);
-});
+subscribeForStorageChanges(data => saveFavorites(data.favorites));
+
 fetchFavorites().then(favorites => {
   if (favorites) {
     updateData(() => ({favorites}));
@@ -27,26 +23,10 @@ async function saveFavorites(favorites) {
 async function doRequest(method, endpoint, params) {
   const data = {...params, authCookie: getAuthCookie()};
 
-  const isGetMethod = method.toUpperCase() === 'GET';
-  const searchParams = new URLSearchParams(isGetMethod ? data : {}).toString();
-  const body = isGetMethod ? null : JSON.stringify(data);
-  const headers = isGetMethod ? {} : {'Content-Type': 'application/json'};
-
-  const url = 'https://www.wix.com/_serverless/wix-meido-improver' + endpoint + '?' + searchParams;
-  const response = await fetch(url, {method, body, headers});
-
-  const responseData = await response.text()
-    .then(text => {
-      try {
-        return JSON.parse(text)
-      } catch (error) {
-        return text;
-      }
-    });
-
-  if (response.ok) {
-    return responseData;
-  } else {
-    throw responseData;
-  }
+  return new Promise((resolve, reject) =>
+    chrome.runtime.sendMessage(
+      {contentScriptQuery: "request", args: {method, endpoint, data}},
+      ([error, result] = ['error']) => error ? reject(error) : resolve(result)
+    )
+  );
 }
