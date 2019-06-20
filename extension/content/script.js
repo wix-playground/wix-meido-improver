@@ -1,4 +1,5 @@
 const HEART_CLASS = '__ITDXER_heart';
+const RATING_CLASS = '__ITDXER_rating';
 const FILTERS_CLASS = '__ITDXER_filters';
 const ORDER_BUTTON_CLASS = '__ITDXER_order_button';
 const ONE_CLICK_BUY_CLASS = '__ITDXER_oneClickBuy';
@@ -86,6 +87,7 @@ function render(data) {
         setTimeout(() => renderHighlights(content, [].concat(...filters), includesFilters > 0), 0);
 
         renderHeart(content, pid, isFavorite);
+        renderRating(content, pid);
         renderOneClickBuy(content);
       });
   });
@@ -113,6 +115,36 @@ function renderHeart(content, pid, isFavorite) {
 
   const button = heart.querySelector('button');
   button.style = `opacity: ${isFavorite ? '1' : '0.1'}`;
+}
+function renderRating(content, pid, isFavorite) {
+  let rating = content.querySelector('.' + RATING_CLASS);
+
+  if (!rating) {
+    rating = document.createElement('div');
+    rating.className = RATING_CLASS;
+    rating.title = '4.5 / 5  (2 Ratings)';
+
+    const shadow = document.createElement('div');
+    shadow.className = 'shadow';
+    shadow.innerText = '⭐⭐⭐⭐⭐';
+    shadow.style.width = '45%';
+
+    const myScore = document.createElement('div');
+    myScore.className = 'my-score';
+    myScore.style.width = '45%';
+
+    const score = document.createElement('div');
+    score.className = 'score';
+    score.innerText = '⭐⭐⭐⭐⭐';
+
+    rating.appendChild(score);
+    rating.appendChild(shadow);
+    rating.appendChild(myScore);
+    content.appendChild(rating);
+  }
+
+  const button = rating.querySelector('button');
+  // button.style = `opacity: ${isFavorite ? '1' : '0.1'}`;
 }
 
 function renderOneClickBuy(content) {

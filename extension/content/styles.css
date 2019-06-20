@@ -289,6 +289,10 @@ body .suppliers .__ITDXER_search_input {
   line-height: 1.2;
 }
 
+.suppliers .suppliers-content .container {
+  overflow: visible;
+}
+
 .suppliers .suppliers-content .container > .tab-content > .tab-pane.active {
   display: flex;
   flex-direction: column;
@@ -310,4 +314,34 @@ body .suppliers .__ITDXER_search_input {
   padding: 0;
   overflow: hidden;
   margin: 0 10px;
+}
+
+.__ITDXER_rating {
+  position: absolute;
+  top: 20px;
+  right: 65px;
+  cursor: default;
+}
+
+.__ITDXER_rating .score {
+  font-size: 2em;
+  display: inline-block;
+  opacity: 0.1;
+}
+
+.__ITDXER_rating .shadow {
+  position: absolute;
+  font-size: 2em;
+  overflow: hidden;
+  left: 0;
+  top: 0;
+}
+
+.__ITDXER_rating .my-score {
+  background: orange;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  top: 0;
+  opacity: 1;
 }

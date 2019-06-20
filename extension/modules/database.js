@@ -31,7 +31,7 @@ function syncFavorites() {
 
 function getAuthCookie() {
   const reg = /(^|; )([a-z0-9]{32}=[^;]*)/;
-  return document.cookie.match(reg)[2];
+  return (document.cookie.match(reg) || '')[2];
 }
 
 async function fetchFavorites() {
