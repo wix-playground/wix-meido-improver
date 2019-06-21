@@ -1,4 +1,4 @@
-import {RpcServiceContext} from "@wix/serverless-api/dist/src/context/FunctionContext";
+import {RpcServiceContext} from "@wix/serverless-api";
 import {Dictionary} from "./utils";
 
 export type Favorites = Dictionary<number>;

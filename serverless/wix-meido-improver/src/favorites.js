@@ -7,6 +7,6 @@ async function getFavorites(ctx, userId) {
 exports.getFavorites = getFavorites;
 async function setFavorites(ctx, userId, favorites) {
     const otherFavorites = await ctx.datastore.get('favorites') || {};
-    await ctx.datastore.put('favorites', Object.assign({}, otherFavorites, { [userId]: favorites }));
+    await ctx.datastore.put('favorites', { ...otherFavorites, [userId]: favorites });
 }
 exports.setFavorites = setFavorites;

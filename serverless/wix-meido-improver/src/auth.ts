@@ -1,6 +1,6 @@
 import * as https from "https";
-import {HttpError} from "@wix/serverless-api/dist/src/http/WebResponse";
-import {WebRequest} from "@wix/serverless-api/dist/src/http/WebRequest";
+import {HttpError} from "@wix/serverless-api";
+import {WebRequest} from "@wix/serverless-api";
 
 export async function tryAuthAndGetUserId(req: WebRequest): Promise<string> {
   const authCookie = getAuthCookie(req);

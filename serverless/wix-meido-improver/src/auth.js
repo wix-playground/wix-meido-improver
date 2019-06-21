@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const https = require("https");
-const WebResponse_1 = require("@wix/serverless-api/dist/src/http/WebResponse");
+const serverless_api_1 = require("@wix/serverless-api");
 async function tryAuthAndGetUserId(req) {
     const authCookie = getAuthCookie(req);
     const userId = getUserIdFromAuthCookie(authCookie);
@@ -13,7 +13,7 @@ async function tryAuthAndGetUserId(req) {
     })
         .on("error", reject));
     if (userId !== getUserIdFromHtmlPage(data)) {
-        throw new WebResponse_1.HttpError({ status: 403, message: 'UserIdFromAuthCookie !== UserIdFromHtmlPage' });
+        throw new serverless_api_1.HttpError({ status: 403, message: 'UserIdFromAuthCookie !== UserIdFromHtmlPage' });
     }
     return userId;
 }
