@@ -2,7 +2,7 @@ import {FunctionsBuilder} from '@wix/serverless-api';
 import {getFavorites, setFavorites} from "./src/favorites";
 import {tryAuthAndGetUserId} from "./src/auth";
 
-export default (functionsBuilder: FunctionsBuilder) =>
+module.exports = (functionsBuilder: FunctionsBuilder) =>
   functionsBuilder
     .withContextPath('wix-meido-improver')
     .addWebFunction('GET', '/favorites', async (ctx, req) => {
