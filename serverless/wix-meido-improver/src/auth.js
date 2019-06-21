@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const https = require("https");
-const WebResponse_1 = require("@wix/serverless-api/src/http/WebResponse");
+const WebResponse_1 = require("@wix/serverless-api/dist/src/http/WebResponse");
 async function tryAuthAndGetUserId(req) {
     const authCookie = getAuthCookie(req);
     const userId = getUserIdFromAuthCookie(authCookie);
