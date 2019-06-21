@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const favorites_1 = require("./src/favorites");
 const auth_1 = require("./src/auth");
 exports.default = (functionsBuilder) => functionsBuilder
