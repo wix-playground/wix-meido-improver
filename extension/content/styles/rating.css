@@ -1,0 +1,46 @@
+.__ITDXER_rating {
+  position: absolute;
+  top: 20px;
+  right: 65px;
+  cursor: default;
+  color: #ffd900;
+  font-size: 2em;
+}
+
+.__ITDXER_rating:hover {
+  color: orange;
+}
+
+.__ITDXER_rating .star:nth-child(1):hover ~ .shadow {
+  width: calc((100% / 5) * 4) !important;
+}
+
+.__ITDXER_rating .star:nth-child(2):hover ~ .shadow {
+  width: calc((100% / 5) * 3) !important;
+}
+
+.__ITDXER_rating .star:nth-child(3):hover ~ .shadow {
+  width: calc((100% / 5) * 2) !important;
+}
+
+.__ITDXER_rating .star:nth-child(4):hover ~ .shadow {
+  width: calc((100% / 5) * 1) !important;
+}
+
+.__ITDXER_rating .star:nth-child(5):hover ~ .shadow {
+  width: calc((100% / 5) * 0) !important;
+}
+
+.__ITDXER_rating .shadow {
+  position: absolute;
+  overflow: hidden;
+  right: 0;
+  top: 0;
+  color: #fff5cc;
+  direction: rtl;
+  width: 0;
+}
+
+.__ITDXER_rating .shadow:hover {
+  width: 0 !important;
+}

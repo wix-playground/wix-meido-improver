@@ -1,0 +1,16 @@
+a.__ITDXER_order_button {
+  cursor: pointer;
+  color: #fff;
+  background: #54ae53;
+  border-radius: 15px;
+  text-decoration: none;
+  text-transform: none;
+  padding: 2px 8px;
+  display: block;
+  -webkit-box-shadow: 0 0 9px rgba(0, 0, 0, 0.2);
+}
+
+a.__ITDXER_order_button:hover {
+  background: #62d135;
+  box-shadow: 0 0 9px rgba(0, 0, 0, 0.2);
+}

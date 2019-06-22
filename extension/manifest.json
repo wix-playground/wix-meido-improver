@@ -11,9 +11,25 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://wix.getmeido.com/order*"],
-      "css": ["content/styles.css"],
-      "js": ["modules/waitForSelector.js", "modules/localStorage.js", "modules/database.js", "modules/orders.js", "modules/categoryAll.js", "modules/highlight.js", "content/script.js"],
+      "matches": [
+        "https://wix.getmeido.com/order*"
+      ],
+      "css": [
+        "content/fixes.css",
+        "content/styles/categoryAll.css",
+        "content/styles/filters.css",
+        "content/styles/oneClickBuy.css",
+        "content/styles/orderButton.css"
+      ],
+      "js": [
+        "modules/waitForSelector.js",
+        "modules/localStorage.js",
+        "modules/database.js",
+        "modules/orders.js",
+        "modules/categoryAll.js",
+        "modules/highlight.js",
+        "content/script.js"
+      ],
       "run_at": "document_start"
     }
   ],

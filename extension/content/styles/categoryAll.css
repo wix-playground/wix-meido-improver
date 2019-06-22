@@ -1,0 +1,16 @@
+.__ITDXER_menu-item__categories {
+  margin-left: 190px;
+  margin-bottom: 10px;
+  line-height: 2;
+}
+
+.__ITDXER_menu-item__category {
+  background: #c7e5fc;
+  border-radius: 15px;
+  padding: 0 10px;
+  color: #333;
+  display: inline-block;
+  margin-right: 6px;
+  cursor: pointer;
+  line-height: 1.5;
+}
