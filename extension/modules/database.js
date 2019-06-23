@@ -42,13 +42,23 @@ async function fetchFavorites() {
 }
 
 async function saveFavorites(favorites) {
-  await doRequest('POST', '/favorites', {favorites})
+  await doRequest('POST', '/favorites', {favorites});
   await syncFavorites();
 }
 
-async function setRatings(dishId, rating) {
+async function setRating(dishId, rating) {
   updateData(({userRatings}) => ({userRatings: {...userRatings, [dishId]: rating}}));
   await doRequest('POST', `/ratings/${encodeURIComponent(dishId)}`, {rating});
+  await syncRatings();
+}
+
+async function deleteRating(dishId) {
+  updateData(({userRatings}) => {
+    const newRatings = userRatings || {};
+    delete newRatings[dishId];
+    return ({userRatings: newRatings});
+  });
+  await doRequest('DELETE', `/ratings/${encodeURIComponent(dishId)}`);
   await syncRatings();
 }
 

@@ -21,7 +21,7 @@ export async function getAvgRatings(ctx: RpcServiceContext): Promise<AvgRatings>
     {}
   );
 
-    return Object.assign(
+  return Object.assign(
     {},
     ...Object.entries(allRatings)
       .map(([dishId, ratingsList]) => ({
@@ -51,4 +51,12 @@ export async function setRating(ctx: RpcServiceContext, userId: string, dishId: 
       [userId]: {...userRatings, [dishId]: rating}
     }
   );
+}
+
+export async function deleteRating(ctx: RpcServiceContext, userId: string, dishId: string): Promise<void> {
+  const ratings = await ctx.datastore.get(DATASTORE_KEY) || {};
+  const userRatings = {...(ratings[userId] || {})};
+  delete userRatings[dishId];
+
+  await ctx.datastore.put(DATASTORE_KEY, {...ratings, [userId]: userRatings});
 }

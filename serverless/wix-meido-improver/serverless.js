@@ -25,6 +25,10 @@ module.exports = (functionsBuilder) => functionsBuilder
     const userId = await auth_1.tryAuthAndGetUserId(req);
     await ratings_1.setRating(ctx, userId, req.params.dishId, req.body.rating);
 })
+    .addWebFunction('DELETE', '/ratings/:dishId', async (ctx, req) => {
+    const userId = await auth_1.tryAuthAndGetUserId(req);
+    await ratings_1.deleteRating(ctx, userId, req.params.dishId);
+})
     .addWebFunction('GET', '/avg-ratings', async (ctx, req) => {
     await auth_1.tryAuthAndGetUserId(req);
     return await ratings_1.getAvgRatings(ctx);

@@ -45,3 +45,24 @@
 .__ITDXER_rating .shadow:hover {
   width: 0 !important;
 }
+
+.__ITDXER_rating .delete {
+  position: absolute;
+  display: none;
+  bottom: 0;
+  right: 100%;
+  font-size: 0.6em;
+  padding: 6px;
+  opacity: 0.3;
+}
+
+.__ITDXER_rating:hover .delete {
+  display: block;
+}
+.__ITDXER_rating .delete:hover {
+  opacity: 1;
+}
+
+.__ITDXER_rating .delete:hover ~ .shadow {
+  width: 100% !important;
+}

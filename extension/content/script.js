@@ -124,6 +124,12 @@ function renderRating(content, dishId, userRating, avgRating) {
     ratingElem = document.createElement('div');
     ratingElem.className = RATING_CLASS;
 
+    const deleteElem = document.createElement('div');
+    deleteElem.className = 'delete';
+    deleteElem.innerText = '❌';
+    deleteElem.title = 'Delete my rating';
+    deleteElem.onclick = () => deleteRating(dishId);
+
     const shadow = document.createElement('div');
     shadow.className = 'shadow';
     shadow.innerText = '★★★★★';
@@ -134,10 +140,11 @@ function renderRating(content, dishId, userRating, avgRating) {
       .map((_, index) => index + 1)
       .forEach(rating => {
         const star = createStar();
-        star.onclick = () => setRatings(dishId, rating);
+        star.onclick = () => setRating(dishId, rating);
         ratingElem.appendChild(star);
       });
 
+    ratingElem.appendChild(deleteElem);
     ratingElem.appendChild(shadow);
     content.appendChild(ratingElem);
   }

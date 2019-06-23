@@ -37,3 +37,10 @@ async function setRating(ctx, userId, dishId, rating) {
     });
 }
 exports.setRating = setRating;
+async function deleteRating(ctx, userId, dishId) {
+    const ratings = await ctx.datastore.get(DATASTORE_KEY) || {};
+    const userRatings = { ...(ratings[userId] || {}) };
+    delete userRatings[dishId];
+    await ctx.datastore.put(DATASTORE_KEY, { ...ratings, [userId]: userRatings });
+}
+exports.deleteRating = deleteRating;
