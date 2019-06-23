@@ -136,8 +136,20 @@ function renderRating(content, dishId, userRating, avgRating) {
 
     const shadow = document.createElement('div');
     shadow.className = 'shadow';
-    shadow.innerText = '★★★★★';
+    shadow.innerText = '☆☆☆☆☆';
     shadow.style.width = '0%';
+
+    const avgRatingElem = document.createElement('div');
+    avgRatingElem.className = 'avg-rating';
+    avgRatingElem.innerText = '★★★★★';
+    avgRatingElem.style.width = '0%';
+
+    const userRatingElem = document.createElement('div');
+    userRatingElem.className = 'user-rating';
+    userRatingElem.style.width = '0%';
+
+    ratingElem.appendChild(deleteElem);
+    ratingElem.appendChild(avgRatingElem);
 
     new Array(5)
       .fill(null)
@@ -145,10 +157,10 @@ function renderRating(content, dishId, userRating, avgRating) {
       .forEach(rating => {
         const star = createStar();
         star.onclick = () => setRating(dishId, rating);
-        ratingElem.appendChild(star);
+        userRatingElem.appendChild(star);
       });
 
-    ratingElem.appendChild(deleteElem);
+    ratingElem.appendChild(userRatingElem);
     ratingElem.appendChild(shadow);
     content.appendChild(ratingElem);
   }
@@ -166,15 +178,19 @@ function renderRating(content, dishId, userRating, avgRating) {
     ratingElem.title = '0 Ratings';
   }
 
-  const shadow = ratingElem.querySelector('.shadow');
-  const rating = userRating || (avgRating && avgRating.avg) || 0;
-  shadow.style.width = `${((5 - rating) / 5) * 100}%`;
-  content.dataset.avgRating = avgRating && avgRating.avg || 0;
+  const avgRatingElem = ratingElem.querySelector('.avg-rating');
+  const userRatingElem = ratingElem.querySelector('.user-rating');
+  const avg = (avgRating && avgRating.avg) || 0;
+  const user = userRating || 0;
+
+  avgRatingElem.style.width = `${(avg / 5) * 100}%`;
+  userRatingElem.style.width = `${(user / 5) * 100}%`;
+  content.dataset.avgRating = avg;
 }
 
 function createStar() {
   const star = document.createElement('span');
-  star.innerText = '★';
+  star.innerText = '☆';
   star.className = 'star';
   return star;
 }
