@@ -99,9 +99,10 @@ body .suppliers .menu-item__content > img {
   margin-top: -35px;
 }
 
+/* Space for fav and star icons */
 body .suppliers .menu-item__content > h4 {
   min-height: 0;
-  margin-right: 80px;
+  margin-right: 205px;
 }
 
 body .suppliers .menu-item__content > h4,

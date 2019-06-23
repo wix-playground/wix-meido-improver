@@ -2,11 +2,12 @@
   position: absolute;
   top: 20px;
   right: 65px;
-  cursor: default;
   color: #ffd900;
   font-size: 2em;
+  cursor: pointer;
 }
 
+.__ITDXER_rating.user-rated,
 .__ITDXER_rating:hover {
   color: orange;
 }

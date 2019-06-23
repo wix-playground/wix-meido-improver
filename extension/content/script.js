@@ -1,4 +1,5 @@
 const HEART_CLASS = '__ITDXER_heart';
+const RATING_CLASS = '__ITDXER_rating';
 const FILTERS_CLASS = '__ITDXER_filters';
 const ORDER_BUTTON_CLASS = '__ITDXER_order_button';
 const ONE_CLICK_BUY_CLASS = '__ITDXER_oneClickBuy';
@@ -34,7 +35,7 @@ function openFirstCategory() {
 }
 
 function render(data) {
-  const {filterOrdered, filterFavorite, filterVegan, filterText} = data;
+  const {filterOrdered, filterFavorite, filterVegan, filterText, userRatings = {}, avgRatings = {}} = data;
 
   const filters = (filterText || '')
     .toLowerCase()
@@ -50,31 +51,31 @@ function render(data) {
       .map(item => {
         const content = item.querySelector('.menu-item__content');
         const button = content.querySelector('a.btn.buy');
-        const pid = button.href.split('/').pop();
+        const dishId = button.href.split('/').pop();
         const orderedElem = content.querySelector('.' + DISH_COUNT_CLASS);
         const orderedTimes = orderedElem ? parseInt(orderedElem.innerText) : 0;
 
         return ({
           item,
           content,
-          pid,
+          dishId,
           includesFilters: includes(content, filters),
-          isFavorite: isFavorite(pid),
+          isFavorite: isFavorite(dishId),
           isVegan: !!content.querySelector('img[src="/images/vegan.png"]'),
           orderedTimes,
         });
       })
-      .map(({includesFilters, pid, isFavorite, isVegan, orderedTimes, content, item}) => ({
+      .map(({includesFilters, dishId, isFavorite, isVegan, orderedTimes, content, item}) => ({
         orderArr: [
           filters.length > 0 ? includesFilters : -1,
           filterFavorite ? isFavorite ? 1 : 0 : -1,
           filterVegan ? (isVegan ? 1 : 0) : -1,
           filterOrdered ? orderedTimes : -1
         ],
-        includesFilters, item, content, pid, isFavorite
+        includesFilters, item, content, dishId, isFavorite
       }))
       .sort((a, b) => sortCompareArrays(a.orderArr, b.orderArr))
-      .forEach(({orderArr, item, content, pid, isFavorite, includesFilters}, order) => {
+      .forEach(({orderArr, item, content, dishId, isFavorite, includesFilters}, order) => {
         if (orderArr.some(a => a === 0) && !firstPartiallyMatchedFound) {
           item.classList.add(PARTIALLY_MATCHED_CLASS);
           firstPartiallyMatchedFound = true;
@@ -85,7 +86,8 @@ function render(data) {
 
         setTimeout(() => renderHighlights(content, [].concat(...filters), includesFilters > 0), 0);
 
-        renderHeart(content, pid, isFavorite);
+        renderHeart(content, dishId, isFavorite);
+        renderRating(content, dishId, userRatings[dishId], avgRatings[dishId]);
         renderOneClickBuy(content);
       });
   });
@@ -96,7 +98,7 @@ function render(data) {
   }
 }
 
-function renderHeart(content, pid, isFavorite) {
+function renderHeart(content, dishId, isFavorite) {
   let heart = content.querySelector('.' + HEART_CLASS);
 
   if (!heart) {
@@ -105,7 +107,7 @@ function renderHeart(content, pid, isFavorite) {
 
     const button = document.createElement('button');
     button.innerText = '❤️';
-    button.onclick = () => setFavorite(pid, !isFavorite);
+    button.onclick = () => setFavorite(dishId, !isFavorite);
 
     heart.appendChild(button);
     content.appendChild(heart);
@@ -113,6 +115,55 @@ function renderHeart(content, pid, isFavorite) {
 
   const button = heart.querySelector('button');
   button.style = `opacity: ${isFavorite ? '1' : '0.1'}`;
+}
+
+function renderRating(content, dishId, userRating, avgRating) {
+  let ratingElem = content.querySelector('.' + RATING_CLASS);
+
+  if (!ratingElem) {
+    ratingElem = document.createElement('div');
+    ratingElem.className = RATING_CLASS;
+
+    const shadow = document.createElement('div');
+    shadow.className = 'shadow';
+    shadow.innerText = '★★★★★';
+    shadow.style.width = '0%';
+
+    new Array(5)
+      .fill(null)
+      .map((_, index) => index + 1)
+      .forEach(rating => {
+        const star = createStar();
+        star.onclick = () => rate(dishId, rating);
+        ratingElem.appendChild(star);
+      });
+
+    ratingElem.appendChild(shadow);
+    content.appendChild(ratingElem);
+  }
+
+  if (userRating) {
+    ratingElem.classList.add('user-rated');
+  } else {
+    ratingElem.classList.remove('user-rated');
+  }
+
+  if (avgRating) {
+    ratingElem.title = `${avgRating.avg} / 5  (${avgRating.count} Ratings)`;
+  } else {
+    ratingElem.title = '0 Ratings';
+  }
+
+  const shadow = ratingElem.querySelector('.shadow');
+  const r = userRating || (avgRating && avgRating.avg) || 0;
+  shadow.style.width = `${((5 - r) / 5) * 100}%`;
+}
+
+function createStar() {
+  const star = document.createElement('span');
+  star.innerText = '★';
+  star.className = 'star';
+  return star;
 }
 
 function renderOneClickBuy(content) {

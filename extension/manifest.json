@@ -19,7 +19,8 @@
         "content/styles/categoryAll.css",
         "content/styles/filters.css",
         "content/styles/oneClickBuy.css",
-        "content/styles/orderButton.css"
+        "content/styles/orderButton.css",
+        "content/styles/rating.css"
       ],
       "js": [
         "modules/waitForSelector.js",
