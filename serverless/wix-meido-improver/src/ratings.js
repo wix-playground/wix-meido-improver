@@ -13,7 +13,13 @@ async function getAvgRatings(ctx) {
         ...avg,
         [dishId]: [...(avg[dishId] || []), rating]
     }), {});
-    return Object.assign({}, ...Object.entries(allRatings).map(([dishId, ratingsList]) => ({ [dishId]: avg(ratingsList) })));
+    return Object.assign({}, ...Object.entries(allRatings)
+        .map(([dishId, ratingsList]) => ({
+        [dishId]: {
+            avg: avg(ratingsList),
+            count: ratingsList.length,
+        }
+    })));
 }
 exports.getAvgRatings = getAvgRatings;
 function avg(arr) {
