@@ -13,6 +13,10 @@ module.exports = (functionsBuilder) => functionsBuilder
     const userId = await auth_1.tryAuthAndGetUserId(req);
     await favorites_1.setFavorites(ctx, userId, req.body.favorites);
 })
+    .addWebFunction('POST', '/favorites/:dishId', async (ctx, req) => {
+    const userId = await auth_1.tryAuthAndGetUserId(req);
+    await favorites_1.setFavorite(ctx, userId, req.params.dishId, req.body.favorite);
+})
     .addWebFunction('GET', '/ratings', async (ctx, req) => {
     const userId = await auth_1.tryAuthAndGetUserId(req);
     return await ratings_1.getUserRatings(ctx, userId);

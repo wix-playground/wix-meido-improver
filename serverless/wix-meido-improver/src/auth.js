@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const https = require("https");
 const serverless_api_1 = require("@wix/serverless-api");
-const DO_NOT_CHECK_AUTH = true;
+const DO_NOT_CHECK_AUTH = false; // set to TRUE to disable auth check
 async function tryAuthAndGetUserId(req) {
     const authCookie = getAuthCookie(req);
     const userId = getUserIdFromAuthCookie(authCookie);

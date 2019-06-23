@@ -53,15 +53,10 @@ async function setRatings(dishId, rating) {
 }
 
 async function toggleFavorite(dishId) {
-  const data = getData();
-  const old = isFavorite(dishId);
-  const favorites = {
-    ...data.favorites,
-    [dishId]: !old
-  };
-
-  updateData(() => ({favorites}));
-  await saveFavorites(favorites)
+  const favorite = !isFavorite(dishId);
+  updateData(({favorites}) => ({favorites: {...favorites, [dishId]: favorite}}));
+  await doRequest('POST', `/favorites/${encodeURIComponent(dishId)}`, {favorite});
+  await syncFavorites();
 }
 
 async function fetchUserRatings() {

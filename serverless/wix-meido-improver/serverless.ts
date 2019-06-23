@@ -1,5 +1,5 @@
 import {FunctionsBuilder} from '@wix/serverless-api';
-import {getFavorites, setFavorites} from "./src/favorites";
+import {getFavorites, setFavorite, setFavorites} from "./src/favorites";
 import {tryAuthAndGetUserId} from "./src/auth";
 import {getAvgRatings, getUserRatings, setRating} from "./src/ratings";
 
@@ -14,6 +14,10 @@ module.exports = (functionsBuilder: FunctionsBuilder) =>
     .addWebFunction('POST', '/favorites', async (ctx, req) => {
       const userId = await tryAuthAndGetUserId(req);
       await setFavorites(ctx, userId, req.body.favorites);
+    })
+    .addWebFunction('POST', '/favorites/:dishId', async (ctx, req) => {
+      const userId = await tryAuthAndGetUserId(req);
+      await setFavorite(ctx, userId, req.params.dishId, req.body.favorite);
     })
     .addWebFunction('GET', '/ratings', async (ctx, req) => {
       const userId = await tryAuthAndGetUserId(req);
