@@ -6,6 +6,7 @@ const ONE_CLICK_BUY_CLASS = '__ITDXER_oneClickBuy';
 const CHECKBOX_ICON_ORDERED = '__ITDXER_checkbox_icon_ordered';
 const CHECKBOX_LABEL_ORDERED = '__ITDXER_checkbox_label_ordered';
 const CHECKBOX_LABEL_FAVORITE = '__ITDXER_checkbox_label_favorite';
+const CHECKBOX_LABEL_RAGTING = '__ITDXER_checkbox_label_rating';
 const CHECKBOX_LABEL_VEGAN = '__ITDXER_checkbox_label_vegan';
 const SEARCH_INPUT_CLASS = '__ITDXER_search_input';
 const PARTIALLY_MATCHED_CLASS = '__ITDXER_first_partially_matched';
@@ -35,7 +36,7 @@ function openFirstCategory() {
 }
 
 function render(data) {
-  const {filterOrdered, filterFavorite, filterVegan, filterText, userRatings = {}, avgRatings = {}} = data;
+  const {filterRating, filterOrdered, filterFavorite, filterVegan, filterText, userRatings = {}, avgRatings = {}} = data;
 
   const filters = (filterText || '')
     .toLowerCase()
@@ -50,6 +51,7 @@ function render(data) {
     [...pane.children]
       .map(item => {
         const content = item.querySelector('.menu-item__content');
+        const rating = parseInt(content.dataset.avgRating) || 0;
         const button = content.querySelector('a.btn.buy');
         const dishId = button.href.split('/').pop();
         const orderedElem = content.querySelector('.' + DISH_COUNT_CLASS);
@@ -59,14 +61,16 @@ function render(data) {
           item,
           content,
           dishId,
+          rating,
           includesFilters: includes(content, filters),
           isFavorite: isFavorite(dishId),
           isVegan: !!content.querySelector('img[src="/images/vegan.png"]'),
           orderedTimes,
         });
       })
-      .map(({includesFilters, dishId, isFavorite, isVegan, orderedTimes, content, item}) => ({
+      .map(({includesFilters, dishId, isFavorite, isVegan, orderedTimes, rating, content, item}) => ({
         orderArr: [
+          filterRating ? rating : -1,
           filters.length > 0 ? includesFilters : -1,
           filterFavorite ? isFavorite ? 1 : 0 : -1,
           filterVegan ? (isVegan ? 1 : 0) : -1,
@@ -94,7 +98,7 @@ function render(data) {
 
   const suppliersContent = document.querySelector('.suppliers-content');
   if (suppliersContent) {
-    renderFilters(suppliersContent, filterOrdered, filterFavorite, filterVegan, filterText);
+    renderFilters({suppliersContent, filterRating, filterOrdered, filterFavorite, filterVegan, filterText});
   }
 }
 
@@ -162,8 +166,9 @@ function renderRating(content, dishId, userRating, avgRating) {
   }
 
   const shadow = ratingElem.querySelector('.shadow');
-  const r = userRating || (avgRating && avgRating.avg) || 0;
-  shadow.style.width = `${((5 - r) / 5) * 100}%`;
+  const rating = userRating || (avgRating && avgRating.avg) || 0;
+  shadow.style.width = `${((5 - rating) / 5) * 100}%`;
+  content.dataset.avgRating = avgRating && avgRating.avg || 0;
 }
 
 function createStar() {
@@ -203,13 +208,14 @@ function createOneClickBuyElement(buy) {
 }
 
 
-function renderFilters(suppliersContent, filterOrdered, filterFavorite, filterVegan, filterText) {
+function renderFilters({suppliersContent, filterRating, filterFavorite, filterVegan, filterOrdered, filterText}) {
   let filters = suppliersContent.querySelector('.' + FILTERS_CLASS);
   if (!filters) {
     filters = createFiltersElement();
     suppliersContent.prepend(filters);
   }
 
+  renderRatingCheckbox(filters, filterRating);
   renderFavoriteCheckbox(filters, filterFavorite);
   renderVeganCheckbox(filters, filterVegan);
   renderOrderedCheckbox(filters, filterOrdered);
@@ -221,6 +227,22 @@ function createFiltersElement() {
   const filters = document.createElement('div');
   filters.className = FILTERS_CLASS;
   return filters;
+}
+
+function renderRatingCheckbox(filters, filterRating) {
+  let checkboxLabel = filters.querySelector('.' + CHECKBOX_LABEL_RAGTING);
+
+  if (!checkboxLabel) {
+    checkboxLabel = createCheckboxInLabel(
+      '&nbsp;<span style="color: #ffd900;">★️</span> rating',
+      CHECKBOX_LABEL_RAGTING,
+      event => updateData(() => ({filterRating: event.target.checked}))
+    );
+
+    filters.append(checkboxLabel);
+  }
+
+  checkboxLabel.querySelector('input').checked = filterRating;
 }
 
 function renderFavoriteCheckbox(filters, filterFavorite) {
