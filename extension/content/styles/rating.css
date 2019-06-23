@@ -56,7 +56,7 @@
   opacity: 0.3;
 }
 
-.__ITDXER_rating:hover .delete {
+.__ITDXER_rating.user-rated:hover .delete {
   display: block;
 }
 .__ITDXER_rating .delete:hover {
