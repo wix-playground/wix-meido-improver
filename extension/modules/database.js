@@ -1,14 +1,7 @@
-subscribeForStorageChanges((data, prevData) => {
-  if (JSON.stringify(data.favorites) !== JSON.stringify(prevData.favorites)) {
-    saveFavorites(data.favorites);
-  }
-});
-
-
-syncFavorites();
+fixFavoritesDataStructure();
 syncRatings();
 
-function syncFavorites() {
+async function fixFavoritesDataStructure() {
   const {...data} = getData();
   const favorites = {};
 
@@ -20,10 +13,16 @@ function syncFavorites() {
   });
 
   if (Object.keys(favorites).length > 0) {
-    saveData({...data, favorites: {...data.favorites, ...favorites}});
+    const newFavorites = {...data.favorites, ...favorites};
+    saveData({...data, favorites: newFavorites});
+    await saveFavorites(newFavorites);
   } else {
-    fetchFavorites().then(favorites => updateData(() => ({favorites})));
+    await syncFavorites();
   }
+}
+
+async function syncFavorites() {
+  await fetchFavorites().then(favorites => updateData(() => ({favorites})));
 }
 
 async function syncRatings() {
@@ -43,13 +42,26 @@ async function fetchFavorites() {
 }
 
 async function saveFavorites(favorites) {
-  return await doRequest('POST', '/favorites', {favorites})
+  await doRequest('POST', '/favorites', {favorites})
+  await syncFavorites();
 }
 
-async function rate(dishId, rating) {
+async function setRatings(dishId, rating) {
   updateData(({userRatings}) => ({userRatings: {...userRatings, [dishId]: rating}}));
-  await doRequest('POST', `/ratings/${encodeURIComponent(dishId)}`, {rating})
+  await doRequest('POST', `/ratings/${encodeURIComponent(dishId)}`, {rating});
   await syncRatings();
+}
+
+async function toggleFavorite(dishId) {
+  const data = getData();
+  const old = isFavorite(dishId);
+  const favorites = {
+    ...data.favorites,
+    [dishId]: !old
+  };
+
+  updateData(() => ({favorites}));
+  await saveFavorites(favorites)
 }
 
 async function fetchUserRatings() {

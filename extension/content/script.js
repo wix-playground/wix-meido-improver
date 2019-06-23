@@ -107,7 +107,7 @@ function renderHeart(content, dishId, isFavorite) {
 
     const button = document.createElement('button');
     button.innerText = '❤️';
-    button.onclick = () => setFavorite(dishId, !isFavorite);
+    button.onclick = () => toggleFavorite(dishId);
 
     heart.appendChild(button);
     content.appendChild(heart);
@@ -134,7 +134,7 @@ function renderRating(content, dishId, userRating, avgRating) {
       .map((_, index) => index + 1)
       .forEach(rating => {
         const star = createStar();
-        star.onclick = () => rate(dishId, rating);
+        star.onclick = () => setRatings(dishId, rating);
         ratingElem.appendChild(star);
       });
 

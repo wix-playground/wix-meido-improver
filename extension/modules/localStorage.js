@@ -40,12 +40,3 @@ function isFavorite(dishId) {
 
   return favorites[dishId];
 }
-
-function setFavorite(dishId, isFavorite) {
-  updateData(data => ({
-    favorites: {
-      ...data.favorites,
-      [dishId]: isFavorite
-    }
-  }));
-}
