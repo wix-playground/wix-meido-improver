@@ -2,7 +2,7 @@ import * as https from "https";
 import {HttpError} from "@wix/serverless-api";
 import {WebRequest} from "@wix/serverless-api";
 
-const DO_NOT_CHECK_AUTH = false; // set to TRUE to disable auth check
+const DO_NOT_CHECK_AUTH = true; // set to TRUE to disable auth check
 
 export async function tryAuthAndGetUserId(req: WebRequest): Promise<string> {
   const authCookie = getAuthCookie(req);
