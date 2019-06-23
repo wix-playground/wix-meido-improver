@@ -2,6 +2,8 @@ import * as https from "https";
 import {HttpError} from "@wix/serverless-api";
 import {WebRequest} from "@wix/serverless-api";
 
+const DO_NOT_CHECK_AUTH = true;
+
 export async function tryAuthAndGetUserId(req: WebRequest): Promise<string> {
   const authCookie = getAuthCookie(req);
   const userId = getUserIdFromAuthCookie(authCookie);
@@ -17,7 +19,11 @@ export async function tryAuthAndGetUserId(req: WebRequest): Promise<string> {
   );
 
   if (userId !== getUserIdFromHtmlPage(data)) {
-    throw new HttpError({status: 403, message: 'UserIdFromAuthCookie !== UserIdFromHtmlPage'});
+    if (DO_NOT_CHECK_AUTH) {
+      console.error('UserIdFromAuthCookie !== UserIdFromHtmlPage; [DO_NOT_CHECK_AUTH=TRUE]');
+    } else {
+      throw new HttpError({status: 403, message: 'UserIdFromAuthCookie !== UserIdFromHtmlPage'});
+    }
   }
 
   return userId;

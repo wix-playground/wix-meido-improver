@@ -27,7 +27,7 @@ async function setRating(ctx, userId, dishId, rating) {
     const userRatings = ratings[userId] || {};
     await ctx.datastore.put(DATASTORE_KEY, {
         ...ratings,
-        [userId]: { userRatings, [dishId]: rating }
+        [userId]: { ...userRatings, [dishId]: rating }
     });
 }
 exports.setRating = setRating;

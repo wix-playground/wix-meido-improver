@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const https = require("https");
 const serverless_api_1 = require("@wix/serverless-api");
+const DO_NOT_CHECK_AUTH = true;
 async function tryAuthAndGetUserId(req) {
     const authCookie = getAuthCookie(req);
     const userId = getUserIdFromAuthCookie(authCookie);
@@ -13,7 +14,12 @@ async function tryAuthAndGetUserId(req) {
     })
         .on("error", reject));
     if (userId !== getUserIdFromHtmlPage(data)) {
-        throw new serverless_api_1.HttpError({ status: 403, message: 'UserIdFromAuthCookie !== UserIdFromHtmlPage' });
+        if (DO_NOT_CHECK_AUTH) {
+            console.error('UserIdFromAuthCookie !== UserIdFromHtmlPage; [DO_NOT_CHECK_AUTH=TRUE]');
+        }
+        else {
+            throw new serverless_api_1.HttpError({ status: 403, message: 'UserIdFromAuthCookie !== UserIdFromHtmlPage' });
+        }
     }
     return userId;
 }
