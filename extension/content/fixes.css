@@ -15,6 +15,12 @@ body .suppliers .tab-content a.btn.btn-success.buy {
   display: none;
 }
 
+/* wide carts */
+body .suppliers-content .tab-content {
+  width: 100%;
+  max-width: 900px;
+}
+
 body .suppliers .tab-content {
   margin: 0 auto;
 }
