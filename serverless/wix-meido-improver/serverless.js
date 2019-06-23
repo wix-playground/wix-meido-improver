@@ -15,13 +15,13 @@ module.exports = (functionsBuilder) => functionsBuilder
 })
     .addWebFunction('GET', '/ratings', async (ctx, req) => {
     const userId = await auth_1.tryAuthAndGetUserId(req);
-    await ratings_1.getUserRatings(ctx, userId);
+    return await ratings_1.getUserRatings(ctx, userId);
 })
-    .addWebFunction('POST', '/ratings/{dishId}', async (ctx, req) => {
+    .addWebFunction('POST', '/ratings/:dishId', async (ctx, req) => {
     const userId = await auth_1.tryAuthAndGetUserId(req);
     await ratings_1.setRating(ctx, userId, req.params.dishId, req.body.rating);
 })
     .addWebFunction('GET', '/avg-ratings', async (ctx, req) => {
     await auth_1.tryAuthAndGetUserId(req);
-    await ratings_1.getAvgRatings(ctx);
+    return await ratings_1.getAvgRatings(ctx);
 });
