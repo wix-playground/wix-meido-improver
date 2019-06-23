@@ -160,7 +160,8 @@ function renderRating(content, dishId, userRating, avgRating) {
   }
 
   if (avgRating) {
-    ratingElem.title = `${avgRating.avg} / 5  (${avgRating.count} Ratings)`;
+    const rounded = (avgRating.avg || 0).toFixed(1);
+    ratingElem.title = `${rounded} / 5  (${avgRating.count} Ratings)`;
   } else {
     ratingElem.title = '0 Ratings';
   }
