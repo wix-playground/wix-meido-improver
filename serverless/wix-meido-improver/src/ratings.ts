@@ -40,7 +40,7 @@ export async function setRating(ctx: RpcServiceContext, userId: string, dishId: 
     DATASTORE_KEY,
     {
       ...ratings,
-      [userId]: {userRatings, [dishId]: rating}
+      [userId]: {...userRatings, [dishId]: rating}
     }
   );
 }
