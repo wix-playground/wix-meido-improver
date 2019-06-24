@@ -10,7 +10,7 @@ export async function tryAuthAndGetUserId(req: WebRequest): Promise<string> {
   const headers = {'Cookie': authCookie};
 
   const data = await new Promise<string>((resolve, reject) =>
-    https.get('https://wix.getmeido.com/order', {headers}, resp => {
+    https.get('https://wix.getmeido.com/change-password', {headers}, resp => {
       let data = '';
       resp.on('data', chunk => data += chunk);
       resp.on('end', () => resolve(data));
