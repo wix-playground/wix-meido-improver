@@ -47,7 +47,19 @@ async function saveFavorites(favorites) {
 }
 
 async function setRating(dishId, rating) {
-  updateData(({userRatings}) => ({userRatings: {...userRatings, [dishId]: rating}}));
+  updateData(({userRatings, avgRatings}) => {
+    const avg = avgRatings[dishId] || {count: 0, avg: 0};
+
+    const newAvg = {
+      count: avg.count + 1,
+      avg: (avg.count * avg.avg + rating) / (avg.count + 1)
+    };
+
+    return ({
+      userRatings: {...userRatings, [dishId]: rating},
+      avgRatings: {...avgRatings, [dishId]: newAvg}
+    });
+  });
   await doRequest('POST', `/ratings/${encodeURIComponent(dishId)}`, {rating});
   await syncRatings();
 }
