@@ -22,6 +22,13 @@ async function getAvgRatings(ctx) {
     })));
 }
 exports.getAvgRatings = getAvgRatings;
+async function getBothRatings(ctx, userId) {
+    return {
+        userRatings: await getUserRatings(ctx, userId),
+        avgRatings: await getAvgRatings(ctx),
+    };
+}
+exports.getBothRatings = getBothRatings;
 function avg(arr) {
     if (arr.length === 0) {
         return 0;

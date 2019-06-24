@@ -7,7 +7,7 @@ async function tryAuthAndGetUserId(req) {
     const authCookie = getAuthCookie(req);
     const userId = getUserIdFromAuthCookie(authCookie);
     const headers = { 'Cookie': authCookie };
-    const data = await new Promise((resolve, reject) => https.get('https://wix.getmeido.com/order', { headers }, resp => {
+    const data = await new Promise((resolve, reject) => https.get('https://wix.getmeido.com/change-password', { headers }, resp => {
         let data = '';
         resp.on('data', chunk => data += chunk);
         resp.on('end', () => resolve(data));

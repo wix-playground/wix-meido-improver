@@ -3,6 +3,11 @@ import {Dictionary} from "./utils";
 
 export type Ratings = Dictionary<number>;
 export type AvgRatings = Dictionary<{ avg: number, count: number }>;
+export type BothRatings = {
+  userRatings: Ratings;
+  avgRatings: AvgRatings
+}
+
 const DATASTORE_KEY = 'ratings';
 
 export async function getUserRatings(ctx: RpcServiceContext, userId: string): Promise<Ratings> {
@@ -32,6 +37,15 @@ export async function getAvgRatings(ctx: RpcServiceContext): Promise<AvgRatings>
       }))
   )
 }
+
+
+export async function getBothRatings(ctx: RpcServiceContext, userId: string): Promise<BothRatings> {
+  return {
+    userRatings: await getUserRatings(ctx, userId),
+    avgRatings: await getAvgRatings(ctx),
+  }
+}
+
 
 function avg(arr: number[]): number {
   if (arr.length === 0) {
