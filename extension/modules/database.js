@@ -26,10 +26,7 @@ async function syncFavorites() {
 }
 
 async function syncRatings() {
-  await Promise.all([
-    fetchUserRatings().then(userRatings => updateData(() => ({userRatings}))),
-    fetchAvgRatings().then(avgRatings => updateData(() => ({avgRatings}))),
-  ]);
+  await fetchBothRatings().then(({userRatings, avgRatings}) => updateData(() => ({userRatings, avgRatings})));
 }
 
 /**
@@ -49,8 +46,8 @@ async function fetchFavorites() {
  * @return {Promise<void>}
  */
 async function saveFavorites(favorites) {
-  await doRequest('POST', '/favorites', {favorites});
-  await syncFavorites();
+  await doRequest('POST', '/favorites', {favorites})
+    .then(favorites => updateData(() => ({favorites})))
 }
 
 /**
@@ -73,8 +70,8 @@ async function setRating(dishId, rating) {
     });
   });
 
-  await doRequest('POST', `/ratings/${encodeURIComponent(dishId)}`, {rating});
-  await syncRatings();
+  await doRequest('POST', `/ratings/${encodeURIComponent(dishId)}`, {rating})
+    .then(({userRatings, avgRatings}) => updateData(() => ({userRatings, avgRatings})));
 }
 
 /**
@@ -87,8 +84,9 @@ async function deleteRating(dishId) {
     delete newRatings[dishId];
     return ({userRatings: newRatings});
   });
-  await doRequest('DELETE', `/ratings/${encodeURIComponent(dishId)}`);
-  await syncRatings();
+
+  await doRequest('DELETE', `/ratings/${encodeURIComponent(dishId)}`)
+    .then(({userRatings, avgRatings}) => updateData(() => ({userRatings, avgRatings})));
 }
 
 /**
@@ -98,17 +96,15 @@ async function deleteRating(dishId) {
 async function toggleFavorite(dishId) {
   const favorite = !isFavorite(dishId);
   updateData(({favorites}) => ({favorites: {...favorites, [dishId]: favorite}}));
-  await doRequest('POST', `/favorites/${encodeURIComponent(dishId)}`, {favorite});
-  await syncFavorites();
+
+  await doRequest('POST', `/favorites/${encodeURIComponent(dishId)}`, {favorite})
+    .then(favorites => updateData(() => ({favorites})));
 }
 
-async function fetchUserRatings() {
-  return await doRequest('GET', '/ratings');
+async function fetchBothRatings() {
+  return await doRequest('GET', '/both-ratings');
 }
 
-async function fetchAvgRatings() {
-  return await doRequest('GET', '/avg-ratings');
-}
 
 /**
  * @param {'GET'|'POST'|'DELETE'} method
