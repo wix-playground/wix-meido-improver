@@ -52,7 +52,6 @@ function render(data) {
     [...pane.children]
       .map(item => {
         const content = item.querySelector('.menu-item__content');
-        const rating = parseInt(content.dataset.avgRating) || 0;
         const button = content.querySelector('a.btn.buy');
         const dishId = button.href.split('/').pop();
         const orderedElem = content.querySelector('.' + DISH_COUNT_CLASS);
@@ -62,7 +61,7 @@ function render(data) {
           item,
           content,
           dishId,
-          rating,
+          rating: (avgRatings[dishId] || {}).avg || 0,
           includesFilters: includes(content, filters),
           isFavorite: isFavorite(dishId),
           isVegan: !!content.querySelector('img[src="/images/vegan.png"]'),
