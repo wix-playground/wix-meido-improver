@@ -60,6 +60,7 @@ async function setRating(dishId, rating) {
       avgRatings: {...avgRatings, [dishId]: newAvg}
     });
   });
+
   await doRequest('POST', `/ratings/${encodeURIComponent(dishId)}`, {rating});
   await syncRatings();
 }

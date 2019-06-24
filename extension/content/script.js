@@ -14,6 +14,7 @@ const PARTIALLY_MATCHED_CLASS = '__ITDXER_first_partially_matched';
 window.addEventListener('DOMContentLoaded', () => {
   addCategoryAll();
   openFirstCategory();
+  addOneClickBuy();
 
   subscribeForStorageChanges(render);
   renderOrderedDishes(renderWithData);
@@ -92,7 +93,6 @@ function render(data) {
 
         renderHeart(content, dishId, isFavorite);
         renderRating(content, dishId, userRatings[dishId], avgRatings[dishId]);
-        renderOneClickBuy(content);
       });
   });
 
@@ -195,15 +195,13 @@ function createStar() {
   return star;
 }
 
-function renderOneClickBuy(content) {
-  const itemInfo = content.querySelector('.menu-item__info');
-  let oneClick = itemInfo.querySelector('.' + ONE_CLICK_BUY_CLASS);
-
-  if (!oneClick) {
+function addOneClickBuy() {
+  const infos = document.querySelectorAll('.suppliers-content .container .menu-item > .menu-item__content > .menu-item__info');
+  [...infos].forEach(itemInfo => {
     const buy = itemInfo.querySelector('.menu-item__info a.buy');
-    oneClick = createOneClickBuyElement(buy);
+    const oneClick = createOneClickBuyElement(buy);
     itemInfo.appendChild(oneClick);
-  }
+  });
 }
 
 function createOneClickBuyElement(buy) {
