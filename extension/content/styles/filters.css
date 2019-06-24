@@ -9,6 +9,15 @@ body .suppliers .__ITDXER_heart > button {
   border: 0 none;
   font-size: 2em;
   padding: 0 6px;
+  opacity: 0.1;
+}
+
+body .suppliers .__ITDXER_heart > button:hover {
+  opacity: 0.3;
+}
+
+body .suppliers .__ITDXER_heart > button.checked {
+  opacity: 1;
 }
 
 body .suppliers .__ITDXER_filters {

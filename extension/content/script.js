@@ -117,7 +117,11 @@ function renderHeart(content, dishId, isFavorite) {
   }
 
   const button = heart.querySelector('button');
-  button.style = `opacity: ${isFavorite ? '1' : '0.1'}`;
+  if (isFavorite) {
+    button.classList.add('checked');
+  } else {
+    button.classList.remove('checked');
+  }
 }
 
 function renderRating(content, dishId, userRating, avgRating) {
