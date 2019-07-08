@@ -7,6 +7,6 @@
     "typescript": "^3.4.5"
   },
   "dependencies": {
-    "@wix/serverless-api": "^1.0.123"
+    "@wix/serverless-api": "^1.0.144"
   }
 }

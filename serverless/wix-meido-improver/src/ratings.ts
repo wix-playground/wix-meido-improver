@@ -1,4 +1,4 @@
-import {RpcServiceContext} from "@wix/serverless-api";
+import {FunctionContext} from "@wix/serverless-api";
 import {Dictionary} from "./utils";
 
 export type Ratings = Dictionary<number>;
@@ -10,12 +10,12 @@ export type BothRatings = {
 
 const DATASTORE_KEY = 'ratings';
 
-export async function getUserRatings(ctx: RpcServiceContext, userId: string): Promise<Ratings> {
+export async function getUserRatings(ctx: FunctionContext, userId: string): Promise<Ratings> {
   const ratings = await ctx.datastore.get(DATASTORE_KEY) || {};
   return ratings[userId] || {}
 }
 
-export async function getAvgRatings(ctx: RpcServiceContext): Promise<AvgRatings> {
+export async function getAvgRatings(ctx: FunctionContext): Promise<AvgRatings> {
   const ratings: Dictionary<Ratings> = await ctx.datastore.get(DATASTORE_KEY) || {};
   const flatRatings: Array<[string, number]> = [].concat(...Object.values(ratings).map(ratings => Object.entries(ratings)));
   const allRatings: Dictionary<Array<number>> = flatRatings.reduce(
@@ -39,7 +39,7 @@ export async function getAvgRatings(ctx: RpcServiceContext): Promise<AvgRatings>
 }
 
 
-export async function getBothRatings(ctx: RpcServiceContext, userId: string): Promise<BothRatings> {
+export async function getBothRatings(ctx: FunctionContext, userId: string): Promise<BothRatings> {
   return {
     userRatings: await getUserRatings(ctx, userId),
     avgRatings: await getAvgRatings(ctx),
@@ -54,7 +54,7 @@ function avg(arr: number[]): number {
   return arr.reduce((sum, item) => sum + item) / arr.length;
 }
 
-export async function setRating(ctx: RpcServiceContext, userId: string, dishId: string, rating: number): Promise<void> {
+export async function setRating(ctx: FunctionContext, userId: string, dishId: string, rating: number): Promise<void> {
   const ratings = await ctx.datastore.get(DATASTORE_KEY) || {};
   const userRatings = ratings[userId] || {};
 
@@ -67,7 +67,7 @@ export async function setRating(ctx: RpcServiceContext, userId: string, dishId: 
   );
 }
 
-export async function deleteRating(ctx: RpcServiceContext, userId: string, dishId: string): Promise<void> {
+export async function deleteRating(ctx: FunctionContext, userId: string, dishId: string): Promise<void> {
   const ratings = await ctx.datastore.get(DATASTORE_KEY) || {};
   const userRatings = {...(ratings[userId] || {})};
   delete userRatings[dishId];
