@@ -6,7 +6,7 @@ chrome.runtime.onMessage.addListener(
 
       doRequest(method, endpoint, data)
         .then(result => sendResponse([null, result]))
-        .catch(error => sendResponse([error]))
+        .catch(error => sendResponse([error]));
 
       return true;
     }

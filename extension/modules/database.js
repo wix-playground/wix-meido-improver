@@ -32,6 +32,9 @@ async function syncRatings() {
   ]);
 }
 
+/**
+ * @return {string}
+ */
 function getAuthCookie() {
   const reg = /(^|; )([a-z0-9]{32}=[^;]*)/;
   return (document.cookie.match(reg) || '')[2];
@@ -41,11 +44,20 @@ async function fetchFavorites() {
   return await doRequest('GET', '/favorites');
 }
 
+/**
+ * @param {Object.<string, boolean>} favorites - where "key" (string) is dishId
+ * @return {Promise<void>}
+ */
 async function saveFavorites(favorites) {
   await doRequest('POST', '/favorites', {favorites});
   await syncFavorites();
 }
 
+/**
+ * @param {string} dishId
+ * @param {number} rating
+ * @return {Promise<void>}
+ */
 async function setRating(dishId, rating) {
   updateData(({userRatings, avgRatings}) => {
     const avg = avgRatings[dishId] || {count: 0, avg: 0};
@@ -65,6 +77,10 @@ async function setRating(dishId, rating) {
   await syncRatings();
 }
 
+/**
+ * @param {string} dishId
+ * @return {Promise<void>}
+ */
 async function deleteRating(dishId) {
   updateData(({userRatings}) => {
     const newRatings = userRatings || {};
@@ -75,6 +91,10 @@ async function deleteRating(dishId) {
   await syncRatings();
 }
 
+/**
+ * @param {string} dishId
+ * @return {Promise<void>}
+ */
 async function toggleFavorite(dishId) {
   const favorite = !isFavorite(dishId);
   updateData(({favorites}) => ({favorites: {...favorites, [dishId]: favorite}}));
@@ -90,6 +110,12 @@ async function fetchAvgRatings() {
   return await doRequest('GET', '/avg-ratings');
 }
 
+/**
+ * @param {'GET'|'POST'|'DELETE'} method
+ * @param {string} endpoint
+ * @param {Object=} params
+ * @return {Promise<*>}
+ */
 async function doRequest(method, endpoint, params) {
   const data = {...params, authCookie: getAuthCookie()};
 

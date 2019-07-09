@@ -1,3 +1,8 @@
+/**
+ *
+ * @param {string} selector
+ * @return {Promise<HTMLElement>}
+ */
 function waitForSelector(selector) {
   return new Promise(resolve => {
     const el = document.querySelector(selector);
@@ -9,6 +14,11 @@ function waitForSelector(selector) {
   })
 }
 
+/**
+ *
+ * @param {string} selector
+ * @return {Promise<HTMLElement>}
+ */
 function waitForEmptySelector(selector) {
   return new Promise(resolve => {
     const el = document.querySelector(selector);
