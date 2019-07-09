@@ -115,10 +115,15 @@ async function fetchBothRatings() {
 async function doRequest(method, endpoint, params) {
   const data = {...params, authCookie: getAuthCookie()};
 
-  return new Promise((resolve, reject) =>
-    chrome.runtime.sendMessage(
-      {contentScriptQuery: "request", args: {method, endpoint, data}},
-      ([error, result] = ['error']) => error ? reject(error) : resolve(result)
-    )
-  );
+  return browser.runtime
+    .sendMessage({
+      contentScriptQuery: "request",
+      args: {method, endpoint, data}
+    })
+    .then(([error, result] = ['error']) => {
+      if (error) {
+        throw error
+      }
+      return result;
+    });
 }

@@ -1,4 +1,4 @@
-chrome.runtime.onMessage.addListener(
+browser.runtime.onMessage.addListener(
   (request, sender, sendResponse) => {
     const {contentScriptQuery, args} = request;
     if (contentScriptQuery === 'request') {
