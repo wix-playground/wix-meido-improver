@@ -117,11 +117,7 @@ function renderHeart(content, dishId, isFavorite) {
   }
 
   const button = heart.querySelector('button');
-  if (isFavorite) {
-    button.classList.add('checked');
-  } else {
-    button.classList.remove('checked');
-  }
+  button.classList.toggle('checked', isFavorite);
 }
 
 function renderRating(content, dishId, userRating, avgRating) {
@@ -168,11 +164,7 @@ function renderRating(content, dishId, userRating, avgRating) {
     content.appendChild(ratingElem);
   }
 
-  if (userRating) {
-    ratingElem.classList.add('user-rated');
-  } else {
-    ratingElem.classList.remove('user-rated');
-  }
+  ratingElem.classList.toggle('user-rated', userRating);
 
   if (avgRating) {
     const rounded = (avgRating.avg || 0).toFixed(1);
@@ -376,11 +368,11 @@ function createCheckboxInLabel(labelHTML, className, onChange) {
 
 function removeAllCartItems() {
   const items = [...document.querySelectorAll('#cart .cart__delete')];
-  return items.length
+  return items.length === 0
     ? Promise.resolve()
+    : Promise.resolve()
       .then(() => items.forEach(item => item.click()))
       .then(() => waitForEmptySelector('#cart .cart__delete'))
-    : Promise.resolve();
 
 }
 

@@ -3,11 +3,15 @@
   "name": "wix-meido-improver",
   "version": "1.6.0",
   "browser_action": {
+    "default_popup": "popup/page.html",
     "default_icon": "icons/icon128.png"
   },
   "icons": {
     "128": "icons/icon128.png",
     "48": "icons/icon48.png"
+  },
+  "options_ui": {
+    "page": "options/page.html"
   },
   "content_scripts": [
     {
@@ -37,10 +41,15 @@
   "background": {
     "scripts": [
       "node_modules/webextension-polyfill/dist/browser-polyfill.min.js",
+      "options/storage.js",
+      "background/notifications.js",
       "background/script.js"
     ]
   },
   "permissions": [
-    "https://www.wix.com/_serverless/wix-meido-improver/*"
+    "https://www.wix.com/_serverless/wix-meido-improver/*",
+    "alarms",
+    "notifications",
+    "storage"
   ]
 }
