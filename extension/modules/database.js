@@ -2,7 +2,7 @@ fixFavoritesDataStructure();
 syncRatings();
 
 async function fixFavoritesDataStructure() {
-  const {...data} = getData();
+  const {...data} = await getData();
   const favorites = {};
 
   Object.entries(data).forEach(([key, value]) => {
@@ -14,7 +14,7 @@ async function fixFavoritesDataStructure() {
 
   if (Object.keys(favorites).length > 0) {
     const newFavorites = {...data.favorites, ...favorites};
-    saveData({...data, favorites: newFavorites});
+    await saveData({...data, favorites: newFavorites});
     await saveFavorites(newFavorites);
   } else {
     await syncFavorites();
@@ -23,12 +23,12 @@ async function fixFavoritesDataStructure() {
 
 async function syncFavorites() {
   const favorites = await fetchFavorites();
-  updateData(() => ({favorites}));
+  await updateData(() => ({favorites}));
 }
 
 async function syncRatings() {
   const {userRatings, avgRatings} = await fetchBothRatings();
-  updateData(() => ({userRatings, avgRatings}));
+  await updateData(() => ({userRatings, avgRatings}));
 }
 
 /**
@@ -49,7 +49,7 @@ async function fetchFavorites() {
  */
 async function saveFavorites(favorites) {
   const updatedFavorites = await doRequest('POST', '/favorites', {favorites});
-  updateData(() => ({favorites: updatedFavorites}));
+  await updateData(() => ({favorites: updatedFavorites}));
 }
 
 /**
@@ -58,7 +58,7 @@ async function saveFavorites(favorites) {
  * @return {Promise<void>}
  */
 async function setRating(dishId, rating) {
-  updateData(({userRatings, avgRatings}) => {
+  await updateData(({userRatings, avgRatings}) => {
     const avg = avgRatings[dishId] || {count: 0, avg: 0};
 
     const newAvg = {
@@ -73,7 +73,7 @@ async function setRating(dishId, rating) {
   });
 
   const {userRatings, avgRatings} = await doRequest('POST', `/ratings/${encodeURIComponent(dishId)}`, {rating});
-  updateData(() => ({userRatings, avgRatings}));
+  await updateData(() => ({userRatings, avgRatings}));
 }
 
 /**
@@ -81,26 +81,26 @@ async function setRating(dishId, rating) {
  * @return {Promise<void>}
  */
 async function deleteRating(dishId) {
-  updateData(({userRatings}) => {
+  await updateData(({userRatings}) => {
     const newRatings = userRatings || {};
     delete newRatings[dishId];
     return ({userRatings: newRatings});
   });
 
   const {userRatings, avgRatings} = await doRequest('DELETE', `/ratings/${encodeURIComponent(dishId)}`);
-  updateData(() => ({userRatings, avgRatings}));
+  await updateData(() => ({userRatings, avgRatings}));
 }
 
 /**
  * @param {string} dishId
+ * @param { boolean} favorite
  * @return {Promise<void>}
  */
-async function toggleFavorite(dishId) {
-  const favorite = !isFavorite(dishId);
-  updateData(({favorites}) => ({favorites: {...favorites, [dishId]: favorite}}));
+async function toggleFavorite(dishId, favorite) {
+ await updateData(({favorites}) => ({favorites: {...favorites, [dishId]: favorite}}));
 
   const favorites = await doRequest('POST', `/favorites/${encodeURIComponent(dishId)}`, {favorite});
-  updateData(() => ({favorites}));
+ await updateData(() => ({favorites}));
 }
 
 async function fetchBothRatings() {

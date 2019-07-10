@@ -2,11 +2,15 @@ const STORAGE_KEY = '__ITDXER_storage';
 
 const listeners = [];
 
-function getData() {
+/**
+ * @return {Promise<{}>}
+ */
+async function getData() {
   let data = null;
 
   try {
-    data = JSON.parse(window.localStorage.getItem(STORAGE_KEY));
+    data = await browser.storage.local.get('userData')
+      || JSON.parse(window.localStorage.getItem(STORAGE_KEY));
   } catch (error) {
     console.log(error);
   }
@@ -14,11 +18,15 @@ function getData() {
   return data || {};
 }
 
-function saveData(data) {
-  const prevData = getData();
+/**
+ * @param {Object} data
+ * @return {Promise<void>}
+ */
+async function saveData(data) {
+  const prevData = await getData();
 
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    await browser.storage.local.get({userData: data});
     listeners.forEach(listener => listener(data, prevData));
   } catch (error) {
     console.log(error);
@@ -27,10 +35,11 @@ function saveData(data) {
 
 /**
  * @param {Function} fn
+ * @return {Promise<void>}
  */
-function updateData(fn) {
-  const prevData = getData();
-  saveData({...prevData, ...fn(prevData)});
+async function updateData(fn) {
+  const prevData = await getData();
+  await saveData({...prevData, ...fn(prevData)});
 }
 
 /**
@@ -38,15 +47,4 @@ function updateData(fn) {
  */
 function subscribeForStorageChanges(handler) {
   listeners.push(handler);
-}
-
-/**
- * @param {string} dishId
- * @return {boolean}
- */
-function isFavorite(dishId) {
-  const data = getData();
-  const favorites = data.favorites || {};
-
-  return favorites[dishId];
 }

@@ -68,7 +68,7 @@ async function fetchOrderedDishes(orders) {
 async function refreshOrderedDishesCache() {
   const orderedDishes = await fetchOrderedDishes(await fetchOrders());
 
-  updateData(() => ({
+ await updateData(() => ({
     orderedDishes: {
       updatedDate: new Date(),
       list: orderedDishes,
@@ -77,18 +77,19 @@ async function refreshOrderedDishesCache() {
 }
 
 async function invalidateOrderedDishesCache() {
-  updateData(() => ({
+ await updateData(() => ({
     orderedDishes: null
   }))
 }
 
 async function getOrderedDishes() {
-  const data = getData();
+  let data = await getData();
   if (!data.orderedDishes || isDateBeforeYesterday(data.orderedDishes.updatedDate)) {
     await refreshOrderedDishesCache();
+    data = await getData();
   }
 
-  return getData().orderedDishes.list;
+  return data.orderedDishes.list;
 }
 
 

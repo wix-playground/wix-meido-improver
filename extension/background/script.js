@@ -20,7 +20,7 @@ browser.alarms.onAlarm.addListener(async () => {
   const notificationOptions = {
     type: 'basic',
     title: 'Meido Order',
-    message: 'Do not forget to make order for the next week',
+    message: 'Do not forget to make order for the next week (click here to open Meido)',
     iconUrl: '../icons/icon48.png',
   };
 
