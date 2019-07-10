@@ -25,15 +25,25 @@ function saveData(data) {
   }
 }
 
+/**
+ * @param {Function} fn
+ */
 function updateData(fn) {
   const prevData = getData();
   saveData({...prevData, ...fn(prevData)});
 }
 
+/**
+ * @param {Function} handler
+ */
 function subscribeForStorageChanges(handler) {
   listeners.push(handler);
 }
 
+/**
+ * @param {string} dishId
+ * @return {boolean}
+ */
 function isFavorite(dishId) {
   const data = getData();
   const favorites = data.favorites || {};

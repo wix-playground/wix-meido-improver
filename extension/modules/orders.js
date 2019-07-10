@@ -1,30 +1,64 @@
 const DISH_COUNT_CLASS = '__ITDXER_dish_count';
 const CONTRACTOR_COUNT_CLASS = '__ITDXER_contractor_count';
 
-async function fetchOrderIds() {
-  const ids = new Set();
-  let i = 1;
-  let newIdsFound = true;
+/**
+ * Parsed order object
+ *
+ * @typedef {Object} Order
+ * @property {string} date - ISO date string
+ * @property {string} id - id of order
+ */
 
-  while (newIdsFound) {
+/**
+ * Parsed dish object that was ordered on specific date
+ *
+ * @typedef {Object} Dish
+ * @property {string} dish - dish name
+ * @property {string} date - the date on which the dish was ordered
+ * @property {string} contractor - food supplier
+ */
+
+
+/**
+ * @return {Promise<Order[]>}
+ */
+async function fetchOrders() {
+  let orders = new Map();
+  let i = 1;
+  let newOrdersFound = true;
+
+  while (newOrdersFound) {
     const response = await fetch(`https://wix.getmeido.com/order/history/_url/%2Forder%2Fhistory/OrderMain_page/${i}`);
     const text = await response.text();
-    const orderIds = [...text.matchAll(/<td>#(\d+)<\/td>/g)].map(([all, number]) => number);
-    newIdsFound = orderIds.some(newId => !ids.has(newId));
-    orderIds.forEach(newId => ids.add(newId));
+    const parsedOrders = [...text.matchAll(/<td>#(\d+)<\/td><td>(\w+\s\d+,\s\d+)<\/td>/g)].map(([all, number, date]) => ({
+      id: number,
+      date: (new Date(`${date} 00:00:00z`)).toISOString(),
+    }));
+
+    newOrdersFound = parsedOrders.some((order) => !orders.has(order.id));
+
+    parsedOrders.forEach(order => {
+      orders.set(order.id, order);
+    });
+
     i = i + 1;
   }
 
-  return [...ids.values()];
+  return [...orders.values()];
 }
 
-async function fetchOrderedDishes(orderIds) {
+/**
+ * @param {Order[]} orders - list of parsed orders from history
+ * @return {Promise<Dish[]>}
+ */
+async function fetchOrderedDishes(orders) {
   return [].concat(
-    ...await Promise.all(orderIds.map(async orderId => {
-      const response = await fetch(`https://wix.getmeido.com/order/view/id/${orderId}`);
+    ...await Promise.all(orders.map(async ({id, date}) => {
+      const response = await fetch(`https://wix.getmeido.com/order/view/id/${id}`);
       const text = await response.text();
       return [...text.matchAll(/<td>(.*)\(Поставщик: <b>(.*)<\/b>\)/g)].map(([all, dish, contractor]) => ({
         dish: unescape(dish).trim(),
+        date,
         contractor: unescape(contractor).trim()
       }));
     }))
@@ -32,7 +66,7 @@ async function fetchOrderedDishes(orderIds) {
 }
 
 async function refreshOrderedDishesCache() {
-  const orderedDishes = await fetchOrderedDishes(await fetchOrderIds());
+  const orderedDishes = await fetchOrderedDishes(await fetchOrders());
 
   updateData(() => ({
     orderedDishes: {
@@ -42,7 +76,7 @@ async function refreshOrderedDishesCache() {
   }));
 }
 
-async function unvalidateOrderedDishesCache() {
+async function invalidateOrderedDishesCache() {
   updateData(() => ({
     orderedDishes: null
   }))

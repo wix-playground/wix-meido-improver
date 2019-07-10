@@ -6,7 +6,7 @@ const ONE_CLICK_BUY_CLASS = '__ITDXER_oneClickBuy';
 const CHECKBOX_ICON_ORDERED = '__ITDXER_checkbox_icon_ordered';
 const CHECKBOX_LABEL_ORDERED = '__ITDXER_checkbox_label_ordered';
 const CHECKBOX_LABEL_FAVORITE = '__ITDXER_checkbox_label_favorite';
-const CHECKBOX_LABEL_RAGTING = '__ITDXER_checkbox_label_rating';
+const CHECKBOX_LABEL_RATING = '__ITDXER_checkbox_label_rating';
 const CHECKBOX_LABEL_VEGAN = '__ITDXER_checkbox_label_vegan';
 const SEARCH_INPUT_CLASS = '__ITDXER_search_input';
 const PARTIALLY_MATCHED_CLASS = '__ITDXER_first_partially_matched';
@@ -244,12 +244,12 @@ function createFiltersElement() {
 }
 
 function renderRatingCheckbox(filters, filterRating) {
-  let checkboxLabel = filters.querySelector('.' + CHECKBOX_LABEL_RAGTING);
+  let checkboxLabel = filters.querySelector('.' + CHECKBOX_LABEL_RATING);
 
   if (!checkboxLabel) {
     checkboxLabel = createCheckboxInLabel(
       '&nbsp;<span style="color: #ffd900;">★️</span> rating',
-      CHECKBOX_LABEL_RAGTING,
+      CHECKBOX_LABEL_RATING,
       event => updateData(() => ({filterRating: event.target.checked}))
     );
 
@@ -350,7 +350,7 @@ function renderOrderTable() {
             orderButton.onclick = () => {
               label.click();
               submitButton.click();
-              unvalidateOrderedDishesCache();
+              void invalidateOrderedDishesCache();
             };
             td.appendChild(orderButton);
           });
@@ -390,13 +390,19 @@ function includes(whereElement, filters) {
 }
 
 const renderHighlights = ((elem, keywords, shouldHighlight) => {
-  unhighlight(elem);
+  unHighlight(elem);
   if (shouldHighlight && keywords.length !== 0) {
     highlight(elem, keywords);
   }
 });
 
 
+/**
+ *
+ * @param {*[]} arr1
+ * @param {*[]} arr2
+ * @return {number}
+ */
 function sortCompareArrays(arr1, arr2) {
   const longest = Math.max(arr1.length, arr2.length);
   const union = new Array(longest)

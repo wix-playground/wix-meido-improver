@@ -1,6 +1,12 @@
 const NODE_TYPE_TEXT = 3;
 const CLASS_NAME = '__HIGHLIGHTED';
 
+/**
+ *
+ * @param {HTMLElement | ChildNode} elem
+ * @param {string[]} keywords
+ * @return {boolean}
+ */
 function highlight(elem, keywords) {
   let found = false;
 
@@ -38,7 +44,10 @@ function highlight(elem, keywords) {
   return found;
 }
 
-function unhighlight(elem) {
+/**
+ * @param {HTMLElement} elem
+ */
+function unHighlight(elem) {
   [...elem.querySelectorAll('.' + CLASS_NAME)]
     .forEach(mark => {
       const newTextNode = document.createTextNode(mark.textContent);
@@ -47,6 +56,9 @@ function unhighlight(elem) {
     })
 }
 
+/**
+ * @param {HTMLElement} elem
+ */
 function unionTextNodes(elem) {
   for (let i = 0; i < elem.childNodes.length; i++) {
     const child = elem.childNodes[i];
@@ -67,6 +79,11 @@ function unionTextNodes(elem) {
   }
 }
 
+/**
+ *
+ * @param {string} string
+ * @return {string}
+ */
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }

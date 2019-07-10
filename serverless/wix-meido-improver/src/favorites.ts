@@ -1,6 +1,5 @@
 import {FunctionContext} from "@wix/serverless-api";
 import {Dictionary} from "./utils";
-import set = Reflect.set;
 
 export type Favorites = Dictionary<boolean>;
 const DATASTORE_KEY = 'favorites';
