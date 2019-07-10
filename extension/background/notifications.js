@@ -1,10 +1,10 @@
-function clearAlarms() {
-  return browser.alarms.clearAll();
+async function clearAlarms() {
+  return await browser.alarms.clearAll();
 }
 
-function createAlarms(options) {
+async function createAlarms(options) {
   if (!options.enableNotifications) {
-    return Promise.resovle();
+    return;
   }
 
   return Promise.all(

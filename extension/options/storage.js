@@ -10,16 +10,17 @@ const DEFAULT_OPTIONS = {
 };
 
 
-function getOptions() {
-  return browser.storage.sync.get('options')
-    .catch(() => browser.storage.local.get('options'))
-    .then(items => ({
-      ...DEFAULT_OPTIONS,
-      ...items.options
-    }));
+async function getOptions() {
+  const items = await browser.storage.sync.get('options')
+    .catch(() => browser.storage.local.get('options'));
+
+  return ({
+    ...DEFAULT_OPTIONS,
+    ...items.options
+  });
 }
 
-function setOptions(options) {
-  return browser.storage.sync.set({options})
+async function setOptions(options) {
+  return await browser.storage.sync.set({options})
     .catch(() => browser.storage.local.set({options}));
 }

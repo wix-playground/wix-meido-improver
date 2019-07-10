@@ -1,16 +1,17 @@
 browser.runtime.onInstalled.addListener(async () => {
-  clearAlarms()
-    .then(() => getOptions())
-    .then(options => createAlarms(options));
+  await clearAlarms();
+  const options = await getOptions();
+  await createAlarms(options);
 });
 
-browser.storage.onChanged.addListener(changes => {
+browser.storage.onChanged.addListener(async changes => {
   if (changes.options) {
-    clearAlarms().then(() => createAlarms(changes.options.newValue));
+    await clearAlarms();
+    await createAlarms(changes.options.newValue);
   }
 });
 
-browser.alarms.onAlarm.addListener(() => {
+browser.alarms.onAlarm.addListener(async () => {
   const buttons = [
     {title: 'Open Meido'},
     {title: 'Config Notifications'}
@@ -24,9 +25,9 @@ browser.alarms.onAlarm.addListener(() => {
   };
 
   try {
-    browser.notifications.create(null, {...notificationOptions, buttons})
+    await browser.notifications.create(null, {...notificationOptions, buttons})
   } catch (e) {
-    browser.notifications.create(null, notificationOptions)
+    await browser.notifications.create(null, notificationOptions)
   }
 });
 
@@ -45,14 +46,17 @@ browser.notifications.onClicked.addListener(() => {
 });
 
 browser.runtime.onMessage.addListener(
-  (request, sender, sendResponse) => {
+  async (request, sender, sendResponse) => {
     const {contentScriptQuery, args} = request;
     if (contentScriptQuery === 'request') {
       const {method, endpoint, data} = args;
 
-      doRequest(method, endpoint, data)
-        .then(result => sendResponse([null, result]))
-        .catch(error => sendResponse([error]));
+      try {
+        const result = await doRequest(method, endpoint, data);
+        sendResponse([null, result])
+      } catch (error) {
+        sendResponse([error]);
+      }
 
       return true;
     }
@@ -67,14 +71,11 @@ async function doRequest(method, endpoint, data) {
   const url = 'https://www.wix.com/_serverless/wix-meido-improver' + endpoint + '?' + searchParams;
   const response = await fetch(url, {method, body, headers});
 
-  const responseData = await response.text()
-    .then(text => {
-      try {
-        return JSON.parse(text)
-      } catch (error) {
-        return text;
-      }
-    });
+  let responseData = await response.text();
+  try {
+    responseData = JSON.parse(responseData)
+  } catch (error) {
+  }
 
   if (response.ok) {
     return responseData;
