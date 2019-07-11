@@ -13,7 +13,9 @@ const CONTRACTOR_COUNT_CLASS = '__ITDXER_contractor_count';
  * Parsed dish object that was ordered on specific date
  *
  * @typedef {Object} Dish
- * @property {string} dish - dish name
+ * @property {string} dishName - dish name
+ * @property {string} dishId - dish id
+ * @property {string} orderId - order id
  * @property {string} date - the date on which the dish was ordered
  * @property {string} contractor - food supplier
  */
@@ -52,16 +54,22 @@ async function fetchOrders() {
  * @return {Promise<Dish[]>}
  */
 async function fetchOrderedDishes(orders) {
-  return [].concat(
-    ...await Promise.all(orders.map(async ({id, date}) => {
+  return await Promise.all(
+    orders.map(async ({id, date}) => {
       const response = await fetch(`https://wix.getmeido.com/order/view/id/${id}`);
       const text = await response.text();
-      return [...text.matchAll(/<td>(.*)\(Поставщик: <b>(.*)<\/b>\)/g)].map(([all, dish, contractor]) => ({
-        dish: unescape(dish).trim(),
+
+      const [, dish, contractor] = text.match(/<td>(.*)\(Поставщик: <b>(.*)<\/b>\)/) || [];
+      const [, dishId, orderId] = text.match(/data-product-id="(\d+)" data-order-id="(\d+)"/) || [];
+
+      return {
+        dishName: unescape(dish).trim(),
+        dishId,
+        orderId,
         date,
         contractor: unescape(contractor).trim()
-      }));
-    }))
+      };
+    })
   );
 }
 
@@ -101,10 +109,10 @@ function isDateBeforeYesterday(date) {
 
 async function renderOrderedDishes(callback) {
   const allDishes = await getOrderedDishes();
-  const dishesByContractor = allDishes.reduce(
-    (by, {dish, contractor}) => ({
+  const dishIdsByContractor = allDishes.reduce(
+    (by, {dishId, contractor}) => ({
       ...by,
-      [contractor]: [...(by[contractor] || []), dish]
+      [contractor]: [...(by[contractor] || []), dishId]
     }),
     {}
   );
@@ -112,7 +120,7 @@ async function renderOrderedDishes(callback) {
   const contractorTab = document.querySelectorAll('.suppliers .restaurants__nav li a');
   [...contractorTab].forEach(link => {
     const contractorName = link.innerText.trim();
-    const count = Object.keys(dishesByContractor[contractorName] || {}).length;
+    const count = Object.keys(dishIdsByContractor[contractorName] || {}).length;
 
     if (count > 0) {
       const countElem = document.createElement('div');
@@ -127,23 +135,25 @@ async function renderOrderedDishes(callback) {
 
   if (activeContractorTab) {
     const activeContractorName = activeContractorTab.innerText.trim();
-    const activeDishes = dishesByContractor[activeContractorName];
+    const activeDishes = dishIdsByContractor[activeContractorName];
     const dishesCount = new Map();
-    activeDishes.forEach(dishName => {
-      if (!dishesCount.has(dishName)) {
-        dishesCount.set(dishName, 0);
+    activeDishes.forEach(dishId => {
+      if (!dishesCount.has(dishId)) {
+        dishesCount.set(dishId, 0);
       }
-      dishesCount.set(dishName, dishesCount.get(dishName) + 1);
+      dishesCount.set(dishId, dishesCount.get(dishId) + 1);
     });
 
     const contents = document.querySelectorAll('.tab-content > .tab-pane > .menu-item > .menu-item__content');
     [...contents].forEach(content => {
-      const dishName = content.querySelector('h4').innerText.trim();
-      if (dishesCount.has(dishName)) {
+      const button = content.querySelector('a.btn.buy');
+      const dishId = button.href.split('/').pop();
+
+      if (dishesCount.has(dishId)) {
         const countElem = document.createElement('div');
-        countElem.innerText = dishesCount.get(dishName);
+        countElem.innerText = dishesCount.get(dishId);
         countElem.className = DISH_COUNT_CLASS;
-        countElem.title = `You bought this dish ${dishesCount.get(dishName)} times`;
+        countElem.title = `You bought this dish ${dishesCount.get(dishId)} times`;
         content.querySelector('.menu-item__info').append(countElem);
       }
     })
