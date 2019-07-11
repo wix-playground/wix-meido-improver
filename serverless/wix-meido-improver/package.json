@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "build": "tsc"
+    "make": "tsc"
   },
   "devDependencies": {
     "typescript": "^3.4.5"
