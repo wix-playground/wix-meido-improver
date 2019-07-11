@@ -49,7 +49,7 @@ async function getData() {
  * @return {Promise<void>}
  */
 async function saveData(data) {
-  await browser.storage.local.get({userData: data});
+  await browser.storage.local.set({userData: data});
 }
 
 /**
