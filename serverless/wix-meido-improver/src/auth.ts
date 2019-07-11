@@ -17,6 +17,10 @@ export async function tryAuthAndGetUserId(req: WebRequest): Promise<string> {
       .on("error", reject)
   );
 
+  if (userId === '') {
+    throw new HttpError({status: 401, message: 'UserIdFromAuthCookie === ""'});
+  }
+
   if (userId !== getUserIdFromHtmlPage(data)) {
     if (DO_NOT_CHECK_AUTH) {
       console.error('UserIdFromAuthCookie !== UserIdFromHtmlPage; [DO_NOT_CHECK_AUTH=TRUE]');

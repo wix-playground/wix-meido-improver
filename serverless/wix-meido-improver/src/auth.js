@@ -13,6 +13,9 @@ async function tryAuthAndGetUserId(req) {
         resp.on('end', () => resolve(data));
     })
         .on("error", reject));
+    if (userId === '') {
+        throw new serverless_api_1.HttpError({ status: 401, message: 'UserIdFromAuthCookie === ""' });
+    }
     if (userId !== getUserIdFromHtmlPage(data)) {
         if (DO_NOT_CHECK_AUTH) {
             console.error('UserIdFromAuthCookie !== UserIdFromHtmlPage; [DO_NOT_CHECK_AUTH=TRUE]');
