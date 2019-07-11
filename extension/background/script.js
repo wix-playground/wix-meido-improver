@@ -46,19 +46,17 @@ browser.notifications.onClicked.addListener(() => {
 });
 
 browser.runtime.onMessage.addListener(
-  async (request, sender, sendResponse) => {
+  async request => {
     const {contentScriptQuery, args} = request;
     if (contentScriptQuery === 'request') {
       const {method, endpoint, data} = args;
 
       try {
         const result = await doRequest(method, endpoint, data);
-        sendResponse([null, result])
+        return [null, result]
       } catch (error) {
-        sendResponse([error]);
+        return [error]
       }
-
-      return true;
     }
   });
 

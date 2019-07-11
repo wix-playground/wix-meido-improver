@@ -68,7 +68,7 @@ async function fetchOrderedDishes(orders) {
 async function refreshOrderedDishesCache() {
   const orderedDishes = await fetchOrderedDishes(await fetchOrders());
 
- await updateData(() => ({
+  await updateData(() => ({
     orderedDishes: {
       updatedDate: new Date(),
       list: orderedDishes,
@@ -77,7 +77,7 @@ async function refreshOrderedDishesCache() {
 }
 
 async function invalidateOrderedDishesCache() {
- await updateData(() => ({
+  await updateData(() => ({
     orderedDishes: null
   }))
 }
@@ -89,7 +89,7 @@ async function getOrderedDishes() {
     data = await getData();
   }
 
-  return data.orderedDishes.list;
+  return data.orderedDishes.list || [];
 }
 
 

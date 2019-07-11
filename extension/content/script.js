@@ -37,7 +37,7 @@ function openFirstCategory() {
 }
 
 function render(data) {
-  const {filterRating, filterOrdered, filterFavorite, filterVegan, filterText, userRatings = {}, avgRatings = {}, favorites = {}} = data;
+  const {filterRating, filterOrdered, filterFavorite, filterVegan, filterText, userRatings, avgRatings, favorites} = data;
 
   const filters = (filterText || '')
     .toLowerCase()
