@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const favorites_1 = require("./src/favorites");
 const auth_1 = require("./src/auth");
 const ratings_1 = require("./src/ratings");
+
 module.exports = (functionsBuilder) => functionsBuilder
     .withContextPath('wix-meido-improver')
     .addWebFunction('GET', '/favorites', async (ctx, req) => {
