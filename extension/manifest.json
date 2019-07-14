@@ -43,7 +43,7 @@
     "scripts": [
       "node_modules/webextension-polyfill/dist/browser-polyfill.min.js",
       "options/storage.js",
-      "background/notifications.js",
+      "modules/notifications.js",
       "background/script.js"
     ]
   },

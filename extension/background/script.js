@@ -12,23 +12,7 @@ browser.storage.onChanged.addListener(async changes => {
 });
 
 browser.alarms.onAlarm.addListener(async () => {
-  const buttons = [
-    {title: 'Open Meido'},
-    {title: 'Config Notifications'}
-  ];
-
-  const notificationOptions = {
-    type: 'basic',
-    title: 'Meido Order',
-    message: 'Do not forget to make order for the next week (click here to open Meido)',
-    iconUrl: '../icons/icon48.png',
-  };
-
-  try {
-    await browser.notifications.create(null, {...notificationOptions, buttons})
-  } catch (e) {
-    await browser.notifications.create(null, notificationOptions)
-  }
+  await showNotification();
 });
 
 browser.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
@@ -59,6 +43,26 @@ browser.runtime.onMessage.addListener(
       }
     }
   });
+
+async function showNotification() {
+  const buttons = [
+    {title: 'Open Meido'},
+    {title: 'Config Notifications'}
+  ];
+
+  const notificationOptions = {
+    type: 'basic',
+    title: 'Meido Order',
+    message: 'Do not forget to make order for the next week (click here to open Meido)',
+    iconUrl: '../icons/icon48.png',
+  };
+
+  try {
+    await browser.notifications.create(null, {...notificationOptions, buttons})
+  } catch (e) {
+    await browser.notifications.create(null, notificationOptions)
+  }
+}
 
 async function doRequest(method, endpoint, data) {
   const isGetMethod = method.toUpperCase() === 'GET';

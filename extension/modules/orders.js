@@ -17,7 +17,7 @@ const CONTRACTOR_COUNT_CLASS = '__ITDXER_contractor_count';
  * @property {string} dishId - dish id
  * @property {string} orderId - order id
  * @property {string} date - the date on which the dish was ordered
- * @property {string} contractor - food supplier
+ * @property {string} contractorName - food supplier
  */
 
 
@@ -32,17 +32,16 @@ async function fetchOrders() {
   while (newOrdersFound) {
     const response = await fetch(`https://wix.getmeido.com/order/history/_url/%2Forder%2Fhistory/OrderMain_page/${i}`);
     const text = await response.text();
-    const parsedOrders = [...text.matchAll(/<td>#(\d+)<\/td><td>(\w+\s\d+,\s\d+)<\/td>/g)].map(([all, number, date]) => ({
-      id: number,
-      date: (new Date(`${date} 00:00:00z`)).toISOString(),
-    }));
+    const parsedOrders = [...text.matchAll(/<td>#(\d+)<\/td><td>(\w+\s\d+,\s\d+)<\/td>/g)]
+      .map(([all, orderId, dateStr]) => ({
+        orderId,
+        dateStr,
+        date: (new Date(dateStr)).toISOString(),
+      }));
 
-    newOrdersFound = parsedOrders.some((order) => !orders.has(order.id));
+    newOrdersFound = parsedOrders.some(order => !orders.has(order.orderId));
 
-    parsedOrders.forEach(order => {
-      orders.set(order.id, order);
-    });
-
+    parsedOrders.forEach(order => orders.set(order.orderId, order));
     i = i + 1;
   }
 
@@ -55,26 +54,27 @@ async function fetchOrders() {
  */
 async function fetchOrderedDishes(orders) {
   return await Promise.all(
-    orders.map(async ({id, date}) => {
-      const response = await fetch(`https://wix.getmeido.com/order/view/id/${id}`);
+    orders.map(async ({orderId, date}) => {
+      const response = await fetch(`https://wix.getmeido.com/order/view/id/${orderId}`);
       const text = await response.text();
 
-      const [, dish, contractor] = text.match(/<td>(.*)\(Поставщик: <b>(.*)<\/b>\)/) || [];
-      const [, dishId, orderId] = text.match(/data-product-id="(\d+)" data-order-id="(\d+)"/) || [];
+      const [, dishName, contractorName] = text.match(/<td>(.*)\(Поставщик: <b>(.*)<\/b>\)/) || [];
+      const [, dishId] = text.match(/<td data-product-id="(\d+)"/) || [];
 
       return {
-        dishName: unescape(dish).trim(),
+        dishName: unescape(dishName).trim(),
         dishId,
         orderId,
         date,
-        contractor: unescape(contractor).trim()
+        contractorName: unescape(contractorName).trim()
       };
     })
   );
 }
 
 async function refreshOrderedDishesCache() {
-  const orderedDishes = await fetchOrderedDishes(await fetchOrders());
+  const orders = await fetchOrders();
+  const orderedDishes = await fetchOrderedDishes(orders);
 
   await updateData(() => ({
     orderedDishes: {
@@ -87,7 +87,7 @@ async function refreshOrderedDishesCache() {
 async function invalidateOrderedDishesCache() {
   await updateData(() => ({
     orderedDishes: null
-  }))
+  }));
 }
 
 async function getOrderedDishes() {
@@ -110,9 +110,9 @@ function isDateBeforeYesterday(date) {
 async function renderOrderedDishes(callback) {
   const allDishes = await getOrderedDishes();
   const dishIdsByContractor = allDishes.reduce(
-    (by, {dishId, contractor}) => ({
+    (by, {dishId, contractorName}) => ({
       ...by,
-      [contractor]: [...(by[contractor] || []), dishId]
+      [contractorName]: [...(by[contractorName] || []), dishId]
     }),
     {}
   );

@@ -24,8 +24,14 @@ async function getData() {
   let data = null;
 
   try {
-    const userDataItems = await browser.storage.local.get('userData');
-    data = userDataItems.userData || JSON.parse(window.localStorage.getItem(STORAGE_KEY));
+    const localStorageData = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || 'null');
+    if (localStorageData) {
+      data = localStorageData;
+      window.localStorage.removeItem(STORAGE_KEY);
+    } else {
+      const userDataItems = await browser.storage.local.get('userData');
+      data = userDataItems.userData;
+    }
   } catch (error) {
     console.log(error);
   }
