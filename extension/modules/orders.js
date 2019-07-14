@@ -78,7 +78,7 @@ async function refreshOrderedDishesCache() {
 
   await updateData(() => ({
     orderedDishes: {
-      updatedDate: new Date(),
+      updatedDate: new Date().toISOString(),
       list: orderedDishes,
     }
   }));

@@ -36,15 +36,15 @@ function getWeekDate(baseDate, dayName, time) {
   return date;
 }
 
-async function getWeekOrders(date) {
+async function getWorkingWeekOrders(date) {
   const data = await getData();
   const orderedDishes = data.orderedDishes || {};
+  const updatedDate = orderedDishes.updatedDate;
   const orders = orderedDishes.list || [];
+  const ordersPerDay = getWorkingWeekDays(date)
+    .map(weekDate => orders.find(order => isSameDay(weekDate, new Date(order.date))));
 
-  return getWeekDays(date)
-    .map(weekDate => {
-      return orders.find(order => isSameDay(weekDate, new Date(order.date)));
-    });
+  return {updatedDate, ordersPerDay};
 }
 
 function isSameDay(dateOne, dateTwo) {
@@ -53,9 +53,9 @@ function isSameDay(dateOne, dateTwo) {
     && dateOne.getDate() === dateTwo.getDate();
 }
 
-function getWeekDays() {
-  const monday = getWeekDate(new Date(), DAY_NAMES[0], '00:00');
-  return new Array(7)
+function getWorkingWeekDays(date) {
+  const monday = getWeekDate(date, DAY_NAMES[0], '00:00');
+  return new Array(5)
     .fill(null)
     .map((_, weekDayIndex) => {
       const newDate = new Date(monday);

@@ -6,8 +6,15 @@ button.addEventListener('click', event => {
 
 
 (async () => {
-  const orders = await getWeekOrders();
-  orders.slice(0, 5).forEach((order, weekDayIndex) => {
+  const {ordersPerDay, updatedDate} = await getWorkingWeekOrders(new Date());
+  const updateDateElem = document.getElementsByClassName('updated-date')[0];
+
+  if (updatedDate) {
+    updateDateElem.innerText = 'Updated: ' + new Date(updatedDate).toLocaleString();
+    updateDateElem.classList.remove('not-loaded');
+  }
+
+  ordersPerDay.forEach((order, weekDayIndex) => {
     const weekElem = document.getElementById('week-' + weekDayIndex);
     const orderElem = weekElem.getElementsByClassName('order')[0];
     const contractorElem = weekElem.getElementsByClassName('contractor')[0];

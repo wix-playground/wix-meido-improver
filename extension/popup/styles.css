@@ -12,7 +12,6 @@ body {
 .title {
   padding: 10px 50px;
   font-size: 1.5em;
-  text-align: center;
   color: #fff;
   background: #54ae53;
   margin-bottom: 15px;
@@ -31,17 +30,28 @@ body {
   padding-left: 15px;
 }
 
+.updated-date {
+  font-size: 0.6em;
+  color: rgba(255, 255, 255, 0.60);
+}
+
+.updated-date.not-loaded,
+.updated-date.not-loaded a {
+  color: red;
+}
+
 .week {
   display: flex;
   padding: 15px 5px;
   border-bottom: 1px solid #ddd;
 }
+
 .week:last-child {
   border-bottom: none;
 }
 
 .week.today {
-  background: #f5f5f5;
+  background: rgba(84, 174, 83, 0.13);
 }
 
 .week__name,
@@ -81,12 +91,16 @@ body {
 .contractor {
   display: inline-block;
   border-radius: 5px;
-  border: 1px solid rgb(199, 229, 252);
-  margin-top: 7px;
+  border: 1px solid #c7e5fc;
+  margin-top: 5px;
   padding: 2px 7px;
   font-size: 0.9em;
   background: #fff;
   color: #555;
+}
+
+.week.today .contractor {
+  border: 1px solid #96cf98;
 }
 
 .buttons {
