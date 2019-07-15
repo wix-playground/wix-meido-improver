@@ -1,33 +1,18 @@
 browser.runtime.onInstalled.addListener(async () => {
-  clearAlarms()
-    .then(() => getOptions())
-    .then(options => createAlarms(options));
+  await clearAlarms();
+  const options = await getOptions();
+  await createAlarms(options);
 });
 
-browser.storage.onChanged.addListener(changes => {
+browser.storage.onChanged.addListener(async changes => {
   if (changes.options) {
-    clearAlarms().then(() => createAlarms(changes.options.newValue));
+    await clearAlarms();
+    await createAlarms(changes.options.newValue);
   }
 });
 
-browser.alarms.onAlarm.addListener(() => {
-  const buttons = [
-    {title: 'Open Meido'},
-    {title: 'Config Notifications'}
-  ];
-
-  const notificationOptions = {
-    type: 'basic',
-    title: 'Meido Order',
-    message: 'Do not forget to make order for the next week',
-    iconUrl: '../icons/icon48.png',
-  };
-
-  try {
-    browser.notifications.create(null, {...notificationOptions, buttons})
-  } catch (e) {
-    browser.notifications.create(null, notificationOptions)
-  }
+browser.alarms.onAlarm.addListener(async () => {
+  await showNotificationIfNoOrder();
 });
 
 browser.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
@@ -45,18 +30,49 @@ browser.notifications.onClicked.addListener(() => {
 });
 
 browser.runtime.onMessage.addListener(
-  (request, sender, sendResponse) => {
+  async request => {
     const {contentScriptQuery, args} = request;
     if (contentScriptQuery === 'request') {
       const {method, endpoint, data} = args;
 
-      doRequest(method, endpoint, data)
-        .then(result => sendResponse([null, result]))
-        .catch(error => sendResponse([error]));
-
-      return true;
+      try {
+        const result = await doRequest(method, endpoint, data);
+        return [null, result]
+      } catch (error) {
+        return [error]
+      }
     }
   });
+
+async function showNotificationIfNoOrder() {
+  const nextWeek = new Date();
+  nextWeek.setDate(nextWeek.getDate() + 7);
+  const {ordersPerDay} = await getWorkingWeekOrders(nextWeek);
+
+  if (ordersPerDay.some(orderForADay => !orderForADay)) {
+   await createNotification();
+  }
+}
+
+async function createNotification() {
+  const buttons = [
+    {title: 'Open Meido'},
+    {title: 'Config Notifications'}
+  ];
+
+  const notificationOptions = {
+    type: 'basic',
+    title: 'Meido Order',
+    message: 'You have no orders for some days next week [Click – open Meido]',
+    iconUrl: '../icons/icon48.png',
+  };
+
+  try {
+    await browser.notifications.create(null, {...notificationOptions, buttons})
+  } catch (e) {
+    await browser.notifications.create(null, notificationOptions)
+  }
+}
 
 async function doRequest(method, endpoint, data) {
   const isGetMethod = method.toUpperCase() === 'GET';
@@ -67,14 +83,11 @@ async function doRequest(method, endpoint, data) {
   const url = 'https://www.wix.com/_serverless/wix-meido-improver' + endpoint + '?' + searchParams;
   const response = await fetch(url, {method, body, headers});
 
-  const responseData = await response.text()
-    .then(text => {
-      try {
-        return JSON.parse(text)
-      } catch (error) {
-        return text;
-      }
-    });
+  let responseData = await response.text();
+  try {
+    responseData = JSON.parse(responseData)
+  } catch (error) {
+  }
 
   if (response.ok) {
     return responseData;

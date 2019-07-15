@@ -22,8 +22,8 @@ window.addEventListener('DOMContentLoaded', () => {
   renderOrderTable();
 });
 
-function renderWithData() {
-  const data = getData();
+async function renderWithData() {
+  const data = await getData();
   render(data);
 }
 
@@ -37,7 +37,7 @@ function openFirstCategory() {
 }
 
 function render(data) {
-  const {filterRating, filterOrdered, filterFavorite, filterVegan, filterText, userRatings = {}, avgRatings = {}} = data;
+  const {filterRating, filterOrdered, filterFavorite, filterVegan, filterText, userRatings, avgRatings, favorites} = data;
 
   const filters = (filterText || '')
     .toLowerCase()
@@ -63,7 +63,7 @@ function render(data) {
           dishId,
           rating: (avgRatings[dishId] || {}).avg || 0,
           includesFilters: includes(content, filters),
-          isFavorite: isFavorite(dishId),
+          isFavorite: !!favorites[dishId],
           isVegan: !!content.querySelector('img[src="/images/vegan.png"]'),
           orderedTimes,
         });
@@ -110,13 +110,13 @@ function renderHeart(content, dishId, isFavorite) {
 
     const button = document.createElement('button');
     button.innerText = '❤️';
-    button.onclick = () => toggleFavorite(dishId);
 
     heart.appendChild(button);
     content.appendChild(heart);
   }
 
   const button = heart.querySelector('button');
+  button.onclick = () => toggleFavorite(dishId, !isFavorite);
   button.classList.toggle('checked', isFavorite);
 }
 

@@ -27,6 +27,7 @@
         "content/styles/rating.css"
       ],
       "js": [
+        "node_modules/webextension-polyfill/dist/browser-polyfill.min.js",
         "modules/waitForSelector.js",
         "modules/localStorage.js",
         "modules/database.js",
@@ -42,7 +43,8 @@
     "scripts": [
       "node_modules/webextension-polyfill/dist/browser-polyfill.min.js",
       "options/storage.js",
-      "background/notifications.js",
+      "modules/localStorage.js",
+      "modules/notifications.js",
       "background/script.js"
     ]
   },

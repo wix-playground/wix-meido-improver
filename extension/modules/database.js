@@ -2,7 +2,7 @@ fixFavoritesDataStructure();
 syncRatings();
 
 async function fixFavoritesDataStructure() {
-  const {...data} = getData();
+  const {...data} = await getData();
   const favorites = {};
 
   Object.entries(data).forEach(([key, value]) => {
@@ -14,7 +14,7 @@ async function fixFavoritesDataStructure() {
 
   if (Object.keys(favorites).length > 0) {
     const newFavorites = {...data.favorites, ...favorites};
-    saveData({...data, favorites: newFavorites});
+    await saveData({...data, favorites: newFavorites});
     await saveFavorites(newFavorites);
   } else {
     await syncFavorites();
@@ -22,11 +22,13 @@ async function fixFavoritesDataStructure() {
 }
 
 async function syncFavorites() {
-  await fetchFavorites().then(favorites => updateData(() => ({favorites})));
+  const favorites = await fetchFavorites();
+  await updateData(() => ({favorites}));
 }
 
 async function syncRatings() {
-  await fetchBothRatings().then(({userRatings, avgRatings}) => updateData(() => ({userRatings, avgRatings})));
+  const {userRatings, avgRatings} = await fetchBothRatings();
+  await updateData(() => ({userRatings, avgRatings}));
 }
 
 /**
@@ -46,8 +48,8 @@ async function fetchFavorites() {
  * @return {Promise<void>}
  */
 async function saveFavorites(favorites) {
-  await doRequest('POST', '/favorites', {favorites})
-    .then(favorites => updateData(() => ({favorites})))
+  const updatedFavorites = await doRequest('POST', '/favorites', {favorites});
+  await updateData(() => ({favorites: updatedFavorites}));
 }
 
 /**
@@ -56,7 +58,7 @@ async function saveFavorites(favorites) {
  * @return {Promise<void>}
  */
 async function setRating(dishId, rating) {
-  updateData(({userRatings, avgRatings}) => {
+  await updateData(({userRatings, avgRatings}) => {
     const avg = avgRatings[dishId] || {count: 0, avg: 0};
 
     const newAvg = {
@@ -70,8 +72,8 @@ async function setRating(dishId, rating) {
     });
   });
 
-  await doRequest('POST', `/ratings/${encodeURIComponent(dishId)}`, {rating})
-    .then(({userRatings, avgRatings}) => updateData(() => ({userRatings, avgRatings})));
+  const {userRatings, avgRatings} = await doRequest('POST', `/ratings/${encodeURIComponent(dishId)}`, {rating});
+  await updateData(() => ({userRatings, avgRatings}));
 }
 
 /**
@@ -79,26 +81,26 @@ async function setRating(dishId, rating) {
  * @return {Promise<void>}
  */
 async function deleteRating(dishId) {
-  updateData(({userRatings}) => {
+  await updateData(({userRatings}) => {
     const newRatings = userRatings || {};
     delete newRatings[dishId];
     return ({userRatings: newRatings});
   });
 
-  await doRequest('DELETE', `/ratings/${encodeURIComponent(dishId)}`)
-    .then(({userRatings, avgRatings}) => updateData(() => ({userRatings, avgRatings})));
+  const {userRatings, avgRatings} = await doRequest('DELETE', `/ratings/${encodeURIComponent(dishId)}`);
+  await updateData(() => ({userRatings, avgRatings}));
 }
 
 /**
  * @param {string} dishId
+ * @param { boolean} favorite
  * @return {Promise<void>}
  */
-async function toggleFavorite(dishId) {
-  const favorite = !isFavorite(dishId);
-  updateData(({favorites}) => ({favorites: {...favorites, [dishId]: favorite}}));
+async function toggleFavorite(dishId, favorite) {
+ await updateData(({favorites}) => ({favorites: {...favorites, [dishId]: favorite}}));
 
-  await doRequest('POST', `/favorites/${encodeURIComponent(dishId)}`, {favorite})
-    .then(favorites => updateData(() => ({favorites})));
+  const favorites = await doRequest('POST', `/favorites/${encodeURIComponent(dishId)}`, {favorite});
+ await updateData(() => ({favorites}));
 }
 
 async function fetchBothRatings() {
@@ -115,15 +117,16 @@ async function fetchBothRatings() {
 async function doRequest(method, endpoint, params) {
   const data = {...params, authCookie: getAuthCookie()};
 
-  return browser.runtime
-    .sendMessage({
-      contentScriptQuery: "request",
-      args: {method, endpoint, data}
-    })
-    .then(([error, result] = ['error']) => {
-      if (error) {
-        throw error
-      }
-      return result;
-    });
+  const response = await browser.runtime.sendMessage({
+    contentScriptQuery: "request",
+    args: {method, endpoint, data}
+  });
+
+  const [error, result] = response || ['error'];
+
+  if (error) {
+    throw error
+  }
+
+  return result;
 }

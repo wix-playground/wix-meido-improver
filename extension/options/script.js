@@ -64,7 +64,7 @@ addButton.addEventListener('click', event => {
   appendTrInputs(DAY_NAMES[0], '12:00');
 });
 
-form.addEventListener('submit', event => {
+form.addEventListener('submit', async event => {
   event.preventDefault();
   const dayNames = [...document.getElementsByName('dayName[]')].map(input => input.value);
   const times = [...document.getElementsByName('time[]')].map(input => input.value);
@@ -74,18 +74,17 @@ form.addEventListener('submit', event => {
     notifications: dayNames.map((dayName, index) => ({dayName, time: times[index]}))
   };
 
-  setOptions(options)
-    .then(() => {
-      changesSavedElem.classList.add('shown');
-      setTimeout(() => changesSavedElem.classList.remove('shown'), 1000);
-    });
+  await setOptions(options);
+  changesSavedElem.classList.add('shown');
+  setTimeout(() => changesSavedElem.classList.remove('shown'), 1000);
 });
 
 
-getOptions()
-  .then(({enableNotifications, notifications}) => {
-    enableNotificationsInput.checked = enableNotifications;
-    enableNotificationsInput.dispatchEvent(new Event('change'));
+(async () => {
+  const {enableNotifications, notifications} = await getOptions();
 
-    notifications.forEach(({dayName, time}) => appendTrInputs(dayName, time));
-  });
+  enableNotificationsInput.checked = enableNotifications;
+  enableNotificationsInput.dispatchEvent(new Event('change'));
+
+  notifications.forEach(({dayName, time}) => appendTrInputs(dayName, time));
+})();
