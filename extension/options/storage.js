@@ -2,10 +2,11 @@ const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Satu
 const DEFAULT_OPTIONS = {
   enableNotifications: true,
   notifications: [
-    {
-      dayName: DAY_NAMES[4],
-      time: '12:00',
-    }
+    {dayName: DAY_NAMES[3], time: '12:00'},
+    {dayName: DAY_NAMES[4], time: '12:00'},
+    {dayName: DAY_NAMES[4], time: '14:00'},
+    {dayName: DAY_NAMES[4], time: '14:30'},
+    {dayName: DAY_NAMES[4], time: '14:45'},
   ],
 };
 
