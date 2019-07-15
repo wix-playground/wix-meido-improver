@@ -2,12 +2,12 @@
 
 The extension makes [wix.getmeido.com](https://wix.getmeido.com/) better
 
-### Install
+### Install 
+* Firefox: search installation file in [#wix-kyiv-crew](https://wix.slack.com/messages/C8VUJPMT3) slack channel
 * Chrome: https://chrome.google.com/webstore/detail/wix-meido-improver/lkmfaemmcllealhiidijpnghmeicdhpe
-* Firefox: https://addons.mozilla.org/firefox/downloads/file/2927617/wix_meido_improver-1.0.0-fx.xpi
 
-NOTE: Firefox users have to update the extension manually
 
-### Screenshot
+### Screenshots
 
 <img src="screenshots/1.png"/>
+<img src="screenshots/2.png"/>
