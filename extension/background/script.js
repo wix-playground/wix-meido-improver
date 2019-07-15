@@ -12,7 +12,7 @@ browser.storage.onChanged.addListener(async changes => {
 });
 
 browser.alarms.onAlarm.addListener(async () => {
-  await showNotificationIfNoOrders();
+  await showNotificationIfNoOrder();
 });
 
 browser.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
@@ -44,7 +44,7 @@ browser.runtime.onMessage.addListener(
     }
   });
 
-async function showNotificationIfNoOrders() {
+async function showNotificationIfNoOrder() {
   const nextWeek = new Date();
   nextWeek.setDate(nextWeek.getDate() + 7);
   const {ordersPerDay} = await getWorkingWeekOrders(nextWeek);
@@ -63,7 +63,7 @@ async function createNotification() {
   const notificationOptions = {
     type: 'basic',
     title: 'Meido Order',
-    message: 'Do not forget to make order for the next week (click here to open Meido)',
+    message: 'You have no orders for some days next week [Click – open Meido]',
     iconUrl: '../icons/icon48.png',
   };
 
