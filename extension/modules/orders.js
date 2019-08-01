@@ -73,15 +73,21 @@ async function fetchOrderedDishes(orders) {
 }
 
 async function refreshOrderedDishesCache() {
-  const orders = await fetchOrders();
-  const orderedDishes = await fetchOrderedDishes(orders);
+  startLoading();
+  try {
+    const orders = await fetchOrders();
+    const orderedDishes = await fetchOrderedDishes(orders);
 
-  await updateData(() => ({
-    orderedDishes: {
-      updatedDate: new Date().toISOString(),
-      list: orderedDishes,
-    }
-  }));
+    await updateData(() => ({
+      orderedDishes: {
+        updatedDate: new Date().toISOString(),
+        list: orderedDishes,
+      }
+    }));
+  } catch (error) {
+    console.error(error);
+  }
+  stopLoading();
 }
 
 async function invalidateOrderedDishesCache() {

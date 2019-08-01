@@ -10,6 +10,7 @@ const CHECKBOX_LABEL_RATING = '__ITDXER_checkbox_label_rating';
 const CHECKBOX_LABEL_VEGAN = '__ITDXER_checkbox_label_vegan';
 const SEARCH_INPUT_CLASS = '__ITDXER_search_input';
 const PARTIALLY_MATCHED_CLASS = '__ITDXER_first_partially_matched';
+const SPINNER_CLASS = '__ITDXER_spinner';
 
 window.addEventListener('DOMContentLoaded', () => {
   addCategoryAll();
@@ -38,6 +39,8 @@ function openFirstCategory() {
 
 function render(data) {
   const {filterRating, filterOrdered, filterFavorite, filterVegan, filterText, userRatings, avgRatings, favorites} = data;
+
+  renderSpinner(document.body, isLoading());
 
   const filters = (filterText || '')
     .toLowerCase()
@@ -99,6 +102,18 @@ function render(data) {
   if (suppliersContent) {
     renderFilters({suppliersContent, filterRating, filterOrdered, filterFavorite, filterVegan, filterText});
   }
+}
+
+function renderSpinner(place, loading) {
+  let spinner = place.querySelector('.' + SPINNER_CLASS);
+
+  if (!spinner) {
+    spinner = document.createElement('div');
+    spinner.className = SPINNER_CLASS;
+    place.appendChild(spinner);
+  }
+
+  spinner.classList.toggle('spinning', loading);
 }
 
 function renderHeart(content, dishId, isFavorite) {

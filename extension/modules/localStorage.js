@@ -78,3 +78,17 @@ function subscribeForStorageChanges(handler) {
     }
   });
 }
+
+let loading = 0;
+
+function startLoading() {
+  loading++;
+}
+
+function stopLoading() {
+  loading--;
+}
+
+function isLoading() {
+  return loading > 0;
+}

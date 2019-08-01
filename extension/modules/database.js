@@ -117,10 +117,17 @@ async function fetchBothRatings() {
 async function doRequest(method, endpoint, params) {
   const data = {...params, authCookie: getAuthCookie()};
 
-  const response = await browser.runtime.sendMessage({
-    contentScriptQuery: "request",
-    args: {method, endpoint, data}
-  });
+  startLoading();
+  let response = null;
+  try {
+    response = await browser.runtime.sendMessage({
+      contentScriptQuery: "request",
+      args: {method, endpoint, data}
+    });
+  } catch (error) {
+    console.error(error);
+  }
+  stopLoading();
 
   const [error, result] = response || ['error'];
 
