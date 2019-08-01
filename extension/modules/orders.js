@@ -58,7 +58,7 @@ async function fetchOrderedDishes(orders) {
       const response = await fetch(`https://wix.getmeido.com/order/view/id/${orderId}`);
       const text = await response.text();
 
-      const [, dishName, contractorName] = text.match(/<td>(.*)\(Поставщик: <b>(.*)<\/b>\)/) || [];
+      const [, dishName, contractorName] = text.match(/<td>(.*)<br>\s*\(Поставщик: <b>(.*)<\/b>\)/) || [];
       const [, dishId] = text.match(/<td data-product-id="(\d+)"/) || [];
 
       return {
