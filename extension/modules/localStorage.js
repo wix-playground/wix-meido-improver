@@ -51,6 +51,13 @@ async function getData() {
 }
 
 /**
+ * @return {Promise<void>}
+ */
+async function clearData() {
+  await browser.storage.local.remove('userData');
+}
+
+/**
  * @param {UserData} data
  * @return {Promise<void>}
  */

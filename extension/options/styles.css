@@ -56,3 +56,7 @@ input[type=submit] {
 #changes-saved.shown {
   height: 20px;
 }
+
+.buttons {
+  text-align: center;
+}

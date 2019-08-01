@@ -79,6 +79,12 @@ form.addEventListener('submit', async event => {
   setTimeout(() => changesSavedElem.classList.remove('shown'), 1000);
 });
 
+document.getElementById('clear-cache').addEventListener('click', () => clearData());
+document.getElementById('reset').addEventListener('click', async () => {
+  await setOptions(DEFAULT_OPTIONS);
+  location.reload(true);
+});
+
 
 (async () => {
   const {enableNotifications, notifications} = await getOptions();
