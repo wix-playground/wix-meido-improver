@@ -7,32 +7,27 @@ button.addEventListener('click', event => {
 
 let weekIndexToShow = 0;
 const ordersElem = document.getElementById('orders');
-const thisWeekElem = document.getElementsByClassName('this-week')[0];
+const thisWeekElem = document.getElementById('this-week');
+const theNextWeekElem = document.getElementById('the-next-week');
 const updateDateElem = document.getElementsByClassName('updated-date')[0];
 const notLoadedElem = document.getElementsByClassName('not-loaded')[0];
+const prevWeekButtonElem = document.getElementsByClassName('prev-week')[0];
+const nextWeekButtonElem = document.getElementsByClassName('next-week')[0];
 
 (async () => {
-  document.getElementsByClassName('prev-week')[0]
-    .addEventListener('click', async () => {
-      weekIndexToShow--;
-      await render();
-    });
-
-  document.getElementsByClassName('next-week')[0]
-    .addEventListener('click', async () => {
-      weekIndexToShow++;
-      await render();
-    });
-
-  thisWeekElem
-    .addEventListener('click', async () => {
-      weekIndexToShow = 0;
-      await render();
-    });
+  prevWeekButtonElem.addEventListener('click', () => changeWeekAndRender(weekIndexToShow - 1));
+  nextWeekButtonElem.addEventListener('click', () => changeWeekAndRender(weekIndexToShow + 1));
+  thisWeekElem.addEventListener('click', () => changeWeekAndRender(0));
+  theNextWeekElem.addEventListener('click', () => changeWeekAndRender(1));
 
   subscribeForStorageChanges(() => render());
   await render();
 })();
+
+async function changeWeekAndRender(weekIndex) {
+  weekIndexToShow = weekIndex;
+  await render();
+}
 
 
 async function render() {
@@ -44,6 +39,7 @@ async function render() {
   updateDateElem.innerText = '';
   notLoadedElem.style.display = updatedDate ? 'none' : 'block';
   thisWeekElem.classList.toggle('yes', weekIndexToShow === 0);
+  theNextWeekElem.classList.toggle('yes', weekIndexToShow === 1);
 
   if (!updatedDate) {
     return;
