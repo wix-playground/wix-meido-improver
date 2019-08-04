@@ -6,10 +6,14 @@
 </head>
 <body>
 <div class="title">
-  <img src="../icons/icon48.png" alt="extension icon"/>
+  <div class="this-week-wrapper">
+  <button class="this-week">This week</button>
+  </div>
+  <button class="prev-week" title="Previous week">⮃</button>
   <div>
+    <img src="../icons/icon48.png" alt="extension icon"/>
     <div>
-      Your orders for the week
+      Your orders for week
       <br/>
       <div class="updated-date"></div>
       <div class="not-loaded">
@@ -17,6 +21,7 @@
       </div>
     </div>
   </div>
+  <button class="next-week" title="Next week">⮁</button>
 </div>
 <div id="orders">
 </div>
