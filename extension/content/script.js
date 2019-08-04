@@ -21,6 +21,8 @@ window.addEventListener('DOMContentLoaded', () => {
   renderOrderedDishes(renderWithData);
   renderWithData();
   renderOrderTable();
+
+  subscribeForLoadingChanges(loading => renderSpinner(document.body, loading));
 });
 
 async function renderWithData() {
@@ -39,8 +41,6 @@ function openFirstCategory() {
 
 function render(data) {
   const {filterRating, filterOrdered, filterFavorite, filterVegan, filterText, userRatings, avgRatings, favorites} = data;
-
-  renderSpinner(document.body, isLoading());
 
   const filters = (filterText || '')
     .toLowerCase()

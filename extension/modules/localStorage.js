@@ -36,6 +36,10 @@ async function getData() {
     console.log(error);
   }
 
+  return fillDefaults(data);
+}
+
+function fillDefaults(data) {
   return {
     filterRating: false,
     filterOrdered: false,
@@ -81,19 +85,25 @@ function subscribeForStorageChanges(handler) {
   browser.storage.onChanged.addListener(async changes => {
     if (changes.userData) {
       const {newValue, oldValue} = changes.userData;
-      handler(newValue, oldValue);
+      handler(fillDefaults(newValue), oldValue);
     }
   });
 }
 
 let loading = 0;
+const loadingListeners = [];
 
+function subscribeForLoadingChanges(fn) {
+  loadingListeners.push(fn);
+}
 function startLoading() {
   loading++;
+  loadingListeners.forEach(fn => fn(loading));
 }
 
 function stopLoading() {
   loading--;
+  loadingListeners.forEach(fn => fn(loading));
 }
 
 function isLoading() {
