@@ -29,8 +29,8 @@ function getWeekDate(baseDate, dayName, time) {
   date.setSeconds(0);
   date.setMilliseconds(0);
 
-  const currentDayIndex = date.getDay();
-  const newDayIndex = (DAY_NAMES.indexOf(dayName) + 1) % DAY_NAMES.length;
+  const currentDayIndex = (date.getDay() + 6 % 7);
+  const newDayIndex = DAY_NAMES.indexOf(dayName);
   date.setDate(date.getDate() - (currentDayIndex - newDayIndex));
 
   return date;
