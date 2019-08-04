@@ -62,11 +62,11 @@ async function fetchOrderedDishes(orders) {
       const [, dishId] = text.match(/<td data-product-id="(\d+)"/) || [];
 
       return {
-        dishName: unescape(dishName).trim(),
+        dishName: unescapeHtml(dishName).trim(),
         dishId,
         orderId,
         date,
-        contractorName: unescape(contractorName).trim()
+        contractorName: unescapeHtml(contractorName).trim()
       };
     })
   );

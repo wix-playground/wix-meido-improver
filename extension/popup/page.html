@@ -11,66 +11,14 @@
     <div>
       Your orders for the week
       <br/>
-      <span class="updated-date not-loaded"><a href="https://wix.getmeido.com/order" target="_blank">Open Meido</a> to load data</span>
+      <div class="updated-date"></div>
+      <div class="not-loaded">
+        <a href="https://wix.getmeido.com/order" target="_blank">Open Meido</a> to load data
+      </div>
     </div>
   </div>
 </div>
 <div id="orders">
-  <div class="week" id="week-0">
-    <div class="week__name">
-      <div class="name">Mon</div>
-    </div>
-    <div class="week__order">
-      <div>
-        <div class="order"><i>No order</i></div>
-        <div class="contractor"></div>
-      </div>
-    </div>
-  </div>
-  <div class="week" id="week-1">
-    <div class="week__name">
-      <div class="name">Tue</div>
-    </div>
-    <div class="week__order">
-      <div>
-        <div class="order"><i>No order</i></div>
-        <div class="contractor"></div>
-      </div>
-    </div>
-  </div>
-  <div class="week" id="week-2">
-    <div class="week__name">
-      <div class="name">Wed</div>
-    </div>
-    <div class="week__order">
-      <div>
-        <div class="order"><i>No order</i></div>
-        <div class="contractor"></div>
-      </div>
-    </div>
-  </div>
-  <div class="week" id="week-3">
-    <div class="week__name">
-      <div class="name">Thu</div>
-    </div>
-    <div class="week__order">
-      <div>
-        <div class="order"><i>No order</i></div>
-        <div class="contractor"></div>
-      </div>
-    </div>
-  </div>
-  <div class="week" id="week-4">
-    <div class="week__name">
-      <div class="name">Fri</div>
-    </div>
-    <div class="week__order">
-      <div>
-        <div class="order"><i>No order</i></div>
-        <div class="contractor"></div>
-      </div>
-    </div>
-  </div>
 </div>
 
 <div class="buttons">
@@ -80,6 +28,7 @@
 
 <script src="../node_modules/webextension-polyfill/dist/browser-polyfill.min.js"></script>
 <script src="../options/storage.js"></script>
+<script src="../modules/escapeHtml.js"></script>
 <script src="../modules/localStorage.js"></script>
 <script src="../modules/orders.js"></script>
 <script src="../modules/notifications.js"></script>

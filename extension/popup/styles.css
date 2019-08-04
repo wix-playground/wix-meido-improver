@@ -35,9 +35,18 @@ body {
   color: rgba(255, 255, 255, 0.60);
 }
 
-.updated-date.not-loaded,
-.updated-date.not-loaded a {
-  color: red;
+.not-loaded {
+  padding: 5px 10px;
+  background-color: red;
+  border-radius: 5px;
+  font-size: 1rem;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.not-loaded,
+.not-loaded a {
+  color: #fff;
 }
 
 .week {
@@ -54,21 +63,33 @@ body {
   background: rgba(84, 174, 83, 0.13);
 }
 
-.week__name,
 .week__order {
   padding: 0 10px;
 }
 
-.name {
-  border-radius: 8%;
-  height: 44px;
-  width: 44px;
+.week__name {
+  margin-left: 10px;
+  margin-right: 5px;
+  border-radius: 5px;
+  height: 40px;
+  min-width: 56px;
   border: 1px solid #4ca9d4;
   text-align: center;
-  line-height: 3em;
-  font-size: 1.2em;
   color: #4ca9d4;
   background: #fff;
+  overflow: hidden;
+}
+
+.name {
+  text-align: center;
+  background-color: #4ca9d4;
+  color: #fff;
+  font-size: 1.1em;
+  line-height: 1.4;
+}
+
+.day {
+  line-height: 1.6;
 }
 
 .week.today .name {
