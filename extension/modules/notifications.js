@@ -29,7 +29,7 @@ function getWeekDate(baseDate, dayName, time) {
   date.setSeconds(0);
   date.setMilliseconds(0);
 
-  const currentDayIndex = (date.getDay() + 6 % 7);
+  const currentDayIndex = (date.getDay() + 6) % 7;
   const newDayIndex = DAY_NAMES.indexOf(dayName);
   date.setDate(date.getDate() - (currentDayIndex - newDayIndex));
 
@@ -55,6 +55,9 @@ function isSameDay(dateOne, dateTwo) {
 
 function getWorkingWeekDays(date) {
   const monday = getWeekDate(date, DAY_NAMES[0], '00:00');
+  console.log('Function: getWorkingWeekDays,', 'Line: 58,', 'Type:', typeof monday, '\n', "monday:",
+    monday
+  );
   return new Array(5)
     .fill(null)
     .map((_, weekDayIndex) => {

@@ -154,9 +154,12 @@ body {
   line-height: 1.6;
 }
 
-.week.today .name {
-  color: #54ae53;
+.week.today .week__name {
   border: 1px solid #54ae53;
+  color: #54ae53;
+}
+.week.today .name {
+  background-color: #54ae53;
 }
 
 .order {

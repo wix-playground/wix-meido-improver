@@ -33,6 +33,9 @@ async function changeWeekAndRender(weekIndex) {
 async function render() {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() + (weekIndexToShow * 7));
+  console.log('Function: render,', 'Line: 36,', 'Type:', typeof startDate, '\n', "startDate:",
+    startDate
+  );
   const {ordersPerDay, updatedDate} = await getWorkingWeekOrders(startDate);
 
   ordersElem.innerText = '';
