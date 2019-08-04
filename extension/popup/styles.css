@@ -13,7 +13,7 @@ body {
   font-size: 1.5em;
   color: #fff;
   background: #54ae53;
-  margin-bottom: 15px;
+  margin-bottom: 25px;
   box-shadow: 0 0 15px #888;
   display: flex;
   position: relative;
@@ -181,12 +181,12 @@ body {
   margin-top: 5px;
   padding: 2px 7px;
   font-size: 0.9em;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.5);
   color: #555;
 }
 
 .week.today .contractor {
-  border: 1px solid #96cf98;
+  border: 1px solid rgba(84, 174, 83, 0.5);
 }
 
 .buttons {
