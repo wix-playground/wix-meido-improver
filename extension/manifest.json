@@ -1,6 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "wix-meido-improver",
+  "short_name": "Wix Meido",
+  "name": "Wix Meido Improver",
+  "description": "User interface improver for wix.getmeido.com",
   "version": "1.9.0",
   "browser_action": {
     "default_popup": "popup/page.html",
