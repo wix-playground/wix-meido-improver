@@ -108,7 +108,7 @@ async function render() {
         hideError();
 
         try {
-          await tryRemoveOrder(order.orderId, order.dishId)
+          await tryRemoveOrder(order.orderId, order.dishId);
         } catch (error) {
           showError(error && error.message || 'Something went wrong...');
         }
@@ -149,7 +149,7 @@ function createWeekElem(date, dishName, contractorName) {
       <button class="repeat">↻</button>
     </div>
     <div class="week__remove">
-      <button class="remove">✕</button>
+      <button class="remove">&nbsp;</button>
     </div>
   </div>
   `;
