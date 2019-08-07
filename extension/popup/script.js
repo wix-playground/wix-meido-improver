@@ -75,12 +75,12 @@ async function render() {
     repeatButton.classList.toggle('hidden', hideRepeatButton);
 
     if (order && !hideRepeatButton) {
-      if (loadingButtons[order.orderId]) {
-        startLoadingButton(order.orderId, repeatButton);
+      if (loadingButtons[weekDayIndex]) {
+        startLoadingButton(weekDayIndex, repeatButton);
       }
 
       repeatButton.addEventListener('click', async () => {
-        startLoadingButton(order.orderId, repeatButton);
+        startLoadingButton(weekDayIndex, repeatButton);
         hideError();
 
         try {
@@ -89,7 +89,7 @@ async function render() {
           showError(error && error.message || 'Something went wrong...');
         }
 
-        stopLoadingButton(order.orderId, repeatButton)
+        stopLoadingButton(weekDayIndex, repeatButton)
       });
     }
 
@@ -98,14 +98,14 @@ async function render() {
   });
 }
 
-function startLoadingButton(orderId, button) {
-  loadingButtons[orderId] = true;
+function startLoadingButton(weekDayIndex, button) {
+  loadingButtons[weekDayIndex] = true;
   button.classList.add('spinning');
   button.disabled = true;
 }
 
-function stopLoadingButton(orderId, button) {
-  delete loadingButtons[orderId];
+function stopLoadingButton(weekDayIndex, button) {
+  delete loadingButtons[weekDayIndex];
   button.classList.remove('spinning');
   button.disabled = false;
 }
@@ -124,13 +124,13 @@ async function makeOrder(newDate, contractorName, dishId) {
 }
 
 async function waitNewWeekOrderData(date) {
-  const weekIndex = getWeekDayIndex(date);
+  const weekDayIndex = getWeekDayIndex(date);
   const {nextWeekOrdersPerDay, orderedDishesInvalidated} = await getWorkingWeekOrders(new Date());
   return new Promise((resolve, reject) => {
     if (orderedDishesInvalidated) {
       setTimeout(() => resolve(waitNewWeekOrderData(date)), 200);
     } else {
-      if (!nextWeekOrdersPerDay[weekIndex]) {
+      if (!nextWeekOrdersPerDay[weekDayIndex]) {
         return reject(new Error('Can\'t find the new created order. Please, check orders list on wix.getmeido.com website'));
       }
 
