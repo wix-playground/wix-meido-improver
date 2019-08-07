@@ -25,27 +25,37 @@ const CONTRACTOR_COUNT_CLASS = '__ITDXER_contractor_count';
  * @return {Promise<Order[]>}
  */
 async function fetchOrders() {
-  let orders = new Map();
-  let i = 1;
-  let newOrdersFound = true;
+  const firstPageText = await fetchOrdersText(1);
+  const pagesCount = parsePagesCount(firstPageText);
+  const restPages = await Promise.all(
+    new Array(pagesCount - 1)
+      .fill(null)
+      .map((_, index) => index + 2)
+      .map(pageNumber => fetchOrdersText(pageNumber))
+  );
 
-  while (newOrdersFound) {
-    const response = await fetch(`https://wix.getmeido.com/order/history/_url/%2Forder%2Fhistory/OrderMain_page/${i}`);
-    const text = await response.text();
-    const parsedOrders = [...text.matchAll(/<td>#(\d+)<\/td><td>(\w+\s\d+,\s\d+)<\/td>/g)]
-      .map(([all, orderId, dateStr]) => ({
-        orderId,
-        dateStr,
-        date: (new Date(dateStr)).toISOString(),
-      }));
+  return [].concat(
+    ...[firstPageText, ...restPages].map(parseOrders)
+  );
+}
 
-    newOrdersFound = parsedOrders.some(order => !orders.has(order.orderId));
+async function fetchOrdersText(page) {
+  const response = await fetch(`https://wix.getmeido.com/order/history/_url/%2Forder%2Fhistory/OrderMain_page/${page}`);
+  return await response.text();
+}
 
-    parsedOrders.forEach(order => orders.set(order.orderId, order));
-    i = i + 1;
-  }
+function parseOrders(text) {
+  return [...text.matchAll(/<td>#(\d+)<\/td><td>(\w+\s\d+,\s\d+)<\/td>/g)]
+    .map(([all, orderId, dateStr]) => ({
+      orderId,
+      dateStr,
+      date: (new Date(dateStr)).toISOString(),
+    }))
+}
 
-  return [...orders.values()];
+function parsePagesCount(text) {
+  const [, resultCount] = text.match(/Displaying 1-10 of (\d+) results/);
+  return Math.ceil(Number(resultCount) / 10);
 }
 
 /**
@@ -74,15 +84,25 @@ async function fetchOrderedDishes(orders) {
 
 async function refreshOrderedDishesCache() {
   startLoading();
+  let data = await getData();
+  const list = (data.orderedDishes && data.orderedDishes.list) || [];
+  const oldOrdersIds = new Set(list.map(({orderId}) => orderId));
+
   try {
     const orders = await fetchOrders();
-    const orderedDishes = await fetchOrderedDishes(orders);
+    const newOrdersIds = new Set(orders.map(({orderId}) => orderId));
+    const createdOrders = orders.filter(({orderId}) => !oldOrdersIds.has(orderId));
+    const createdDishes = await fetchOrderedDishes(createdOrders);
+    const liveDishes = list.filter(({orderId}) => newOrdersIds.has(orderId));
 
     await updateData(() => ({
       orderedDishesInvalidated: false,
       orderedDishes: {
         updatedDate: new Date().toISOString(),
-        list: orderedDishes,
+        list: [
+          ...liveDishes,
+          ...createdDishes
+        ],
       }
     }));
   } catch (error) {

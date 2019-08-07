@@ -37,7 +37,8 @@ if (inIframe()) {
 
       await fetch('https://wix.getmeido.com/order/remove', {
         body: removeFormData,
-        method: 'POST'
+        method: 'POST',
+        redirect: 'manual',
       });
 
       const editRemoveFormData = new FormData();
@@ -46,6 +47,7 @@ if (inIframe()) {
       await fetch('https://wix.getmeido.com/order/editremove', {
         body: editRemoveFormData,
         method: 'POST',
+        redirect: 'manual',
       });
     }
   });
@@ -55,6 +57,6 @@ if (inIframe()) {
   const client = new PostMessageClient(window.parent);
   client.mount(window);
 
-  window.addEventListener('load', () => client.request('parentLoaded'));
+  window.addEventListener('DOMContentLoaded', () => client.request('parentLoaded'));
   window.addEventListener('beforeunload', () => client.request('parentBeforeUnload'));
 }
