@@ -5,8 +5,8 @@ async function tryRemoveOrder(orderId, dishId) {
     }
 
     await removeOrder(orderId, dishId);
-    await refreshOrderedDishesCache();
   });
+  await refreshOrderedDishesCache();
 }
 
 const removingButtons = {};

@@ -84,12 +84,13 @@ async function fetchOrderedDishes(orders) {
 
 async function refreshOrderedDishesCache() {
   startLoading();
-  let data = await getData();
-  const list = (data.orderedDishes && data.orderedDishes.list) || [];
-  const oldOrdersIds = new Set(list.map(({orderId}) => orderId));
-
   try {
     const orders = await fetchOrders();
+
+    let data = await getData();
+    const list = (data.orderedDishes && data.orderedDishes.list) || [];
+    const oldOrdersIds = new Set(list.map(({orderId}) => orderId));
+
     const newOrdersIds = new Set(orders.map(({orderId}) => orderId));
     const createdOrders = orders.filter(({orderId}) => !oldOrdersIds.has(orderId));
     const createdDishes = await fetchOrderedDishes(createdOrders);

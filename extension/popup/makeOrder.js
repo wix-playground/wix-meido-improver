@@ -7,8 +7,8 @@ async function makeOrder(newDate, contractorName, dishId) {
     await openContractor(contractorName);
     await clickOneClickBuy(dishId);
     await confirmOrder(newDate);
-    await waitNewWeekOrderData(newDate);
   });
+  await waitNewWeekOrderData(newDate);
 }
 
 async function waitNewWeekOrderData(date) {

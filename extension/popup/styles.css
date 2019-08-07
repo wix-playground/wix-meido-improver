@@ -113,7 +113,7 @@ body {
 
 .week {
   display: flex;
-  padding: 15px 5px;
+  padding: 15px 10px;
   border-bottom: 1px solid #ddd;
 }
 
@@ -131,8 +131,7 @@ body {
 }
 
 .week__name {
-  margin-left: 10px;
-  margin-right: 5px;
+  margin: 0 5px;
   border-radius: 5px;
   height: 40px;
   min-width: 56px;
