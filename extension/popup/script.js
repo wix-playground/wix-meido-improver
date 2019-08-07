@@ -6,7 +6,10 @@ button.addEventListener('click', event => {
 
 
 let weekShift = 0;
+let warningsCount = 0;
+
 const errorElem = document.getElementById('error');
+const warningElem = document.getElementById('warning');
 const ordersElem = document.getElementById('orders');
 const thisWeekElem = document.getElementById('this-week');
 const theNextWeekElem = document.getElementById('the-next-week');
@@ -33,6 +36,7 @@ async function changeWeekAndRender(newWeekShift) {
 }
 
 async function render() {
+  renderWarning();
   const startDate = getDateByDayIndex(new Date(), 0);
   startDate.setDate(startDate.getDate() + (weekShift * 7));
   const {ordersPerDay, updatedDate, nextWeekOrdersPerDay} = await getWorkingWeekOrders(startDate);
@@ -79,6 +83,7 @@ async function render() {
       }
 
       repeatButton.addEventListener('click', async () => {
+        showWarning();
         startLoadingButton(weekDayIndex, repeatButton);
         hideError();
 
@@ -88,7 +93,8 @@ async function render() {
           showError(error && error.message || 'Something went wrong...');
         }
 
-        stopLoadingButton(weekDayIndex, repeatButton)
+        stopLoadingButton(weekDayIndex, repeatButton);
+        hideWarning();
       });
     }
 
@@ -104,6 +110,7 @@ async function render() {
       }
 
       removeButton.addEventListener('click', async () => {
+        showWarning();
         startRemovingButton(order.orderId, removeButton);
         hideError();
 
@@ -113,7 +120,8 @@ async function render() {
           showError(error && error.message || 'Something went wrong...');
         }
 
-        stopRemovingButton(order.orderId, removeButton)
+        stopRemovingButton(order.orderId, removeButton);
+        hideWarning();
       });
     }
 
@@ -124,11 +132,27 @@ async function render() {
 
 
 function showError(errorMessage) {
-  errorElem.innerText = errorMessage || '';
+  errorElem.innerText = errorMessage;
 }
 
 function hideError() {
-  showError('');
+  errorElem.innerText = '';
+}
+
+function showWarning() {
+  warningsCount++;
+  renderWarning();
+}
+
+function hideWarning() {
+  warningsCount--;
+  renderWarning();
+}
+
+function renderWarning() {
+  warningElem.innerText = warningsCount === 0
+    ? ''
+    : "Do not close this popup";
 }
 
 function createWeekElem(date, dishName, contractorName) {

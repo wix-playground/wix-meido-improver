@@ -13,7 +13,6 @@ body {
   font-size: 1.5em;
   color: #fff;
   background: #54ae53;
-  margin-bottom: 25px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
   display: flex;
   position: relative;
@@ -73,6 +72,7 @@ body {
   display: flex;
   align-items: center;
   padding: 10px 10px 20px;
+  /*transition: padding 1s;*/
 }
 
 .prev-week,
@@ -224,16 +224,32 @@ body {
 }
 
 
+#warning:empty,
 #error:empty {
-  display: none;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
+#warning,
 #error {
-  margin-top: -25px;
   background: red;
   color: #fff;
-  font-size: 1rem;
   padding: 20px 15px 15px;
+}
+
+#warning {
+  /*background-color: #ff5d00;*/
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+#error:not(:empty) + #warning:not(:empty) {
+  display: block;
+}
+
+#error:not(:empty) + #warning,
+#error + #warning:not(:empty) {
+  margin-bottom: 0;
 }
 
 .remove {
