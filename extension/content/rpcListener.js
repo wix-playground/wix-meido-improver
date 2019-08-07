@@ -30,11 +30,27 @@ if (inIframe()) {
         return Promise.reject(new Error(`Can't make an order for ${dateStr}. Probably you already made an order, or it's a holiday`));
       }
       input.nextSibling.nextSibling.click();
+    },
+    removeOrder: async (orderId, dishId) => {
+      const removeFormData = new FormData();
+      removeFormData.append('product_id', dishId);
+
+      await fetch('https://wix.getmeido.com/order/remove', {
+        body: removeFormData,
+        method: 'POST'
+      });
+
+      const editRemoveFormData = new FormData();
+      editRemoveFormData.append('product_id', dishId);
+      editRemoveFormData.append('order_id', orderId);
+      await fetch('https://wix.getmeido.com/order/editremove', {
+        body: editRemoveFormData,
+        method: 'POST',
+      });
     }
   });
 
   server.mount(window);
-
 
   const client = new PostMessageClient(window.parent);
   client.mount(window);

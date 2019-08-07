@@ -26,7 +26,6 @@ const nextWeekButtonElem = document.getElementsByClassName('next-week')[0];
   await render();
 })();
 
-const loadingButtons = {};
 
 async function changeWeekAndRender(newWeekShift) {
   weekShift = newWeekShift;
@@ -64,7 +63,7 @@ async function render() {
       order && order.dishName,
       order && order.contractorName
     );
-    weekElem.classList.toggle('today', isSameDay(new Date(date), new Date()));
+    weekElem.classList.toggle('today', isSameDay(date, new Date()));
 
     const nextWeekDay = getDateByDayIndex(new Date(), weekDayIndex);
     nextWeekDay.setDate(nextWeekDay.getDate() + 7);
@@ -75,7 +74,7 @@ async function render() {
     repeatButton.classList.toggle('hidden', hideRepeatButton);
 
     if (order && !hideRepeatButton) {
-      if (loadingButtons[weekDayIndex]) {
+      if (isLoadingButton(weekDayIndex)) {
         startLoadingButton(weekDayIndex, repeatButton);
       }
 
@@ -93,51 +92,36 @@ async function render() {
       });
     }
 
+    const removeButton = weekElem.querySelector('.remove');
+    const nextMonday = getDateByDayIndex(nextWeekDay, 0);
+    const hideRemoveButton = !order || date < nextMonday;
+    removeButton.disabled = hideRemoveButton;
+    removeButton.classList.toggle('hidden', hideRemoveButton);
+
+    if (order && !hideRemoveButton) {
+      if (isRemovingButton(order.orderId)) {
+        startRemovingButton(order.orderId, removeButton);
+      }
+
+      removeButton.addEventListener('click', async () => {
+        startRemovingButton(order.orderId, removeButton);
+        hideError();
+
+        try {
+          await tryRemoveOrder(order.orderId, order.dishId)
+        } catch (error) {
+          showError(error && error.message || 'Something went wrong...');
+        }
+
+        stopRemovingButton(order.orderId, removeButton)
+      });
+    }
+
 
     ordersElem.appendChild(weekElem);
   });
 }
 
-function startLoadingButton(weekDayIndex, button) {
-  loadingButtons[weekDayIndex] = true;
-  button.classList.add('spinning');
-  button.disabled = true;
-}
-
-function stopLoadingButton(weekDayIndex, button) {
-  delete loadingButtons[weekDayIndex];
-  button.classList.remove('spinning');
-  button.disabled = false;
-}
-
-async function makeOrder(newDate, contractorName, dishId) {
-  if (!await isLoggedIn()) {
-    throw new Error('Open Meido to login');
-  }
-
-  await callInQueue(async () => {
-    await openContractor(contractorName);
-    await clickOneClickBuy(dishId);
-    await confirmOrder(newDate);
-    await waitNewWeekOrderData(newDate);
-  });
-}
-
-async function waitNewWeekOrderData(date) {
-  const weekDayIndex = getWeekDayIndex(date);
-  const {nextWeekOrdersPerDay, orderedDishesInvalidated} = await getWorkingWeekOrders(new Date());
-  return new Promise((resolve, reject) => {
-    if (orderedDishesInvalidated) {
-      setTimeout(() => resolve(waitNewWeekOrderData(date)), 200);
-    } else {
-      if (!nextWeekOrdersPerDay[weekDayIndex]) {
-        return reject(new Error('Can\'t find the new created order. Please, check orders list on wix.getmeido.com website'));
-      }
-
-      return resolve();
-    }
-  })
-}
 
 function showError(errorMessage) {
   errorElem.innerText = errorMessage || '';
@@ -163,6 +147,9 @@ function createWeekElem(date, dishName, contractorName) {
     </div>
     <div class="week__repeat">
       <button class="repeat">↻</button>
+    </div>
+    <div class="week__remove">
+      <button class="remove">✕</button>
     </div>
   </div>
   `;

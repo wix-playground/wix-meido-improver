@@ -34,6 +34,7 @@ const callInQueue = (fn) =>
 function createRpc() {
   const iframe = document.createElement('iframe');
   iframe.style.display = 'none';
+  iframe.style.width = '100%';
   document.body.appendChild(iframe);
 
   const client = new PostMessageClient(iframe.contentWindow);
@@ -47,12 +48,14 @@ function createRpc() {
 let client = null;
 let iframe = null;
 async function getRpcClient(src) {
+  let justCreated = false;
   if (!client || !iframe) {
     ({client, iframe} = createRpc());
+    justCreated = true;
   }
 
-  if (src) {
-    iframe.src = src;
+  if (src || justCreated) {
+    iframe.src = src || 'https://wix.getmeido.com/order';
     await waitLoaded();
   }
 
@@ -60,7 +63,7 @@ async function getRpcClient(src) {
 }
 
 async function isLoggedIn() {
-  const client = await getRpcClient('https://wix.getmeido.com/order');
+  const client = await getRpcClient();
   return client.request('isLoggedIn');
 }
 
@@ -89,4 +92,9 @@ async function confirmOrder(date) {
     .join('-');
 
   await client.request('confirmOrder', dateStr);
+}
+
+async function removeOrder(orderId, dishId) {
+  const client = await getRpcClient();
+  await client.request('removeOrder', orderId, dishId);
 }
