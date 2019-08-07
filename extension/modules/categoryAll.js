@@ -9,7 +9,7 @@ function addCategoryAll() {
     link.innerText = 'SHOW ALL';
     link.dataset.toggle = "tab";
     link.href = "#category_all";
-    link.setAttribute('onclick', "saveTabPosition('category_all')");
+    link.setAttribute('onclick', "typeof saveTabPosition === 'function' && saveTabPosition('category_all')");
     link.setAttribute('aria-controls', "category_all");
     link.setAttribute('role', "tab");
     li.appendChild(link);

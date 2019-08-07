@@ -14,6 +14,7 @@ const STORAGE_KEY = '__ITDXER_storage';
  * @property {Object} avgRatings
  * @property {Object} favorites
  * @property {Object|null} orderedDishes
+ * @property {boolean} orderedDishesInvalidated
  */
 
 
@@ -50,6 +51,7 @@ function fillDefaults(data) {
     avgRatings: {},
     favorites: {},
     orderedDishes: null,
+    orderedDishesInvalidated: false,
     ...data,
   };
 }

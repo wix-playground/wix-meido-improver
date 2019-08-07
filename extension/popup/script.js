@@ -5,7 +5,8 @@ button.addEventListener('click', event => {
 });
 
 
-let weekIndexToShow = 0;
+let weekShift = 0;
+const errorElem = document.getElementById('error');
 const ordersElem = document.getElementById('orders');
 const thisWeekElem = document.getElementById('this-week');
 const theNextWeekElem = document.getElementById('the-next-week');
@@ -15,34 +16,33 @@ const prevWeekButtonElem = document.getElementsByClassName('prev-week')[0];
 const nextWeekButtonElem = document.getElementsByClassName('next-week')[0];
 
 (async () => {
-  prevWeekButtonElem.addEventListener('click', () => changeWeekAndRender(weekIndexToShow - 1));
-  nextWeekButtonElem.addEventListener('click', () => changeWeekAndRender(weekIndexToShow + 1));
+  prevWeekButtonElem.addEventListener('click', () => changeWeekAndRender(weekShift - 1));
+  nextWeekButtonElem.addEventListener('click', () => changeWeekAndRender(weekShift + 1));
   thisWeekElem.addEventListener('click', () => changeWeekAndRender(0));
   theNextWeekElem.addEventListener('click', () => changeWeekAndRender(1));
+
 
   subscribeForStorageChanges(() => render());
   await render();
 })();
 
-async function changeWeekAndRender(weekIndex) {
-  weekIndexToShow = weekIndex;
+const loadingButtons = {};
+
+async function changeWeekAndRender(newWeekShift) {
+  weekShift = newWeekShift;
   await render();
 }
 
-
 async function render() {
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() + (weekIndexToShow * 7));
-  console.log('Function: render,', 'Line: 36,', 'Type:', typeof startDate, '\n', "startDate:",
-    startDate
-  );
-  const {ordersPerDay, updatedDate} = await getWorkingWeekOrders(startDate);
+  const startDate = getDateByDayIndex(new Date(), 0);
+  startDate.setDate(startDate.getDate() + (weekShift * 7));
+  const {ordersPerDay, updatedDate, nextWeekOrdersPerDay} = await getWorkingWeekOrders(startDate);
 
   ordersElem.innerText = '';
   updateDateElem.innerText = '';
   notLoadedElem.style.display = updatedDate ? 'none' : 'block';
-  thisWeekElem.classList.toggle('yes', weekIndexToShow === 0);
-  theNextWeekElem.classList.toggle('yes', weekIndexToShow === 1);
+  thisWeekElem.classList.toggle('yes', weekShift === 0);
+  theNextWeekElem.classList.toggle('yes', weekShift === 1);
 
   if (!updatedDate) {
     return;
@@ -65,8 +65,86 @@ async function render() {
       order && order.contractorName
     );
     weekElem.classList.toggle('today', isSameDay(new Date(date), new Date()));
+
+    const nextWeekDay = getDateByDayIndex(new Date(), weekDayIndex);
+    nextWeekDay.setDate(nextWeekDay.getDate() + 7);
+
+    const repeatButton = weekElem.querySelector('.repeat');
+    const hideRepeatButton = !order || !!nextWeekOrdersPerDay[weekDayIndex] || date >= nextWeekDay;
+    repeatButton.disabled = hideRepeatButton;
+    repeatButton.classList.toggle('hidden', hideRepeatButton);
+
+    if (order && !hideRepeatButton) {
+      if (loadingButtons[order.orderId]) {
+        startLoadingButton(order.orderId, repeatButton);
+      }
+
+      repeatButton.addEventListener('click', async () => {
+        startLoadingButton(order.orderId, repeatButton);
+        hideError();
+
+        try {
+          await makeOrder(nextWeekDay, order.contractorName, order.dishId);
+        } catch (error) {
+          showError(error && error.message || 'Something went wrong...');
+        }
+
+        stopLoadingButton(order.orderId, repeatButton)
+      });
+    }
+
+
     ordersElem.appendChild(weekElem);
+  });
+}
+
+function startLoadingButton(orderId, button) {
+  loadingButtons[orderId] = true;
+  button.classList.add('spinning');
+  button.disabled = true;
+}
+
+function stopLoadingButton(orderId, button) {
+  delete loadingButtons[orderId];
+  button.classList.remove('spinning');
+  button.disabled = false;
+}
+
+async function makeOrder(newDate, contractorName, dishId) {
+  if (!await isLoggedIn()) {
+    throw new Error('Open Meido to login');
+  }
+
+  await callInQueue(async () => {
+    await openContractor(contractorName);
+    await clickOneClickBuy(dishId);
+    await confirmOrder(newDate);
+    await waitNewWeekOrderData(newDate);
+  });
+}
+
+async function waitNewWeekOrderData(date) {
+  const weekIndex = getWeekDayIndex(date);
+  const {nextWeekOrdersPerDay, orderedDishesInvalidated} = await getWorkingWeekOrders(new Date());
+  return new Promise((resolve, reject) => {
+    if (orderedDishesInvalidated) {
+      setTimeout(() => resolve(waitNewWeekOrderData(date)), 200);
+    } else {
+      if (!nextWeekOrdersPerDay[weekIndex]) {
+        return reject(new Error('Can\'t find the new created order. Please, check orders list on wix.getmeido.com website'));
+      }
+
+      return resolve();
+    }
   })
+}
+
+function showError(errorMessage) {
+  errorElem.innerText = errorMessage || '';
+}
+
+function hideError() {
+  showError('');
 }
 
 function createWeekElem(date, dishName, contractorName) {
@@ -83,14 +161,17 @@ function createWeekElem(date, dishName, contractorName) {
         <div class="contractor">${escapeHtml(contractorName || '')}</div>
       </div>
     </div>
+    <div class="week__repeat">
+      <button class="repeat">↻</button>
+    </div>
+  </div>
   `;
   return weekElem;
 }
 
 
 function getWeekName(date) {
-  const dayNumber = date.getDay();
-  const dayIndex = (dayNumber + 6) % 7;
+  const dayIndex = getWeekDayIndex(date);
   return DAY_NAMES[dayIndex].substr(0, 3);
 }
 

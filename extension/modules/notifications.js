@@ -12,7 +12,7 @@ async function createAlarms(options) {
       browser.alarms.create(
         `${dayName} ${time}`,
         {
-          when: getWeekDate(new Date(), dayName, time).getTime(),
+          when: getDateByDayIndex(new Date(), DAY_NAMES[dayName], time).getTime(),
           periodInMinutes: 7 * 24 * 60, // One week
         }
       )
@@ -20,7 +20,7 @@ async function createAlarms(options) {
   )
 }
 
-function getWeekDate(baseDate, dayName, time) {
+function getDateByDayIndex(baseDate, newDayIndex, time = '00:00') {
   const [hh, mm] = time.split(':');
   const date = new Date(baseDate);
 
@@ -29,22 +29,31 @@ function getWeekDate(baseDate, dayName, time) {
   date.setSeconds(0);
   date.setMilliseconds(0);
 
-  const currentDayIndex = (date.getDay() + 6) % 7;
-  const newDayIndex = DAY_NAMES.indexOf(dayName);
+  const currentDayIndex = getWeekDayIndex(date);
   date.setDate(date.getDate() - (currentDayIndex - newDayIndex));
 
   return date;
 }
 
+function getWeekDayIndex(date) {
+  return (date.getDay() + 6) % 7;
+}
+
 async function getWorkingWeekOrders(date) {
-  const data = await getData();
+  const {orderedDishesInvalidated, ...data} = await getData();
   const orderedDishes = data.orderedDishes || {};
   const updatedDate = orderedDishes.updatedDate;
   const orders = orderedDishes.list || [];
+
   const ordersPerDay = getWorkingWeekDays(date)
     .map(weekDate => orders.find(order => isSameDay(weekDate, new Date(order.date))));
 
-  return {updatedDate, ordersPerDay};
+  const nextWeek = new Date();
+  nextWeek.setDate(nextWeek.getDate() + 7);
+  const nextWeekOrdersPerDay = getWorkingWeekDays(nextWeek)
+    .map(weekDate => orders.find(order => isSameDay(weekDate, new Date(order.date))));
+
+  return {updatedDate, ordersPerDay, nextWeekOrdersPerDay, orderedDishesInvalidated};
 }
 
 function isSameDay(dateOne, dateTwo) {
@@ -54,10 +63,7 @@ function isSameDay(dateOne, dateTwo) {
 }
 
 function getWorkingWeekDays(date) {
-  const monday = getWeekDate(date, DAY_NAMES[0], '00:00');
-  console.log('Function: getWorkingWeekDays,', 'Line: 58,', 'Type:', typeof monday, '\n', "monday:",
-    monday
-  );
+  const monday = getDateByDayIndex(date, 0, '00:00');
   return new Array(5)
     .fill(null)
     .map((_, weekDayIndex) => {

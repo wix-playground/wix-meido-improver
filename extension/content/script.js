@@ -13,14 +13,17 @@ const PARTIALLY_MATCHED_CLASS = '__ITDXER_first_partially_matched';
 const SPINNER_CLASS = '__ITDXER_spinner';
 
 window.addEventListener('DOMContentLoaded', () => {
-  addCategoryAll();
-  openFirstCategory();
-  addOneClickBuy();
+  if (window.location.href.startsWith('https://wix.getmeido.com/order')) {
+    addCategoryAll();
+    openFirstCategory();
+    addOneClickBuy();
 
-  subscribeForStorageChanges(render);
-  renderOrderedDishes(renderWithData);
-  renderWithData();
-  renderOrderTable();
+    subscribeForStorageChanges(render);
+    renderOrderedDishes(renderWithData);
+    renderWithData();
+    renderOrderTable();
+    addRemoveCartButtonListener();
+  }
 
   subscribeForLoadingChanges(loading => renderSpinner(document.body, loading));
 });
@@ -98,7 +101,7 @@ function render(data) {
       });
   });
 
-  const suppliersContent = document.querySelector('.suppliers-content');
+  const suppliersContent = document.querySelector('.suppliers > .suppliers-content');
   if (suppliersContent) {
     renderFilters({suppliersContent, filterRating, filterOrdered, filterFavorite, filterVegan, filterText});
   }
@@ -214,17 +217,19 @@ function addOneClickBuy() {
   });
 }
 
-function createOneClickBuyElement(buy) {
+function createOneClickBuyElement(buyButton) {
   const oneClick = document.createElement('a');
+  const dishId = buyButton.href.split('/').pop();
 
   oneClick.innerText = 'One Click Buy';
   oneClick.className = [ONE_CLICK_BUY_CLASS, 'btn btn-success'].join(' ');
+  oneClick.dataset.dishId = dishId;
 
   oneClick.onclick = (event) => {
     event.preventDefault();
     Promise.resolve()
       .then(() => removeAllCartItems())
-      .then(() => buy.click())
+      .then(() => buyButton.click())
       .then(() => waitForSelector('#cart .cart__button > a'))
       .then(() => document.querySelector('#cart .cart__button > a').click());
   };
@@ -335,7 +340,7 @@ function createSearchInput() {
 
   searchInput.className = SEARCH_INPUT_CLASS;
   searchInput.placeholder = 'Search... Example: Кур овоч, суп горох';
-  searchInput.autofocus = true;
+  searchInput.autofocus = !inIframe();
   searchInput.onkeyup = event => updateData(() => ({filterText: event.target.value}));
 
   return searchInput;
@@ -359,14 +364,19 @@ function renderOrderTable() {
             orderButton.className = ORDER_BUTTON_CLASS;
 
             orderButton.onclick = () => {
+              void invalidateOrderedDishesCache();
               label.click();
               submitButton.click();
-              void invalidateOrderedDishesCache();
             };
             td.appendChild(orderButton);
           });
       })
   }
+}
+
+function addRemoveCartButtonListener() {
+  [...document.querySelectorAll('.cart__delete.delete-cart-product')]
+    .map(button => button.addEventListener('click', () => invalidateOrderedDishesCache()))
 }
 
 function createCheckboxInLabel(labelHTML, className, onChange) {
@@ -406,7 +416,6 @@ const renderHighlights = ((elem, keywords, shouldHighlight) => {
     highlight(elem, keywords);
   }
 });
-
 
 /**
  *
