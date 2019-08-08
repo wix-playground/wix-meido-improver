@@ -170,7 +170,7 @@ function createWeekElem(date, dishName, contractorName) {
       </div>
     </div>
     <div class="week__repeat">
-      <button class="repeat">↻</button>
+      <button class="repeat">&nbsp;</button>
     </div>
     <div class="week__remove">
       <button class="remove">&nbsp;</button>
