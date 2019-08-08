@@ -49,6 +49,9 @@ if (inIframe()) {
         method: 'POST',
         redirect: 'manual',
       });
+    },
+    callRefreshOrderedDishesCache: async () => {
+      await refreshOrderedDishesCache();
     }
   });
 

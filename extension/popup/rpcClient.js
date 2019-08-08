@@ -98,3 +98,8 @@ async function removeOrder(orderId, dishId) {
   const client = await getRpcClient();
   await client.request('removeOrder', orderId, dishId);
 }
+
+async function callRefreshOrderedDishesCache() {
+  const client = await getRpcClient();
+  await client.request('callRefreshOrderedDishesCache');
+}

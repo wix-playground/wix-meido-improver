@@ -5,17 +5,18 @@ function randomStr() {
 class PostMessageClient {
   constructor(targetWindow) {
     this.targetWindow = targetWindow;
+    this.dispatches = new Map();
+    this.handleMessage = this.handleMessage.bind(this)
   }
 
-  _dispatches = new Map();
 
-  handleMessage = event => {
+  handleMessage(event) {
     if (!event.data || typeof event.data.id === 'undefined' || !event.data.jsonrpc || 'method' in event.data) {
       return;
     }
 
-    const dispatch = this._dispatches.get(event.data.id);
-    this._dispatches.delete(event.data.id);
+    const dispatch = this.dispatches.get(event.data.id);
+    this.dispatches.delete(event.data.id);
 
     if (dispatch) {
       if (event.data.error) {
@@ -36,7 +37,7 @@ class PostMessageClient {
 
   _dispatch(method, id, ...params) {
     return new Promise((resolve, reject) => {
-      this._dispatches.set(id, {resolve, reject});
+      this.dispatches.set(id, {resolve, reject});
 
       try {
         const message = {
@@ -47,7 +48,7 @@ class PostMessageClient {
         };
         this.targetWindow.postMessage(message, '*');
       } catch (error) {
-        this._dispatches.delete(id);
+        this.dispatches.delete(id);
         reject(error);
       }
     });
@@ -61,6 +62,8 @@ class PostMessageClient {
 class PostMessageServer {
   constructor(handlers) {
     this.handlers = handlers;
+    this.handleMessage = this.handleMessage.bind(this)
+
   }
 
   mount(window) {
@@ -71,7 +74,7 @@ class PostMessageServer {
     window.removeEventListener('message', this.handleMessage);
   }
 
-  callHandler = message => {
+  callHandler(message) {
     if (message.data && message.data.method && message.data.jsonrpc && !('error' in message.data || 'result' in message.data)) {
       const handler = this.handlers[message.data.method];
       if (!handler) {
@@ -86,7 +89,7 @@ class PostMessageServer {
     }
   };
 
-  handleMessage = event => {
+  handleMessage(event) {
     const resultPromise = this.callHandler(event);
     if (!resultPromise) {
       return;

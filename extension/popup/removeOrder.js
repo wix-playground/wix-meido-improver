@@ -3,10 +3,14 @@ async function tryRemoveOrder(orderId, dishId) {
     if (!await isLoggedIn()) {
       throw new Error('Open Meido to login');
     }
-
-    await removeOrder(orderId, dishId);
+    try {
+      await removeOrder(orderId, dishId);
+    } catch (error) {
+      throw error;
+    } finally {
+      await callRefreshOrderedDishesCache();
+    }
   });
-  await refreshOrderedDishesCache();
 }
 
 const removingButtons = {};

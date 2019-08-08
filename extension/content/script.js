@@ -364,7 +364,9 @@ function renderOrderTable() {
             orderButton.className = ORDER_BUTTON_CLASS;
 
             orderButton.onclick = () => {
-              void invalidateOrderedDishesCache();
+              if (!inIframe()) {
+                void invalidateOrderedDishesCache();
+              }
               label.click();
               submitButton.click();
             };
