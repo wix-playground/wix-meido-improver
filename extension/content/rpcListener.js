@@ -60,6 +60,6 @@ if (inIframe()) {
   const client = new PostMessageClient(window.parent);
   client.mount(window);
 
-  window.addEventListener('DOMContentLoaded', () => client.request('parentLoaded'));
-  window.addEventListener('beforeunload', () => client.request('parentBeforeUnload'));
+  window.addEventListener('DOMContentLoaded', () => client.request('childLoaded'));
+  window.addEventListener('beforeunload', () => client.request('childBeforeUnload'));
 }

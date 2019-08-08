@@ -1,12 +1,14 @@
-html,
-body {
+body,
+html {
   padding: 0;
   margin: 0;
+}
+
+body {
+  width: 450px;
   font-family: sans-serif;
   font-size: 10pt;
-  min-width: 400px;
   color: #333333;
-  width: 400px;
 }
 
 .title {
@@ -243,8 +245,8 @@ body {
   margin-bottom: 25px;
 }
 
-#error:not(:empty) + #warning:not(:empty) {
-  display: block;
+#error:not(:empty) + #warning {
+  display: none;
 }
 
 #error:not(:empty) + #warning,

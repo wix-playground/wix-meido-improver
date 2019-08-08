@@ -1,7 +1,7 @@
 let loaded = false;
 const server = new PostMessageServer({
-  parentLoaded: () => loaded = true,
-  parentBeforeUnload: () => loaded = false,
+  childLoaded: () => loaded = true,
+  childBeforeUnload: () => loaded = false,
 });
 server.mount(window);
 
@@ -31,11 +31,18 @@ const callInQueue = (fn) =>
 
 
 
-function createRpc() {
+async function createRpc(src = 'https://wix.getmeido.com/order') {
   const iframe = document.createElement('iframe');
-  iframe.style.display = 'none';
-  iframe.style.width = '100%';
-  document.body.appendChild(iframe);
+
+  iframe.src = src;
+  iframe.style.width = '1px';
+  iframe.style.height = '1px';
+  iframe.style.position = 'absolute';
+  iframe.style.opacity = '0';
+
+  document.body.prepend(iframe);
+
+  await waitLoaded();
 
   const client = new PostMessageClient(iframe.contentWindow);
   client.mount(window);
@@ -50,12 +57,12 @@ let iframe = null;
 async function getRpcClient(src) {
   let justCreated = false;
   if (!client || !iframe) {
-    ({client, iframe} = createRpc());
+    ({client, iframe} = await createRpc(src));
     justCreated = true;
   }
 
-  if (src || justCreated) {
-    iframe.src = src || 'https://wix.getmeido.com/order';
+  if (src && !justCreated) {
+    iframe.src = src;
     await waitLoaded();
   }
 
