@@ -47,7 +47,7 @@ browser.runtime.onMessage.addListener(async request => {
   }
 });
 
-async function showNotificationIfNoOrder() {
+async function showNotificationIfNoOrder(): Promise<void> {
   const nextWeek = new Date();
   nextWeek.setDate(nextWeek.getDate() + 7);
   const { ordersPerDay } = await getWorkingWeekOrders(nextWeek);
@@ -57,7 +57,7 @@ async function showNotificationIfNoOrder() {
   }
 }
 
-async function createNotification() {
+async function createNotification(): Promise<void> {
   const buttons = [{ title: 'Open Meido' }, { title: 'Config Notifications' }];
 
   const notificationOptions = {

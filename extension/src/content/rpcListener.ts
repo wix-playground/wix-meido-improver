@@ -1,7 +1,7 @@
 import { PostMessageClient, PostMessageServer } from '../modules/postMessageRPC';
 import { refreshOrderedDishesCache } from '../modules/orders';
 
-export function inIframe() {
+export function inIframe(): boolean {
   try {
     return window.self !== window.top;
   } catch (e) {
@@ -13,15 +13,15 @@ if (inIframe()) {
   const server = new PostMessageServer({
     isLoggedIn: () => !window.location.href.includes('wix.getmeido.com/auth'),
     openContractor: contractorName => {
-      const all = document.querySelectorAll('.restaurants__nav > li > a');
-      const found = [...all].find(link => link.innerText.trim() === contractorName.trim());
+      const all = [...document.querySelectorAll('.restaurants__nav > li > a')];
+      const found = all.find(link => (<HTMLAnchorElement>link).innerText.trim() === contractorName.trim());
       if (!found) {
         return Promise.reject(new Error(`Contractor "${contractorName}" not found`));
       }
-      found.click();
+      (<HTMLAnchorElement>found).click();
     },
     clickOneClickBuy: dishId => {
-      const button = document.querySelector(`.__ITDXER_oneClickBuy[data-dish-id="${dishId}"]`);
+      const button: HTMLButtonElement = document.querySelector(`.__ITDXER_oneClickBuy[data-dish-id="${dishId}"]`);
       if (!button) {
         return Promise.reject(new Error(`Dish with id "${dishId}" not found`));
       }
@@ -34,7 +34,7 @@ if (inIframe()) {
           new Error(`Can't make an order for ${dateStr}. Probably you already made an order, or it's a holiday`)
         );
       }
-      input.nextSibling.nextSibling.click();
+      (<HTMLButtonElement>input.nextSibling.nextSibling).click();
     },
     removeOrder: async (orderId, dishId) => {
       const removeFormData = new FormData();

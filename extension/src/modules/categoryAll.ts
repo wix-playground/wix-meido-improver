@@ -1,7 +1,7 @@
 const CATEGORIES_LIST_CLASS = '__ITDXER_menu-item__categories';
 const CATEGORY_CLASS = '__ITDXER_menu-item__category';
 
-export function addCategoryAll() {
+export function addCategoryAll(): void {
   const categoryTabs = document.querySelector('.suppliers .container .nav.nav-tabs.new-tabs');
   if (categoryTabs) {
     const li = document.createElement('li');
@@ -22,7 +22,7 @@ export function addCategoryAll() {
 function renderCategoryAll() {
   const categoryTabLinks = document.querySelectorAll('.suppliers .container .nav.nav-tabs.new-tabs li a');
   const categoryNameByKey = Object.fromEntries(
-    [...categoryTabLinks].map(link => [link.getAttribute('aria-controls'), link.innerText])
+    [...categoryTabLinks].map((link: HTMLAnchorElement) => [link.getAttribute('aria-controls'), link.innerText])
   );
 
   const categoryAllPane = document.createElement('div');
@@ -38,27 +38,24 @@ function renderCategoryAll() {
   [...panes].forEach(pane => {
     const items = [...pane.children].map(node => ({
       contractors: [pane.id],
-      id: node
-        .querySelector('.btn.buy')
-        .href.split('/')
-        .pop(),
+      dishId: (<HTMLAnchorElement>node.querySelector('.btn.buy')).href.split('/').pop(),
       node,
     }));
 
     items.forEach(item => {
-      if (allItems[item.id]) {
-        allItems[item.id].contractors = [...allItems[item.id].contractors, ...item.contractors];
+      if (allItems[item.dishId]) {
+        allItems[item.dishId].contractors = [...allItems[item.dishId].contractors, ...item.contractors];
       } else {
-        allItems[item.id] = item;
+        allItems[item.dishId] = item;
       }
     });
   });
 
-  Object.values(allItems).forEach(item => {
-    const cloned = item.node.cloneNode();
+  Object.values(allItems).forEach((item: { node: HTMLElement; contractors: string[] }) => {
+    const cloned = <HTMLElement>item.node.cloneNode();
     cloned.innerHTML = item.node.innerHTML;
-    const oldBuyButton = item.node.querySelector('.menu-item__info > a.btn.btn-success.buy');
-    const clonedBuyButton = cloned.querySelector('.menu-item__info > a.btn.btn-success.buy');
+    const oldBuyButton = <HTMLAnchorElement>item.node.querySelector('.menu-item__info > a.btn.btn-success.buy');
+    const clonedBuyButton = <HTMLAnchorElement>cloned.querySelector('.menu-item__info > a.btn.btn-success.buy');
     clonedBuyButton.onclick = event => {
       event.preventDefault();
       oldBuyButton.click();
@@ -72,7 +69,7 @@ function renderCategoryAll() {
       link.innerText = categoryNameByKey[contractorKey];
       link.className = CATEGORY_CLASS;
       link.href = '#';
-      link.onclick = () => document.querySelector(`[href="#${contractorKey}"]`).click();
+      link.onclick = () => (<HTMLAnchorElement>document.querySelector(`[href="#${contractorKey}"]`)).click();
       categories.append(link);
     });
     content.insertBefore(categories, info);

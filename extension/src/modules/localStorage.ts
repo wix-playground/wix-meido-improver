@@ -1,28 +1,34 @@
 import browser from 'webextension-polyfill';
+import { AvgRatings, DishId, Favorites, UserRatings } from './database';
 
 const STORAGE_KEY = '__ITDXER_storage';
 
-/**
- * User specific data
- *
- * @typedef {Object} UserData
- *
- * @property {boolean} filterRating
- * @property {boolean} filterOrdered
- * @property {boolean} filterFavorite
- * @property {boolean} filterVegan
- * @property {string} filterText
- * @property {Object} userRatings
- * @property {Object} avgRatings
- * @property {Object} favorites
- * @property {Object|null} orderedDishes
- * @property {boolean} orderedDishesInvalidated
- */
+export type DishOrder = {
+  dishName: string;
+  dishId: DishId;
+  orderId: string;
+  date: string;
+  contractorName: string;
+};
+type OrderedDishes = {
+  list: DishOrder[];
+  updatedDate: string;
+};
 
-/**
- * @return {Promise<UserData>}
- */
-export async function getData() {
+export type UserData = {
+  filterRating: boolean;
+  filterOrdered: boolean;
+  filterFavorite: boolean;
+  filterVegan: boolean;
+  filterText: string;
+  userRatings: UserRatings;
+  avgRatings: AvgRatings;
+  favorites: Favorites;
+  orderedDishes: OrderedDishes | null;
+  orderedDishesInvalidated: boolean;
+};
+
+export async function getData(): Promise<UserData> {
   let data = null;
 
   try {
@@ -41,7 +47,7 @@ export async function getData() {
   return fillDefaults(data);
 }
 
-function fillDefaults(data) {
+function fillDefaults(data: Partial<UserData>): UserData {
   return {
     filterRating: false,
     filterOrdered: false,
@@ -57,34 +63,20 @@ function fillDefaults(data) {
   };
 }
 
-/**
- * @return {Promise<void>}
- */
-export async function clearData() {
+export async function clearData(): Promise<void> {
   await browser.storage.local.remove('userData');
 }
 
-/**
- * @param {UserData} data
- * @return {Promise<void>}
- */
-export async function saveData(data) {
+export async function saveData(data: Partial<UserData>): Promise<void> {
   await browser.storage.local.set({ userData: data });
 }
 
-/**
- * @param {Function} fn
- * @return {Promise<void>}
- */
-export async function updateData(fn) {
+export async function updateData(fn: (userData: UserData) => Partial<UserData>): Promise<void> {
   const prevData = await getData();
   await saveData({ ...prevData, ...fn(prevData) });
 }
 
-/**
- * @param {Function} handler
- */
-export function subscribeForStorageChanges(handler) {
+export function subscribeForStorageChanges(handler: (newData: UserData, oldValue: Partial<UserData>) => void): void {
   browser.storage.onChanged.addListener(async changes => {
     if (changes.userData) {
       const { newValue, oldValue } = changes.userData;
@@ -96,19 +88,16 @@ export function subscribeForStorageChanges(handler) {
 let loading = 0;
 const loadingListeners = [];
 
-export function subscribeForLoadingChanges(fn) {
+export function subscribeForLoadingChanges(fn: (loading: boolean) => void): void {
   loadingListeners.push(fn);
 }
-export function startLoading() {
+
+export function startLoading(): void {
   loading++;
   loadingListeners.forEach(fn => fn(loading));
 }
 
-export function stopLoading() {
+export function stopLoading(): void {
   loading--;
   loadingListeners.forEach(fn => fn(loading));
-}
-
-export function isLoading() {
-  return loading > 0;
 }

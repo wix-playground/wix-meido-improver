@@ -1,4 +1,5 @@
 import { PostMessageClient, PostMessageServer } from '../modules/postMessageRPC';
+import { DishId } from '../modules/database';
 
 let loaded = false;
 const server = new PostMessageServer({
@@ -28,7 +29,9 @@ export const callInQueue = fn =>
     queue = queue.then(() => Promise.resolve(fn()).then(resolve, reject));
   });
 
-async function createRpc(src = 'https://wix.getmeido.com/order') {
+async function createRpc(
+  src = 'https://wix.getmeido.com/order'
+): Promise<{ client: PostMessageClient; iframe: HTMLIFrameElement }> {
   const iframe = document.createElement('iframe');
 
   iframe.src = src;
@@ -49,7 +52,8 @@ async function createRpc(src = 'https://wix.getmeido.com/order') {
 
 let client = null;
 let iframe = null;
-async function getRpcClient(src) {
+
+async function getRpcClient(src?: string): Promise<PostMessageClient> {
   let justCreated = false;
   if (!client || !iframe) {
     ({ client, iframe } = await createRpc(src));
@@ -64,42 +68,42 @@ async function getRpcClient(src) {
   return client;
 }
 
-export async function isLoggedIn() {
+export async function isLoggedIn(): Promise<boolean> {
   const client = await getRpcClient();
-  return client.request('isLoggedIn');
+  return (await client.request('isLoggedIn')) as boolean;
 }
 
-export async function openContractor(contractorName) {
+export async function openContractor(contractorName: string): Promise<void> {
   const client = await getRpcClient('https://wix.getmeido.com/order');
   await client.request('openContractor', contractorName);
   await waitLoaded();
 }
 
-export async function clickOneClickBuy(dishId) {
+export async function clickOneClickBuy(dishId: DishId): Promise<void> {
   const client = await getRpcClient();
   await client.request('clickOneClickBuy', dishId);
   await waitLoaded();
 }
 
-export async function confirmOrder(date) {
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
+export async function confirmOrder(date: Date): Promise<void> {
+  const year = String(date.getFullYear());
+  const month = String(date.getMonth() + 1);
+  const day = String(date.getDate());
 
   const query = new URLSearchParams({ year, month, day }).toString();
   const client = await getRpcClient('https://wix.getmeido.com/order/fast?' + query);
 
-  const dateStr = [year, month, day].map(n => String(n).padStart(2, '0')).join('-');
+  const dateStr = [year, month, day].map(n => n.padStart(2, '0')).join('-');
 
   await client.request('confirmOrder', dateStr);
 }
 
-export async function removeOrder(orderId, dishId) {
+export async function removeOrder(orderId: string, dishId: DishId): Promise<void> {
   const client = await getRpcClient();
   await client.request('removeOrder', orderId, dishId);
 }
 
-export async function callRefreshOrderedDishesCache() {
+export async function callRefreshOrderedDishesCache(): Promise<void> {
   const client = await getRpcClient();
   await client.request('callRefreshOrderedDishesCache');
 }

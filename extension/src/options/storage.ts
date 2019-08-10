@@ -1,5 +1,13 @@
 import browser from 'webextension-polyfill';
 
+type Notification = {
+  dayName: string;
+  time: string;
+};
+export type Options = {
+  enableNotifications: boolean;
+  notifications: Notification[];
+};
 export const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 export const MONTH_NAMES = [
   'January',
@@ -15,7 +23,7 @@ export const MONTH_NAMES = [
   'November',
   'December',
 ];
-const DEFAULT_OPTIONS = {
+const DEFAULT_OPTIONS: Options = {
   enableNotifications: true,
   notifications: [
     { dayName: DAY_NAMES[3], time: '12:00' },
@@ -26,7 +34,7 @@ const DEFAULT_OPTIONS = {
   ],
 };
 
-export async function getOptions() {
+export async function getOptions(): Promise<Options> {
   const items = await browser.storage.sync.get('options').catch(() => browser.storage.local.get('options'));
 
   return {
@@ -35,10 +43,10 @@ export async function getOptions() {
   };
 }
 
-export async function setOptions(options) {
-  return await browser.storage.sync.set({ options }).catch(() => browser.storage.local.set({ options }));
+export async function setOptions(options: Options): Promise<void> {
+  await browser.storage.sync.set({ options }).catch(() => browser.storage.local.set({ options }));
 }
 
-export async function resetOptions() {
+export async function resetOptions(): Promise<void> {
   await setOptions(DEFAULT_OPTIONS);
 }

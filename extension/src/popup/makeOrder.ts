@@ -6,8 +6,9 @@ import {
   confirmOrder,
   callRefreshOrderedDishesCache,
 } from './rpcClient';
+import { DishId } from '../modules/database';
 
-export async function makeOrder(newDate, contractorName, dishId) {
+export async function makeOrder(newDate: Date, contractorName: string, dishId: DishId): Promise<void> {
   await callInQueue(async () => {
     if (!(await isLoggedIn())) {
       throw new Error('Open Meido to login');
@@ -27,17 +28,17 @@ export async function makeOrder(newDate, contractorName, dishId) {
 
 const loadingButtons = {};
 
-export function isLoadingButton(weekDayIndex) {
+export function isLoadingButton(weekDayIndex: number): boolean {
   return !!loadingButtons[weekDayIndex];
 }
 
-export function startLoadingButton(weekDayIndex, button) {
+export function startLoadingButton(weekDayIndex: number, button: HTMLButtonElement): void {
   loadingButtons[weekDayIndex] = true;
   button.classList.add('spinning');
   button.disabled = true;
 }
 
-export function stopLoadingButton(weekDayIndex, button) {
+export function stopLoadingButton(weekDayIndex: number, button: HTMLButtonElement): void {
   delete loadingButtons[weekDayIndex];
   button.classList.remove('spinning');
   button.disabled = false;

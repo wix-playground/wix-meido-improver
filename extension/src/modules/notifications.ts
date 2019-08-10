@@ -1,17 +1,23 @@
 import browser from 'webextension-polyfill';
-import { DAY_NAMES } from '../options/storage';
-import { getData } from './localStorage';
+import { DAY_NAMES, Options } from '../options/storage';
+import { DishOrder, getData } from './localStorage';
 
+type WorkingWeekOrders = {
+  updatedDate: string;
+  ordersPerDay: DishOrder[];
+  nextWeekOrdersPerDay: DishOrder[];
+  orderedDishesInvalidated: boolean;
+};
 export async function clearAlarms() {
   return await browser.alarms.clearAll();
 }
 
-export async function createAlarms(options) {
+export async function createAlarms(options: Options): Promise<void> {
   if (!options.enableNotifications) {
     return;
   }
 
-  return Promise.all(
+  await Promise.all(
     options.notifications.map(({ dayName, time }) =>
       browser.alarms.create(`${dayName} ${time}`, {
         when: getDateByDayIndex(new Date(), DAY_NAMES[dayName], time).getTime(),
@@ -21,7 +27,7 @@ export async function createAlarms(options) {
   );
 }
 
-export function getDateByDayIndex(baseDate, newDayIndex, time = '00:00') {
+export function getDateByDayIndex(baseDate: Date, newDayIndex: number, time: string = '00:00'): Date {
   const [hh, mm] = time.split(':');
   const date = new Date(baseDate);
 
@@ -36,30 +42,28 @@ export function getDateByDayIndex(baseDate, newDayIndex, time = '00:00') {
   return date;
 }
 
-export function getWeekDayIndex(date) {
+export function getWeekDayIndex(date: Date): number {
   return (date.getDay() + 6) % 7;
 }
 
-export async function getWorkingWeekOrders(date) {
+export async function getWorkingWeekOrders(date: Date): Promise<WorkingWeekOrders> {
   const { orderedDishesInvalidated, ...data } = await getData();
-  const orderedDishes = data.orderedDishes || {};
-  const updatedDate = orderedDishes.updatedDate;
-  const orders = orderedDishes.list || [];
+  const { updatedDate, list } = data.orderedDishes || { list: [], updatedDate: null };
 
   const ordersPerDay = getWorkingWeekDays(date).map(weekDate =>
-    orders.find(order => isSameDay(weekDate, new Date(order.date)))
+    list.find(order => isSameDay(weekDate, new Date(order.date)))
   );
 
   const nextWeek = new Date();
   nextWeek.setDate(nextWeek.getDate() + 7);
   const nextWeekOrdersPerDay = getWorkingWeekDays(nextWeek).map(weekDate =>
-    orders.find(order => isSameDay(weekDate, new Date(order.date)))
+    list.find(order => isSameDay(weekDate, new Date(order.date)))
   );
 
   return { updatedDate, ordersPerDay, nextWeekOrdersPerDay, orderedDishesInvalidated };
 }
 
-export function isSameDay(dateOne, dateTwo) {
+export function isSameDay(dateOne: Date, dateTwo: Date): boolean {
   return (
     dateOne.getFullYear() === dateTwo.getFullYear() &&
     dateOne.getMonth() === dateTwo.getMonth() &&
@@ -67,7 +71,7 @@ export function isSameDay(dateOne, dateTwo) {
   );
 }
 
-export function getWorkingWeekDays(date) {
+export function getWorkingWeekDays(date: Date): Date[] {
   const monday = getDateByDayIndex(date, 0, '00:00');
   return new Array(5).fill(null).map((_, weekDayIndex) => {
     const newDate = new Date(monday);

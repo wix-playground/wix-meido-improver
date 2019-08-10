@@ -3,11 +3,10 @@
   "scripts": {
     "premake": "rm -rf ./dist",
     "make": "webpack --mode production",
-    "postmake": "zip -r -FS dist.zip ./dist/*",
     "watch": "npm run make -- --watch",
     "lint": "npm run prettier -- --check",
     "lint:fix": "npm run prettier -- --write",
-    "prettier": "prettier ./src/\\*\\*/\\*.{js,css} --single-quote --trailing-comma=es5 --print-width=120"
+    "prettier": "prettier ./src/\\*\\*/\\*.{ts,css} --single-quote --trailing-comma=es5 --print-width=120"
   },
   "husky": {
     "hooks": {
@@ -15,7 +14,7 @@
     }
   },
   "lint-staged": {
-    "*.{js,css}": [
+    "*.{ts,css}": [
       "npm run lint:fix",
       "git add"
     ]
@@ -38,6 +37,8 @@
     "mini-css-extract-plugin": "^0.8.0",
     "prettier": "^1.18.2",
     "style-loader": "^0.23.1",
+    "ts-loader": "^6.0.4",
+    "typescript": "^3.5.3",
     "webpack": "^4.39.1",
     "webpack-cli": "^3.3.6"
   }

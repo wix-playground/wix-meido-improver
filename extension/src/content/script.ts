@@ -1,4 +1,10 @@
-import { getData, subscribeForLoadingChanges, subscribeForStorageChanges, updateData } from '../modules/localStorage';
+import {
+  getData,
+  subscribeForLoadingChanges,
+  subscribeForStorageChanges,
+  updateData,
+  UserData,
+} from '../modules/localStorage';
 import { DISH_COUNT_CLASS, invalidateOrderedDishesCache, renderOrderedDishes } from '../modules/orders';
 import { addCategoryAll } from '../modules/categoryAll';
 import { inIframe } from './rpcListener';
@@ -35,7 +41,7 @@ window.addEventListener('DOMContentLoaded', () => {
     addOneClickBuy();
 
     subscribeForStorageChanges(render);
-    void renderOrderedDishes(renderWithData);
+    void renderOrderedDishes().then(() => renderWithData());
     void renderWithData();
     renderOrderTable();
     addRemoveCartButtonListener();
@@ -44,21 +50,23 @@ window.addEventListener('DOMContentLoaded', () => {
   subscribeForLoadingChanges(loading => renderSpinner(document.body, loading));
 });
 
-async function renderWithData() {
+async function renderWithData(): Promise<void> {
   const data = await getData();
   render(data);
 }
 
-function openFirstCategory() {
+function openFirstCategory(): void {
   const firstCategoryTabSelected = !!document.querySelector('.suppliers .container .nav.nav-tabs.new-tabs li.active');
-  const firstCategoryTab = document.querySelector('.suppliers .container .nav.nav-tabs.new-tabs li:first-child a');
+  const firstCategoryTab = <HTMLAnchorElement>(
+    document.querySelector('.suppliers .container .nav.nav-tabs.new-tabs li:first-child a')
+  );
 
   if ((!firstCategoryTabSelected || document.cookie.includes('activeTab=category_all')) && firstCategoryTab) {
     firstCategoryTab.click();
   }
 }
 
-function render(data) {
+function render(data: UserData): void {
   const {
     filterRating,
     filterOrdered,
@@ -86,18 +94,18 @@ function render(data) {
     let firstPartiallyMatchedFound = false;
 
     [...pane.children]
-      .map(item => {
-        const content = item.querySelector('.menu-item__content');
-        const button = content.querySelector('a.btn.buy');
+      .map((item: HTMLElement) => {
+        const content = <HTMLElement>item.querySelector('.menu-item__content');
+        const button = <HTMLAnchorElement>content.querySelector('a.btn.buy');
         const dishId = button.href.split('/').pop();
-        const orderedElem = content.querySelector('.' + DISH_COUNT_CLASS);
+        const orderedElem = <HTMLElement>content.querySelector('.' + DISH_COUNT_CLASS);
         const orderedTimes = orderedElem ? parseInt(orderedElem.innerText) : 0;
 
         return {
           item,
           content,
           dishId,
-          rating: (avgRatings[dishId] || {}).avg || 0,
+          rating: (avgRatings[dishId] || { avg: 0 }).avg,
           includesFilters: includes(content, filters),
           isFavorite: !!favorites[dishId],
           isVegan: !!content.querySelector('img[src="/images/vegan.png"]'),
@@ -267,7 +275,7 @@ function createOneClickBuyElement(buyButton) {
       .then(() => removeAllCartItems())
       .then(() => buyButton.click())
       .then(() => waitForSelector('#cart .cart__button > a'))
-      .then(() => document.querySelector('#cart .cart__button > a').click());
+      .then(() => (<HTMLAnchorElement>document.querySelector('#cart .cart__button > a')).click());
   };
 
   return oneClick;
@@ -373,7 +381,7 @@ function createSearchInput() {
   searchInput.className = SEARCH_INPUT_CLASS;
   searchInput.placeholder = 'Search... Example: Кур овоч, суп горох';
   searchInput.autofocus = !inIframe();
-  searchInput.onkeyup = event => updateData(() => ({ filterText: event.target.value }));
+  searchInput.onkeyup = event => updateData(() => ({ filterText: (<HTMLInputElement>event.target).value }));
 
   return searchInput;
 }
@@ -384,7 +392,7 @@ function renderOrderTable() {
       submitButton.style.display = 'none';
 
       [...document.querySelectorAll('#calendar.table.calendar tbody td')]
-        .map(td => ({ td, label: td.querySelector('.btn.available-date') }))
+        .map(td => ({ td, label: <HTMLLabelElement>td.querySelector('.btn.available-date') }))
         .filter(({ label }) => label)
         .forEach(({ td, label }) => {
           const orderButton = document.createElement('a');
@@ -423,16 +431,17 @@ function createCheckboxInLabel(labelHTML, className, onChange) {
   return label;
 }
 
-function removeAllCartItems() {
+function removeAllCartItems(): Promise<void> {
   const items = [...document.querySelectorAll('#cart .cart__delete')];
   return items.length === 0
     ? Promise.resolve()
     : Promise.resolve()
-        .then(() => items.forEach(item => item.click()))
-        .then(() => waitForEmptySelector('#cart .cart__delete'));
+        .then(() => items.forEach((item: HTMLElement) => item.click()))
+        .then(() => waitForEmptySelector('#cart .cart__delete'))
+        .then(() => void 0);
 }
 
-function includes(whereElement, filters) {
+function includes(whereElement: HTMLElement, filters: string[][]) {
   const where = whereElement.innerText.toLowerCase();
 
   return filters
@@ -441,7 +450,7 @@ function includes(whereElement, filters) {
     .reduce((sum, len) => sum + len, 0);
 }
 
-const renderHighlights = (elem, keywords, shouldHighlight) => {
+const renderHighlights = (elem: HTMLElement, keywords: string[], shouldHighlight: boolean) => {
   unHighlight(elem);
   if (shouldHighlight && keywords.length !== 0) {
     highlight(elem, keywords);

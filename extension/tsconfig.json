@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "module": "es6",
+    "target": "es2018",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext",
+      "es2020.string"
+    ],
+    "esModuleInterop": true,
+    "allowJs": true
+  }
+}

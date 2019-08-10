@@ -1,10 +1,27 @@
 import browser from 'webextension-polyfill';
-import {startLoading, stopLoading, updateData, getData, saveData} from './localStorage';
+import { startLoading, stopLoading, updateData, getData, saveData } from './localStorage';
 
 void fixFavoritesDataStructure();
 void syncRatings();
 
-async function fixFavoritesDataStructure() {
+export type DishId = string;
+type Rating = number;
+
+type AvgRating = {
+  count: number;
+  avg: Rating;
+};
+
+export type Favorites = { [dishId: string]: boolean };
+export type UserRatings = { [dishId: string]: Rating };
+export type AvgRatings = { [dishId: string]: AvgRating };
+
+type BothRatings = {
+  userRatings: UserRatings;
+  avgRatings: AvgRatings;
+};
+
+async function fixFavoritesDataStructure(): Promise<void> {
   const { ...data } = await getData();
   const favorites = {};
 
@@ -24,25 +41,22 @@ async function fixFavoritesDataStructure() {
   }
 }
 
-async function syncFavorites() {
+async function syncFavorites(): Promise<void> {
   const favorites = await fetchFavorites();
   await updateData(() => ({ favorites }));
 }
 
-async function syncRatings() {
+async function syncRatings(): Promise<void> {
   const { userRatings, avgRatings } = await fetchBothRatings();
   await updateData(() => ({ userRatings, avgRatings }));
 }
 
-/**
- * @return {string}
- */
-function getAuthCookie() {
+function getAuthCookie(): string {
   const reg = /(^|; )([a-z0-9]{32}=[^;]*)/;
   return (document.cookie.match(reg) || '')[2];
 }
 
-async function fetchFavorites() {
+async function fetchFavorites(): Promise<Favorites> {
   return await doRequest('GET', '/favorites');
 }
 
@@ -50,17 +64,12 @@ async function fetchFavorites() {
  * @param {Object.<string, boolean>} favorites - where "key" (string) is dishId
  * @return {Promise<void>}
  */
-async function saveFavorites(favorites) {
+async function saveFavorites(favorites: Favorites): Promise<void> {
   const updatedFavorites = await doRequest('POST', '/favorites', { favorites });
   await updateData(() => ({ favorites: updatedFavorites }));
 }
 
-/**
- * @param {string} dishId
- * @param {number} rating
- * @return {Promise<void>}
- */
-export async function setRating(dishId, rating) {
+export async function setRating(dishId: DishId, rating: Rating): Promise<void> {
   await updateData(({ userRatings, avgRatings }) => {
     const avg = avgRatings[dishId] || { count: 0, avg: 0 };
 
@@ -79,11 +88,7 @@ export async function setRating(dishId, rating) {
   await updateData(() => ({ userRatings, avgRatings }));
 }
 
-/**
- * @param {string} dishId
- * @return {Promise<void>}
- */
-export async function deleteRating(dishId) {
+export async function deleteRating(dishId: DishId): Promise<void> {
   await updateData(({ userRatings }) => {
     const newRatings = userRatings || {};
     delete newRatings[dishId];
@@ -94,29 +99,18 @@ export async function deleteRating(dishId) {
   await updateData(() => ({ userRatings, avgRatings }));
 }
 
-/**
- * @param {string} dishId
- * @param { boolean} favorite
- * @return {Promise<void>}
- */
-export async function toggleFavorite(dishId, favorite) {
+export async function toggleFavorite(dishId: DishId, favorite: boolean): Promise<void> {
   await updateData(({ favorites }) => ({ favorites: { ...favorites, [dishId]: favorite } }));
 
   const favorites = await doRequest('POST', `/favorites/${encodeURIComponent(dishId)}`, { favorite });
   await updateData(() => ({ favorites }));
 }
 
-async function fetchBothRatings() {
+async function fetchBothRatings(): Promise<BothRatings> {
   return await doRequest('GET', '/both-ratings');
 }
 
-/**
- * @param {'GET'|'POST'|'DELETE'} method
- * @param {string} endpoint
- * @param {Object=} params
- * @return {Promise<*>}
- */
-async function doRequest(method, endpoint, params) {
+async function doRequest(method: 'GET' | 'POST' | 'DELETE', endpoint: string, params: object = {}) {
   const data = { ...params, authCookie: getAuthCookie() };
 
   startLoading();
@@ -131,7 +125,7 @@ async function doRequest(method, endpoint, params) {
   }
   stopLoading();
 
-  const [error, result] = response || ['error'];
+  const [error, result] = response || ['error', null];
 
   if (error) {
     throw error;

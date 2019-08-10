@@ -1,13 +1,7 @@
 const NODE_TYPE_TEXT = 3;
 const CLASS_NAME = '__HIGHLIGHTED';
 
-/**
- *
- * @param {HTMLElement | ChildNode} elem
- * @param {string[]} keywords
- * @return {boolean}
- */
-export function highlight(elem, keywords) {
+export function highlight(elem: HTMLElement | ChildNode, keywords: string[]): boolean {
   let found = false;
 
   // Sort longer matches first to avoid
@@ -34,6 +28,8 @@ export function highlight(elem, keywords) {
 
         lastIdx = idx + match.length;
         found = true;
+
+        return match;
       });
       const end = document.createTextNode(child.textContent.slice(lastIdx));
       frag.appendChild(end);
@@ -44,10 +40,7 @@ export function highlight(elem, keywords) {
   return found;
 }
 
-/**
- * @param {HTMLElement} elem
- */
-export function unHighlight(elem) {
+export function unHighlight(elem: HTMLElement): void {
   [...elem.querySelectorAll('.' + CLASS_NAME)].forEach(mark => {
     const newTextNode = document.createTextNode(mark.textContent);
     mark.parentNode.insertBefore(newTextNode, mark);
@@ -55,10 +48,7 @@ export function unHighlight(elem) {
   });
 }
 
-/**
- * @param {HTMLElement} elem
- */
-function unionTextNodes(elem) {
+function unionTextNodes(elem: HTMLElement | ChildNode): void {
   for (let i = 0; i < elem.childNodes.length; i++) {
     const child = elem.childNodes[i];
 
@@ -78,11 +68,6 @@ function unionTextNodes(elem) {
   }
 }
 
-/**
- *
- * @param {string} string
- * @return {string}
- */
-function escapeRegExp(string) {
+function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }

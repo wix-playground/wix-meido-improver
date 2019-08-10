@@ -1,4 +1,4 @@
-function randomStr() {
+function randomStr(): string {
   return (
     Math.random()
       .toString(36)
@@ -10,6 +10,11 @@ function randomStr() {
 }
 
 export class PostMessageClient {
+  private readonly targetWindow: {
+    postMessage: (message: any, origin: string) => void;
+  };
+  private dispatches: Map<string, { resolve: (any) => void; reject: (any) => void }>;
+
   constructor(targetWindow) {
     this.targetWindow = targetWindow;
     this.dispatches = new Map();
@@ -17,12 +22,12 @@ export class PostMessageClient {
   }
 
   handleMessage(event) {
-    if (!event.data || typeof event.data.id === 'undefined' || !event.data.jsonrpc || 'method' in event.data) {
+    if (!event.data || typeof event.data.dishId === 'undefined' || !event.data.jsonrpc || 'method' in event.data) {
       return;
     }
 
-    const dispatch = this.dispatches.get(event.data.id);
-    this.dispatches.delete(event.data.id);
+    const dispatch = this.dispatches.get(event.data.dishId);
+    this.dispatches.delete(event.data.dishId);
 
     if (dispatch) {
       if (event.data.error) {
@@ -41,7 +46,7 @@ export class PostMessageClient {
     window.removeEventListener('message', this.handleMessage);
   }
 
-  _dispatch(method, id, ...params) {
+  _dispatch(method: string, id: string, ...params) {
     return new Promise((resolve, reject) => {
       this.dispatches.set(id, { resolve, reject });
 
@@ -60,12 +65,16 @@ export class PostMessageClient {
     });
   }
 
-  request(method, ...params) {
+  request(method: string, ...params) {
     return this._dispatch(method, randomStr(), ...params);
   }
 }
 
 export class PostMessageServer {
+  private readonly handlers: {
+    [handler: string]: (any) => any;
+  };
+
   constructor(handlers) {
     this.handlers = handlers;
     this.handleMessage = this.handleMessage.bind(this);
@@ -116,7 +125,7 @@ export class PostMessageServer {
       }))
       .then(response => ({
         jsonrpc: '2.0',
-        id: event.data.id,
+        dishId: event.data.dishId,
         ...response,
       }))
       .then(response => event.source.postMessage(response, '*'));

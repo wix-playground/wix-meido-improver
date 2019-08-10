@@ -1,10 +1,14 @@
-import { clearData } from '../modules/localStorage.js';
-import { DAY_NAMES, setOptions, getOptions } from './storage.js';
+import { clearData } from '../modules/localStorage';
+import { DAY_NAMES, setOptions, getOptions } from './storage';
 
 import './styles.css';
 import { resetOptions } from './storage';
 
-function createInputsTr(selectedDayName, enteredTime, onRemoveClick) {
+function createInputsTr(
+  selectedDayName: string,
+  enteredTime: string,
+  onRemoveClick: (event: Event) => void
+): HTMLTableRowElement {
   const tr = document.createElement('tr');
   const tdDay = document.createElement('td');
   const tdTime = document.createElement('td');
@@ -45,11 +49,11 @@ function createInputsTr(selectedDayName, enteredTime, onRemoveClick) {
 const form = document.forms[0];
 const table = document.getElementsByTagName('table')[0];
 const tableTbody = document.getElementsByTagName('tbody')[0];
-const enableNotificationsInput = document.getElementsByName('enableNotifications')[0];
+const enableNotificationsInput = <HTMLInputElement>document.getElementsByName('enableNotifications')[0];
 const changesSavedElem = document.getElementById('changes-saved');
 
 enableNotificationsInput.addEventListener('change', event => {
-  const checked = event.currentTarget.checked;
+  const checked = (<HTMLInputElement>event.currentTarget).checked;
   table.classList.toggle('notifications-enabled', checked);
 });
 
@@ -72,8 +76,8 @@ addButton.addEventListener('click', event => {
 
 form.addEventListener('submit', async event => {
   event.preventDefault();
-  const dayNames = [...document.getElementsByName('dayName[]')].map(input => input.value);
-  const times = [...document.getElementsByName('time[]')].map(input => input.value);
+  const dayNames = [...document.getElementsByName('dayName[]')].map(input => (<HTMLInputElement>input).value);
+  const times = [...document.getElementsByName('time[]')].map(input => (<HTMLInputElement>input).value);
 
   const options = {
     enableNotifications: enableNotificationsInput.checked,

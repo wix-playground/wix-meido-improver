@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { escapeHtml } from '../modules/escapeHtml.js';
+import { escapeHtml } from '../modules/escapeHtml';
 import { DAY_NAMES, MONTH_NAMES } from '../options/storage';
 import { getDateByDayIndex, getWeekDayIndex, getWorkingWeekOrders, isSameDay } from '../modules/notifications';
 import { isRemovingButton, startRemovingButton, stopRemovingButton, tryRemoveOrder } from './removeOrder';
@@ -14,18 +14,18 @@ button.addEventListener('click', event => {
   browser.runtime.openOptionsPage();
 });
 
-let weekShift = 0;
-let warningsCount = 0;
+let weekShift: number = 0;
+let warningsCount: number = 0;
 
 const errorElem = document.getElementById('error');
 const warningElem = document.getElementById('warning');
 const ordersElem = document.getElementById('orders');
 const thisWeekElem = document.getElementById('this-week');
 const theNextWeekElem = document.getElementById('the-next-week');
-const updateDateElem = document.getElementsByClassName('updated-date')[0];
-const notLoadedElem = document.getElementsByClassName('not-loaded')[0];
-const prevWeekButtonElem = document.getElementsByClassName('prev-week')[0];
-const nextWeekButtonElem = document.getElementsByClassName('next-week')[0];
+const updateDateElem = document.getElementById('updated-date');
+const notLoadedElem = document.getElementById('not-loaded');
+const prevWeekButtonElem = document.getElementById('prev-week');
+const nextWeekButtonElem = document.getElementById('next-week');
 
 (async () => {
   prevWeekButtonElem.addEventListener('click', () => changeWeekAndRender(weekShift - 1));
@@ -37,12 +37,12 @@ const nextWeekButtonElem = document.getElementsByClassName('next-week')[0];
   await render();
 })();
 
-async function changeWeekAndRender(newWeekShift) {
+async function changeWeekAndRender(newWeekShift: number) {
   weekShift = newWeekShift;
   await render();
 }
 
-async function render() {
+async function render(): Promise<void> {
   renderWarning();
   const startDate = getDateByDayIndex(new Date(), 0);
   startDate.setDate(startDate.getDate() + weekShift * 7);
@@ -75,7 +75,7 @@ async function render() {
     const nextWeekDay = getDateByDayIndex(new Date(), weekDayIndex);
     nextWeekDay.setDate(nextWeekDay.getDate() + 7);
 
-    const repeatButton = weekElem.querySelector('.repeat');
+    const repeatButton = <HTMLButtonElement>weekElem.querySelector('.repeat');
     const hideRepeatButton = !order || !!nextWeekOrdersPerDay[weekDayIndex] || date >= nextWeekDay;
     repeatButton.disabled = hideRepeatButton;
     repeatButton.classList.toggle('hidden', hideRepeatButton);
@@ -101,7 +101,7 @@ async function render() {
       });
     }
 
-    const removeButton = weekElem.querySelector('.remove');
+    const removeButton = <HTMLButtonElement>weekElem.querySelector('.remove');
     const nextMonday = getDateByDayIndex(nextWeekDay, 0);
     const hideRemoveButton = !order || date < nextMonday;
     removeButton.disabled = hideRemoveButton;
@@ -132,29 +132,29 @@ async function render() {
   });
 }
 
-function showError(errorMessage) {
+function showError(errorMessage: string): void {
   errorElem.innerText = errorMessage;
 }
 
-function hideError() {
+function hideError(): void {
   errorElem.innerText = '';
 }
 
-function showWarning() {
+function showWarning(): void {
   warningsCount++;
   renderWarning();
 }
 
-function hideWarning() {
+function hideWarning(): void {
   warningsCount--;
   renderWarning();
 }
 
-function renderWarning() {
+function renderWarning(): void {
   warningElem.innerText = warningsCount === 0 ? '' : 'Do not close this popup';
 }
 
-function createWeekElem(date, dishName, contractorName) {
+function createWeekElem(date: Date, dishName: string, contractorName: string) {
   const weekElem = document.createElement('div');
   weekElem.className = 'week';
   weekElem.innerHTML = `
@@ -179,12 +179,12 @@ function createWeekElem(date, dishName, contractorName) {
   return weekElem;
 }
 
-function getWeekName(date) {
+function getWeekName(date: Date): string {
   const dayIndex = getWeekDayIndex(date);
   return DAY_NAMES[dayIndex].substr(0, 3);
 }
 
-function getDayName(date) {
+function getDayName(date: Date): string {
   const monthIndex = date.getMonth();
   const monthName = MONTH_NAMES[monthIndex].substr(0, 3);
   return date.getDate() + ' ' + monthName;

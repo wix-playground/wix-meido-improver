@@ -77,8 +77,8 @@ body {
   /*transition: padding 1s;*/
 }
 
-.prev-week,
-.next-week {
+#prev-week,
+#next-week {
   border: none;
   background: transparent;
   color: orange;
@@ -89,17 +89,17 @@ body {
   text-shadow: 0 1px 0 orange;
 }
 
-.prev-week:hover,
-.next-week:hover {
+#prev-week:hover,
+#next-week:hover {
   background: rgba(0, 0, 0, 0.1);
 }
 
-.updated-date {
+#updated-date {
   font-size: 0.6em;
   color: rgba(255, 255, 255, 0.6);
 }
 
-.not-loaded {
+#not-loaded {
   padding: 5px 10px;
   background-color: red;
   border-radius: 5px;
@@ -108,8 +108,8 @@ body {
   text-align: center;
 }
 
-.not-loaded,
-.not-loaded a {
+#not-loaded,
+#not-loaded a {
   color: #fff;
 }
 
