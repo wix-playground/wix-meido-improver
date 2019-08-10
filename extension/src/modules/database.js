@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { startLoading, stopLoading, updateData, getData } from './localStorage';
+import {startLoading, stopLoading, updateData, getData, saveData} from './localStorage';
 
 void fixFavoritesDataStructure();
 void syncRatings();
