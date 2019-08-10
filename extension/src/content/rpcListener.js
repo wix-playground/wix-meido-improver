@@ -1,5 +1,5 @@
-import {PostMessageClient, PostMessageServer} from "../modules/postMessageRPC";
-import {refreshOrderedDishesCache} from "../modules/orders";
+import { PostMessageClient, PostMessageServer } from '../modules/postMessageRPC';
+import { refreshOrderedDishesCache } from '../modules/orders';
 
 export function inIframe() {
   try {
@@ -30,7 +30,9 @@ if (inIframe()) {
     confirmOrder: dateStr => {
       const input = document.querySelector(`input[value="${dateStr}"]`);
       if (!input) {
-        return Promise.reject(new Error(`Can't make an order for ${dateStr}. Probably you already made an order, or it's a holiday`));
+        return Promise.reject(
+          new Error(`Can't make an order for ${dateStr}. Probably you already made an order, or it's a holiday`)
+        );
       }
       input.nextSibling.nextSibling.click();
     },
@@ -55,7 +57,7 @@ if (inIframe()) {
     },
     callRefreshOrderedDishesCache: async () => {
       await refreshOrderedDishesCache();
-    }
+    },
   });
 
   server.mount(window);

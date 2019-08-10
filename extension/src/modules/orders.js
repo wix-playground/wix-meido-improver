@@ -1,5 +1,5 @@
-import {unescapeHtml} from "../modules/escapeHtml.js";
-import {getData, startLoading, stopLoading, updateData} from './localStorage';
+import { unescapeHtml } from '../modules/escapeHtml.js';
+import { getData, startLoading, stopLoading, updateData } from './localStorage';
 
 export const DISH_COUNT_CLASS = '__ITDXER_dish_count';
 const CONTRACTOR_COUNT_CLASS = '__ITDXER_contractor_count';
@@ -23,7 +23,6 @@ const CONTRACTOR_COUNT_CLASS = '__ITDXER_contractor_count';
  * @property {string} contractorName - food supplier
  */
 
-
 /**
  * @return {Promise<Order[]>}
  */
@@ -37,9 +36,7 @@ async function fetchOrders() {
       .map(pageNumber => fetchOrdersText(pageNumber))
   );
 
-  return [].concat(
-    ...[firstPageText, ...restPages].map(parseOrders)
-  );
+  return [].concat(...[firstPageText, ...restPages].map(parseOrders));
 }
 
 async function fetchOrdersText(page) {
@@ -48,12 +45,11 @@ async function fetchOrdersText(page) {
 }
 
 function parseOrders(text) {
-  return [...text.matchAll(/<td>#(\d+)<\/td><td>(\w+\s\d+,\s\d+)<\/td>/g)]
-    .map(([all, orderId, dateStr]) => ({
-      orderId,
-      dateStr,
-      date: (new Date(dateStr)).toISOString(),
-    }))
+  return [...text.matchAll(/<td>#(\d+)<\/td><td>(\w+\s\d+,\s\d+)<\/td>/g)].map(([all, orderId, dateStr]) => ({
+    orderId,
+    dateStr,
+    date: new Date(dateStr).toISOString(),
+  }));
 }
 
 function parsePagesCount(text) {
@@ -67,7 +63,7 @@ function parsePagesCount(text) {
  */
 async function fetchOrderedDishes(orders) {
   return await Promise.all(
-    orders.map(async ({orderId, date}) => {
+    orders.map(async ({ orderId, date }) => {
       const response = await fetch(`https://wix.getmeido.com/order/view/id/${orderId}`);
       const text = await response.text();
 
@@ -79,7 +75,7 @@ async function fetchOrderedDishes(orders) {
         dishId,
         orderId,
         date,
-        contractorName: unescapeHtml(contractorName).trim()
+        contractorName: unescapeHtml(contractorName).trim(),
       };
     })
   );
@@ -92,22 +88,19 @@ export async function refreshOrderedDishesCache() {
 
     let data = await getData();
     const list = (data.orderedDishes && data.orderedDishes.list) || [];
-    const oldOrdersIds = new Set(list.map(({orderId}) => orderId));
+    const oldOrdersIds = new Set(list.map(({ orderId }) => orderId));
 
-    const newOrdersIds = new Set(orders.map(({orderId}) => orderId));
-    const createdOrders = orders.filter(({orderId}) => !oldOrdersIds.has(orderId));
+    const newOrdersIds = new Set(orders.map(({ orderId }) => orderId));
+    const createdOrders = orders.filter(({ orderId }) => !oldOrdersIds.has(orderId));
     const createdDishes = await fetchOrderedDishes(createdOrders);
-    const liveDishes = list.filter(({orderId}) => newOrdersIds.has(orderId));
+    const liveDishes = list.filter(({ orderId }) => newOrdersIds.has(orderId));
 
     await updateData(() => ({
       orderedDishesInvalidated: false,
       orderedDishes: {
         updatedDate: new Date().toISOString(),
-        list: [
-          ...liveDishes,
-          ...createdDishes
-        ],
-      }
+        list: [...liveDishes, ...createdDishes],
+      },
     }));
   } catch (error) {
     console.error(error);
@@ -117,7 +110,7 @@ export async function refreshOrderedDishesCache() {
 
 export async function invalidateOrderedDishesCache() {
   await updateData(() => ({
-    orderedDishesInvalidated: true
+    orderedDishesInvalidated: true,
   }));
 }
 
@@ -131,7 +124,6 @@ async function getOrderedDishes() {
   return data.orderedDishes.list || [];
 }
 
-
 function isDateBeforeYesterday(date) {
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
@@ -141,9 +133,9 @@ function isDateBeforeYesterday(date) {
 export async function renderOrderedDishes(callback) {
   const allDishes = await getOrderedDishes();
   const dishIdsByContractor = allDishes.reduce(
-    (by, {dishId, contractorName}) => ({
+    (by, { dishId, contractorName }) => ({
       ...by,
-      [contractorName]: [...(by[contractorName] || []), dishId]
+      [contractorName]: [...(by[contractorName] || []), dishId],
     }),
     {}
   );
@@ -187,7 +179,7 @@ export async function renderOrderedDishes(callback) {
         countElem.title = `You bought this dish ${dishesCount.get(dishId)} times`;
         content.querySelector('.menu-item__info').append(countElem);
       }
-    })
+    });
   }
 
   callback();

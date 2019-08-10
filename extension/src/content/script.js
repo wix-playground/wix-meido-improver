@@ -1,6 +1,10 @@
-import {getData, subscribeForLoadingChanges, subscribeForStorageChanges, updateData} from "../modules/localStorage";
-import {DISH_COUNT_CLASS, invalidateOrderedDishesCache, renderOrderedDishes} from "../modules/orders";
-import {addCategoryAll} from "../modules/categoryAll";
+import { getData, subscribeForLoadingChanges, subscribeForStorageChanges, updateData } from '../modules/localStorage';
+import { DISH_COUNT_CLASS, invalidateOrderedDishesCache, renderOrderedDishes } from '../modules/orders';
+import { addCategoryAll } from '../modules/categoryAll';
+import { inIframe } from './rpcListener';
+import { highlight, unHighlight } from '../modules/highlight';
+import { deleteRating, setRating, toggleFavorite } from '../modules/database';
+import { waitForEmptySelector, waitForSelector } from '../modules/waitForSelector';
 
 import './fixes.css';
 import './styles/categoryAll.css';
@@ -9,10 +13,6 @@ import './styles/oneClickBuy.css';
 import './styles/orderButton.css';
 import './styles/rating.css';
 import './styles/spinner.css';
-import {inIframe} from "./rpcListener";
-import {highlight, unHighlight} from "../modules/highlight";
-import {deleteRating, setRating, toggleFavorite} from "../modules/database";
-import {waitForEmptySelector, waitForSelector} from "../modules/waitForSelector";
 
 const HEART_CLASS = '__ITDXER_heart';
 const RATING_CLASS = '__ITDXER_rating';
@@ -59,12 +59,26 @@ function openFirstCategory() {
 }
 
 function render(data) {
-  const {filterRating, filterOrdered, filterFavorite, filterVegan, filterText, userRatings, avgRatings, favorites} = data;
+  const {
+    filterRating,
+    filterOrdered,
+    filterFavorite,
+    filterVegan,
+    filterText,
+    userRatings,
+    avgRatings,
+    favorites,
+  } = data;
 
   const filters = (filterText || '')
     .toLowerCase()
     .split(',')
-    .map(part => part.split(' ').map(p => p.trim()).filter(Boolean))
+    .map(part =>
+      part
+        .split(' ')
+        .map(p => p.trim())
+        .filter(Boolean)
+    )
     .filter(part => part.length !== 0);
 
   const panes = document.querySelectorAll('.suppliers-content .container > .tab-content > .tab-pane');
@@ -79,7 +93,7 @@ function render(data) {
         const orderedElem = content.querySelector('.' + DISH_COUNT_CLASS);
         const orderedTimes = orderedElem ? parseInt(orderedElem.innerText) : 0;
 
-        return ({
+        return {
           item,
           content,
           dishId,
@@ -88,20 +102,24 @@ function render(data) {
           isFavorite: !!favorites[dishId],
           isVegan: !!content.querySelector('img[src="/images/vegan.png"]'),
           orderedTimes,
-        });
+        };
       })
-      .map(({includesFilters, dishId, isFavorite, isVegan, orderedTimes, rating, content, item}) => ({
+      .map(({ includesFilters, dishId, isFavorite, isVegan, orderedTimes, rating, content, item }) => ({
         orderArr: [
           filterRating ? rating : -1,
           filters.length > 0 ? includesFilters : -1,
-          filterFavorite ? isFavorite ? 1 : 0 : -1,
+          filterFavorite ? (isFavorite ? 1 : 0) : -1,
           filterVegan ? (isVegan ? 1 : 0) : -1,
-          filterOrdered ? orderedTimes : -1
+          filterOrdered ? orderedTimes : -1,
         ],
-        includesFilters, item, content, dishId, isFavorite
+        includesFilters,
+        item,
+        content,
+        dishId,
+        isFavorite,
       }))
       .sort((a, b) => sortCompareArrays(a.orderArr, b.orderArr))
-      .forEach(({orderArr, item, content, dishId, isFavorite, includesFilters}, order) => {
+      .forEach(({ orderArr, item, content, dishId, isFavorite, includesFilters }, order) => {
         if (orderArr.some(a => a === 0) && !firstPartiallyMatchedFound) {
           item.classList.add(PARTIALLY_MATCHED_CLASS);
           firstPartiallyMatchedFound = true;
@@ -119,7 +137,7 @@ function render(data) {
 
   const suppliersContent = document.querySelector('.suppliers > .suppliers-content');
   if (suppliersContent) {
-    renderFilters({suppliersContent, filterRating, filterOrdered, filterFavorite, filterVegan, filterText});
+    renderFilters({ suppliersContent, filterRating, filterOrdered, filterFavorite, filterVegan, filterText });
   }
 }
 
@@ -225,7 +243,9 @@ function createStar() {
 }
 
 function addOneClickBuy() {
-  const infos = document.querySelectorAll('.suppliers-content .container .menu-item > .menu-item__content > .menu-item__info');
+  const infos = document.querySelectorAll(
+    '.suppliers-content .container .menu-item > .menu-item__content > .menu-item__info'
+  );
   [...infos].forEach(itemInfo => {
     const buy = itemInfo.querySelector('.menu-item__info a.buy');
     const oneClick = createOneClickBuyElement(buy);
@@ -241,7 +261,7 @@ function createOneClickBuyElement(buyButton) {
   oneClick.className = [ONE_CLICK_BUY_CLASS, 'btn btn-success'].join(' ');
   oneClick.dataset.dishId = dishId;
 
-  oneClick.onclick = (event) => {
+  oneClick.onclick = event => {
     event.preventDefault();
     Promise.resolve()
       .then(() => removeAllCartItems())
@@ -253,8 +273,7 @@ function createOneClickBuyElement(buyButton) {
   return oneClick;
 }
 
-
-function renderFilters({suppliersContent, filterRating, filterFavorite, filterVegan, filterOrdered, filterText}) {
+function renderFilters({ suppliersContent, filterRating, filterFavorite, filterVegan, filterOrdered, filterText }) {
   let filters = suppliersContent.querySelector('.' + FILTERS_CLASS);
   if (!filters) {
     filters = createFiltersElement();
@@ -266,7 +285,7 @@ function renderFilters({suppliersContent, filterRating, filterFavorite, filterVe
   renderVeganCheckbox(filters, filterVegan);
   renderOrderedCheckbox(filters, filterOrdered);
 
-  renderSearchInput(filters, filterText)
+  renderSearchInput(filters, filterText);
 }
 
 function createFiltersElement() {
@@ -282,7 +301,7 @@ function renderRatingCheckbox(filters, filterRating) {
     checkboxLabel = createCheckboxInLabel(
       '&nbsp;<span style="color: #ffd900;">★️</span> rating',
       CHECKBOX_LABEL_RATING,
-      event => updateData(() => ({filterRating: event.target.checked}))
+      event => updateData(() => ({ filterRating: event.target.checked }))
     );
 
     filters.append(checkboxLabel);
@@ -295,10 +314,8 @@ function renderFavoriteCheckbox(filters, filterFavorite) {
   let checkboxLabel = filters.querySelector('.' + CHECKBOX_LABEL_FAVORITE);
 
   if (!checkboxLabel) {
-    checkboxLabel = createCheckboxInLabel(
-      '&nbsp;<span>❤️</span> favorite',
-      CHECKBOX_LABEL_FAVORITE,
-      event => updateData(() => ({filterFavorite: event.target.checked}))
+    checkboxLabel = createCheckboxInLabel('&nbsp;<span>❤️</span> favorite', CHECKBOX_LABEL_FAVORITE, event =>
+      updateData(() => ({ filterFavorite: event.target.checked }))
     );
 
     filters.append(checkboxLabel);
@@ -314,7 +331,7 @@ function renderVeganCheckbox(filters, filterVegan) {
     checkboxLabel = createCheckboxInLabel(
       '&nbsp;<img alt="vegan" src="/images/vegan.png" style="height: 1em"/> vegetarian',
       CHECKBOX_LABEL_VEGAN,
-      event => updateData(() => ({filterVegan: event.target.checked}))
+      event => updateData(() => ({ filterVegan: event.target.checked }))
     );
 
     filters.append(checkboxLabel);
@@ -330,7 +347,7 @@ function renderOrderedCheckbox(filters, filterOrdered) {
     checkboxLabel = createCheckboxInLabel(
       `&nbsp;<div class="${CHECKBOX_ICON_ORDERED}">n</div> ordered`,
       CHECKBOX_LABEL_ORDERED,
-      event => updateData(() => ({filterOrdered: event.target.checked}))
+      event => updateData(() => ({ filterOrdered: event.target.checked }))
     );
 
     filters.append(checkboxLabel);
@@ -338,7 +355,6 @@ function renderOrderedCheckbox(filters, filterOrdered) {
 
   checkboxLabel.querySelector('input').checked = filterOrdered;
 }
-
 
 function renderSearchInput(filters, filterText) {
   let searchInput = filters.querySelector('.' + SEARCH_INPUT_CLASS);
@@ -357,44 +373,43 @@ function createSearchInput() {
   searchInput.className = SEARCH_INPUT_CLASS;
   searchInput.placeholder = 'Search... Example: Кур овоч, суп горох';
   searchInput.autofocus = !inIframe();
-  searchInput.onkeyup = event => updateData(() => ({filterText: event.target.value}));
+  searchInput.onkeyup = event => updateData(() => ({ filterText: event.target.value }));
 
   return searchInput;
 }
 
-
 function renderOrderTable() {
   if (window.location.pathname.endsWith('/fast')) {
-    waitForSelector('.modal-open .modal-footer button.submit')
-      .then(submitButton => {
-        submitButton.style.display = 'none';
+    waitForSelector('.modal-open .modal-footer button.submit').then(submitButton => {
+      submitButton.style.display = 'none';
 
-        ([...document.querySelectorAll('#calendar.table.calendar tbody td')])
-          .map(td => ({td, label: td.querySelector('.btn.available-date')}))
-          .filter(({label}) => label)
-          .forEach(({td, label}) => {
-            const orderButton = document.createElement('a');
-            label.style.display = 'inline';
+      [...document.querySelectorAll('#calendar.table.calendar tbody td')]
+        .map(td => ({ td, label: td.querySelector('.btn.available-date') }))
+        .filter(({ label }) => label)
+        .forEach(({ td, label }) => {
+          const orderButton = document.createElement('a');
+          label.style.display = 'inline';
 
-            orderButton.innerText = 'Order';
-            orderButton.className = ORDER_BUTTON_CLASS;
+          orderButton.innerText = 'Order';
+          orderButton.className = ORDER_BUTTON_CLASS;
 
-            orderButton.onclick = () => {
-              if (!inIframe()) {
-                void invalidateOrderedDishesCache();
-              }
-              label.click();
-              submitButton.click();
-            };
-            td.appendChild(orderButton);
-          });
-      })
+          orderButton.onclick = () => {
+            if (!inIframe()) {
+              void invalidateOrderedDishesCache();
+            }
+            label.click();
+            submitButton.click();
+          };
+          td.appendChild(orderButton);
+        });
+    });
   }
 }
 
 function addRemoveCartButtonListener() {
-  [...document.querySelectorAll('.cart__delete.delete-cart-product')]
-    .map(button => button.addEventListener('click', () => invalidateOrderedDishesCache()))
+  [...document.querySelectorAll('.cart__delete.delete-cart-product')].map(button =>
+    button.addEventListener('click', () => invalidateOrderedDishesCache())
+  );
 }
 
 function createCheckboxInLabel(labelHTML, className, onChange) {
@@ -408,15 +423,13 @@ function createCheckboxInLabel(labelHTML, className, onChange) {
   return label;
 }
 
-
 function removeAllCartItems() {
   const items = [...document.querySelectorAll('#cart .cart__delete')];
   return items.length === 0
     ? Promise.resolve()
     : Promise.resolve()
-      .then(() => items.forEach(item => item.click()))
-      .then(() => waitForEmptySelector('#cart .cart__delete'))
-
+        .then(() => items.forEach(item => item.click()))
+        .then(() => waitForEmptySelector('#cart .cart__delete'));
 }
 
 function includes(whereElement, filters) {
@@ -428,12 +441,12 @@ function includes(whereElement, filters) {
     .reduce((sum, len) => sum + len, 0);
 }
 
-const renderHighlights = ((elem, keywords, shouldHighlight) => {
+const renderHighlights = (elem, keywords, shouldHighlight) => {
   unHighlight(elem);
   if (shouldHighlight && keywords.length !== 0) {
     highlight(elem, keywords);
   }
-});
+};
 
 /**
  *
@@ -443,9 +456,7 @@ const renderHighlights = ((elem, keywords, shouldHighlight) => {
  */
 function sortCompareArrays(arr1, arr2) {
   const longest = Math.max(arr1.length, arr2.length);
-  const union = new Array(longest)
-    .fill(0)
-    .map((_, index) => [arr1[index] || 0, arr2[index] || 0]);
+  const union = new Array(longest).fill(0).map((_, index) => [arr1[index] || 0, arr2[index] || 0]);
 
-  return union.reduce((comp, [first, second]) => comp || (second - first), 0);
+  return union.reduce((comp, [first, second]) => comp || second - first, 0);
 }

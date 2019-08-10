@@ -1,4 +1,4 @@
-import browser from "webextension-polyfill";
+import browser from 'webextension-polyfill';
 
 const STORAGE_KEY = '__ITDXER_storage';
 
@@ -18,7 +18,6 @@ const STORAGE_KEY = '__ITDXER_storage';
  * @property {Object|null} orderedDishes
  * @property {boolean} orderedDishesInvalidated
  */
-
 
 /**
  * @return {Promise<UserData>}
@@ -70,7 +69,7 @@ export async function clearData() {
  * @return {Promise<void>}
  */
 export async function saveData(data) {
-  await browser.storage.local.set({userData: data});
+  await browser.storage.local.set({ userData: data });
 }
 
 /**
@@ -79,7 +78,7 @@ export async function saveData(data) {
  */
 export async function updateData(fn) {
   const prevData = await getData();
-  await saveData({...prevData, ...fn(prevData)});
+  await saveData({ ...prevData, ...fn(prevData) });
 }
 
 /**
@@ -88,7 +87,7 @@ export async function updateData(fn) {
 export function subscribeForStorageChanges(handler) {
   browser.storage.onChanged.addListener(async changes => {
     if (changes.userData) {
-      const {newValue, oldValue} = changes.userData;
+      const { newValue, oldValue } = changes.userData;
       handler(fillDefaults(newValue), oldValue);
     }
   });

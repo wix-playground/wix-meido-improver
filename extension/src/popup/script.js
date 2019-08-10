@@ -1,13 +1,12 @@
-import browser from "webextension-polyfill";
-import {escapeHtml} from "../modules/escapeHtml.js";
-import {DAY_NAMES, MONTH_NAMES} from "../options/storage";
-import {getDateByDayIndex, getWeekDayIndex, getWorkingWeekOrders, isSameDay} from "../modules/notifications";
-import {isRemovingButton, startRemovingButton, stopRemovingButton, tryRemoveOrder} from "./removeOrder";
-import {isLoadingButton, makeOrder, startLoadingButton, stopLoadingButton} from "./makeOrder";
-import {subscribeForStorageChanges} from "../modules/localStorage";
+import browser from 'webextension-polyfill';
+import { escapeHtml } from '../modules/escapeHtml.js';
+import { DAY_NAMES, MONTH_NAMES } from '../options/storage';
+import { getDateByDayIndex, getWeekDayIndex, getWorkingWeekOrders, isSameDay } from '../modules/notifications';
+import { isRemovingButton, startRemovingButton, stopRemovingButton, tryRemoveOrder } from './removeOrder';
+import { isLoadingButton, makeOrder, startLoadingButton, stopLoadingButton } from './makeOrder';
+import { subscribeForStorageChanges } from '../modules/localStorage';
 
 import './styles.css';
-
 
 const button = document.getElementById('openOptions');
 button.addEventListener('click', event => {
@@ -34,11 +33,9 @@ const nextWeekButtonElem = document.getElementsByClassName('next-week')[0];
   thisWeekElem.addEventListener('click', () => changeWeekAndRender(0));
   theNextWeekElem.addEventListener('click', () => changeWeekAndRender(1));
 
-
   subscribeForStorageChanges(() => render());
   await render();
 })();
-
 
 async function changeWeekAndRender(newWeekShift) {
   weekShift = newWeekShift;
@@ -48,8 +45,8 @@ async function changeWeekAndRender(newWeekShift) {
 async function render() {
   renderWarning();
   const startDate = getDateByDayIndex(new Date(), 0);
-  startDate.setDate(startDate.getDate() + (weekShift * 7));
-  const {ordersPerDay, updatedDate, nextWeekOrdersPerDay} = await getWorkingWeekOrders(startDate);
+  startDate.setDate(startDate.getDate() + weekShift * 7);
+  const { ordersPerDay, updatedDate, nextWeekOrdersPerDay } = await getWorkingWeekOrders(startDate);
 
   ordersElem.innerText = '';
   updateDateElem.innerText = '';
@@ -72,11 +69,7 @@ async function render() {
       date.setDate(date.getDate() + weekDayIndex);
     }
 
-    const weekElem = createWeekElem(
-      date,
-      order && order.dishName,
-      order && order.contractorName
-    );
+    const weekElem = createWeekElem(date, order && order.dishName, order && order.contractorName);
     weekElem.classList.toggle('today', isSameDay(date, new Date()));
 
     const nextWeekDay = getDateByDayIndex(new Date(), weekDayIndex);
@@ -100,7 +93,7 @@ async function render() {
         try {
           await makeOrder(nextWeekDay, order.contractorName, order.dishId);
         } catch (error) {
-          showError(error && error.message || 'Something went wrong...');
+          showError((error && error.message) || 'Something went wrong...');
         }
 
         stopLoadingButton(weekDayIndex, repeatButton);
@@ -127,7 +120,7 @@ async function render() {
         try {
           await tryRemoveOrder(order.orderId, order.dishId);
         } catch (error) {
-          showError(error && error.message || 'Something went wrong...');
+          showError((error && error.message) || 'Something went wrong...');
         }
 
         stopRemovingButton(order.orderId, removeButton);
@@ -135,11 +128,9 @@ async function render() {
       });
     }
 
-
     ordersElem.appendChild(weekElem);
   });
 }
-
 
 function showError(errorMessage) {
   errorElem.innerText = errorMessage;
@@ -160,9 +151,7 @@ function hideWarning() {
 }
 
 function renderWarning() {
-  warningElem.innerText = warningsCount === 0
-    ? ''
-    : "Do not close this popup";
+  warningElem.innerText = warningsCount === 0 ? '' : 'Do not close this popup';
 }
 
 function createWeekElem(date, dishName, contractorName) {
@@ -189,7 +178,6 @@ function createWeekElem(date, dishName, contractorName) {
   `;
   return weekElem;
 }
-
 
 function getWeekName(date) {
   const dayIndex = getWeekDayIndex(date);

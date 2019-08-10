@@ -79,7 +79,7 @@ body .suppliers .__ITDXER_search_input {
 }
 
 .__ITDXER_first_partially_matched::before {
-  content: "Partially matched";
+  content: 'Partially matched';
   display: block;
   text-align: center;
   font-size: 1em;

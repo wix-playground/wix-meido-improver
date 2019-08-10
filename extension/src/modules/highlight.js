@@ -48,12 +48,11 @@ export function highlight(elem, keywords) {
  * @param {HTMLElement} elem
  */
 export function unHighlight(elem) {
-  [...elem.querySelectorAll('.' + CLASS_NAME)]
-    .forEach(mark => {
-      const newTextNode = document.createTextNode(mark.textContent);
-      mark.parentNode.insertBefore(newTextNode, mark);
-      mark.parentNode.removeChild(mark);
-    })
+  [...elem.querySelectorAll('.' + CLASS_NAME)].forEach(mark => {
+    const newTextNode = document.createTextNode(mark.textContent);
+    mark.parentNode.insertBefore(newTextNode, mark);
+    mark.parentNode.removeChild(mark);
+  });
 }
 
 /**
@@ -67,7 +66,7 @@ function unionTextNodes(elem) {
       unionTextNodes(child);
     } else {
       if (child.nodeType === NODE_TYPE_TEXT) {
-        const next = elem.childNodes[i+1];
+        const next = elem.childNodes[i + 1];
         if (next && next.nodeType === NODE_TYPE_TEXT) {
           child.textContent += next.textContent;
           child.parentNode.removeChild(next);

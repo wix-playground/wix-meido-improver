@@ -58,7 +58,7 @@ body .suppliers .new-tabs a {
   text-decoration: underline;
 }
 
-body .suppliers .menu-item__content > h4 > img[src="/images/vegan.png"] {
+body .suppliers .menu-item__content > h4 > img[src='/images/vegan.png'] {
   position: absolute;
   height: 80px;
   width: 80px;
@@ -90,7 +90,7 @@ body .suppliers .menu-item__content > img {
   width: 170px;
 }
 
-body .suppliers .menu-item__content > img[src="/images/no-image.png"] {
+body .suppliers .menu-item__content > img[src='/images/no-image.png'] {
   height: 120px;
   opacity: 0.4;
   z-index: 1;
@@ -126,7 +126,7 @@ body .suppliers .menu-item__hidden {
   color: #555;
 }
 
-body .suppliers .menu-item__content > h4 > img[src="/images/vegan.png"] {
+body .suppliers .menu-item__content > h4 > img[src='/images/vegan.png'] {
   position: absolute;
   height: 60px;
   width: 60px;
@@ -157,7 +157,7 @@ body .suppliers .restaurants {
 }
 
 body .suppliers .restaurants__nav {
-  display: flex
+  display: flex;
 }
 
 body .suppliers .restaurants__nav li:first-child,
@@ -167,7 +167,7 @@ body .suppliers .restaurants__nav li {
   padding: 20px 30px;
 }
 
-body .suppliers .restaurants__nav li > a[href^="/order?"] {
+body .suppliers .restaurants__nav li > a[href^='/order?'] {
   line-height: 1.5;
   font-weight: 600;
 }

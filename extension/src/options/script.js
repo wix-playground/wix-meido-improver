@@ -1,8 +1,8 @@
-import {clearData} from "../modules/localStorage.js";
-import {DAY_NAMES, setOptions, getOptions} from "./storage.js";
+import { clearData } from '../modules/localStorage.js';
+import { DAY_NAMES, setOptions, getOptions } from './storage.js';
 
 import './styles.css';
-import {resetOptions} from "./storage";
+import { resetOptions } from './storage';
 
 function createInputsTr(selectedDayName, enteredTime, onRemoveClick) {
   const tr = document.createElement('tr');
@@ -77,7 +77,7 @@ form.addEventListener('submit', async event => {
 
   const options = {
     enableNotifications: enableNotificationsInput.checked,
-    notifications: dayNames.map((dayName, index) => ({dayName, time: times[index]}))
+    notifications: dayNames.map((dayName, index) => ({ dayName, time: times[index] })),
   };
 
   await setOptions(options);
@@ -91,12 +91,11 @@ document.getElementById('reset').addEventListener('click', async () => {
   location.reload(true);
 });
 
-
 (async () => {
-  const {enableNotifications, notifications} = await getOptions();
+  const { enableNotifications, notifications } = await getOptions();
 
   enableNotificationsInput.checked = enableNotifications;
   enableNotificationsInput.dispatchEvent(new Event('change'));
 
-  notifications.forEach(({dayName, time}) => appendTrInputs(dayName, time));
+  notifications.forEach(({ dayName, time }) => appendTrInputs(dayName, time));
 })();

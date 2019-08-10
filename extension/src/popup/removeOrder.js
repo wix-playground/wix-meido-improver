@@ -1,8 +1,8 @@
-import {callInQueue, isLoggedIn, removeOrder, callRefreshOrderedDishesCache} from "./rpcClient";
+import { callInQueue, isLoggedIn, removeOrder, callRefreshOrderedDishesCache } from './rpcClient';
 
 export async function tryRemoveOrder(orderId, dishId) {
   await callInQueue(async () => {
-    if (!await isLoggedIn()) {
+    if (!(await isLoggedIn())) {
       throw new Error('Open Meido to login');
     }
     try {

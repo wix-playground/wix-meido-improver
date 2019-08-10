@@ -7,11 +7,11 @@ export function addCategoryAll() {
     const li = document.createElement('li');
     const link = document.createElement('a');
     link.innerText = 'SHOW ALL';
-    link.dataset.toggle = "tab";
-    link.href = "#category_all";
+    link.dataset.toggle = 'tab';
+    link.href = '#category_all';
     link.setAttribute('onclick', "typeof saveTabPosition === 'function' && saveTabPosition('category_all')");
-    link.setAttribute('aria-controls', "category_all");
-    link.setAttribute('role', "tab");
+    link.setAttribute('aria-controls', 'category_all');
+    link.setAttribute('role', 'tab');
     li.appendChild(link);
 
     renderCategoryAll();
@@ -21,14 +21,14 @@ export function addCategoryAll() {
 
 function renderCategoryAll() {
   const categoryTabLinks = document.querySelectorAll('.suppliers .container .nav.nav-tabs.new-tabs li a');
-  const categoryNameByKey = Object.fromEntries([...categoryTabLinks].map(link => [
-    link.getAttribute('aria-controls'), link.innerText
-  ]));
+  const categoryNameByKey = Object.fromEntries(
+    [...categoryTabLinks].map(link => [link.getAttribute('aria-controls'), link.innerText])
+  );
 
   const categoryAllPane = document.createElement('div');
   categoryAllPane.id = 'category_all';
   categoryAllPane.className = 'tab-pane';
-  categoryAllPane.setAttribute('role', "tabpanel");
+  categoryAllPane.setAttribute('role', 'tabpanel');
 
   const categoriesTabContent = document.querySelector('.suppliers > .suppliers-content .tab-content');
   const panes = categoriesTabContent.querySelectorAll('.tab-pane');
@@ -38,8 +38,11 @@ function renderCategoryAll() {
   [...panes].forEach(pane => {
     const items = [...pane.children].map(node => ({
       contractors: [pane.id],
-      id: node.querySelector('.btn.buy').href.split('/').pop(),
-      node
+      id: node
+        .querySelector('.btn.buy')
+        .href.split('/')
+        .pop(),
+      node,
     }));
 
     items.forEach(item => {
@@ -48,7 +51,7 @@ function renderCategoryAll() {
       } else {
         allItems[item.id] = item;
       }
-    })
+    });
   });
 
   Object.values(allItems).forEach(item => {
@@ -68,7 +71,7 @@ function renderCategoryAll() {
       const link = document.createElement('a');
       link.innerText = categoryNameByKey[contractorKey];
       link.className = CATEGORY_CLASS;
-      link.href = "#";
+      link.href = '#';
       link.onclick = () => document.querySelector(`[href="#${contractorKey}"]`).click();
       categories.append(link);
     });

@@ -1,37 +1,32 @@
-import {PostMessageClient, PostMessageServer} from "../modules/postMessageRPC";
+import { PostMessageClient, PostMessageServer } from '../modules/postMessageRPC';
 
 let loaded = false;
 const server = new PostMessageServer({
-  childLoaded: () => loaded = true,
-  childBeforeUnload: () => loaded = false,
+  childLoaded: () => (loaded = true),
+  childBeforeUnload: () => (loaded = false),
 });
 server.mount(window);
 
 const waitLoaded = () => {
   loaded = false;
 
-  const wait = () => new Promise(resolve => {
-    if (loaded) {
-      return resolve();
-    } else {
-      return setTimeout(() => resolve(wait()), 100)
-    }
-  });
+  const wait = () =>
+    new Promise(resolve => {
+      if (loaded) {
+        return resolve();
+      } else {
+        return setTimeout(() => resolve(wait()), 100);
+      }
+    });
 
   return wait();
 };
 
-
-
 let queue = Promise.resolve();
-export const callInQueue = (fn) =>
+export const callInQueue = fn =>
   new Promise((resolve, reject) => {
-    queue = queue.then(
-      () => Promise.resolve(fn()).then(resolve, reject)
-    )
+    queue = queue.then(() => Promise.resolve(fn()).then(resolve, reject));
   });
-
-
 
 async function createRpc(src = 'https://wix.getmeido.com/order') {
   const iframe = document.createElement('iframe');
@@ -49,17 +44,15 @@ async function createRpc(src = 'https://wix.getmeido.com/order') {
   const client = new PostMessageClient(iframe.contentWindow);
   client.mount(window);
 
-  return {client, iframe};
+  return { client, iframe };
 }
-
-
 
 let client = null;
 let iframe = null;
 async function getRpcClient(src) {
   let justCreated = false;
   if (!client || !iframe) {
-    ({client, iframe} = await createRpc(src));
+    ({ client, iframe } = await createRpc(src));
     justCreated = true;
   }
 
@@ -93,12 +86,10 @@ export async function confirmOrder(date) {
   const month = date.getMonth() + 1;
   const day = date.getDate();
 
-  const query = new URLSearchParams({year, month, day}).toString();
+  const query = new URLSearchParams({ year, month, day }).toString();
   const client = await getRpcClient('https://wix.getmeido.com/order/fast?' + query);
 
-  const dateStr = [year, month, day]
-    .map(n => String(n).padStart(2, '0'))
-    .join('-');
+  const dateStr = [year, month, day].map(n => String(n).padStart(2, '0')).join('-');
 
   await client.request('confirmOrder', dateStr);
 }

@@ -4,12 +4,12 @@ import {
   openContractor,
   clickOneClickBuy,
   confirmOrder,
-  callRefreshOrderedDishesCache
-} from "./rpcClient";
+  callRefreshOrderedDishesCache,
+} from './rpcClient';
 
 export async function makeOrder(newDate, contractorName, dishId) {
   await callInQueue(async () => {
-    if (!await isLoggedIn()) {
+    if (!(await isLoggedIn())) {
       throw new Error('Open Meido to login');
     }
 

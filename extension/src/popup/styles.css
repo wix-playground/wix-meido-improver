@@ -96,7 +96,7 @@ body {
 
 .updated-date {
   font-size: 0.6em;
-  color: rgba(255, 255, 255, 0.60);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .not-loaded {
@@ -225,7 +225,6 @@ body {
   color: #54ae53;
 }
 
-
 #warning:empty,
 #error:empty {
   padding-top: 0;
@@ -285,7 +284,6 @@ body {
 .repeat:hover {
   background-color: #fff2ee;
 }
-
 
 .remove[disabled]:hover,
 .repeat[disabled]:hover {

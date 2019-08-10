@@ -1,11 +1,11 @@
-import browser from "webextension-polyfill";
-import {startLoading, stopLoading, updateData, getData} from "./localStorage";
+import browser from 'webextension-polyfill';
+import { startLoading, stopLoading, updateData, getData } from './localStorage';
 
 void fixFavoritesDataStructure();
 void syncRatings();
 
 async function fixFavoritesDataStructure() {
-  const {...data} = await getData();
+  const { ...data } = await getData();
   const favorites = {};
 
   Object.entries(data).forEach(([key, value]) => {
@@ -16,8 +16,8 @@ async function fixFavoritesDataStructure() {
   });
 
   if (Object.keys(favorites).length > 0) {
-    const newFavorites = {...data.favorites, ...favorites};
-    await saveData({...data, favorites: newFavorites});
+    const newFavorites = { ...data.favorites, ...favorites };
+    await saveData({ ...data, favorites: newFavorites });
     await saveFavorites(newFavorites);
   } else {
     await syncFavorites();
@@ -26,12 +26,12 @@ async function fixFavoritesDataStructure() {
 
 async function syncFavorites() {
   const favorites = await fetchFavorites();
-  await updateData(() => ({favorites}));
+  await updateData(() => ({ favorites }));
 }
 
 async function syncRatings() {
-  const {userRatings, avgRatings} = await fetchBothRatings();
-  await updateData(() => ({userRatings, avgRatings}));
+  const { userRatings, avgRatings } = await fetchBothRatings();
+  await updateData(() => ({ userRatings, avgRatings }));
 }
 
 /**
@@ -51,8 +51,8 @@ async function fetchFavorites() {
  * @return {Promise<void>}
  */
 async function saveFavorites(favorites) {
-  const updatedFavorites = await doRequest('POST', '/favorites', {favorites});
-  await updateData(() => ({favorites: updatedFavorites}));
+  const updatedFavorites = await doRequest('POST', '/favorites', { favorites });
+  await updateData(() => ({ favorites: updatedFavorites }));
 }
 
 /**
@@ -61,22 +61,22 @@ async function saveFavorites(favorites) {
  * @return {Promise<void>}
  */
 export async function setRating(dishId, rating) {
-  await updateData(({userRatings, avgRatings}) => {
-    const avg = avgRatings[dishId] || {count: 0, avg: 0};
+  await updateData(({ userRatings, avgRatings }) => {
+    const avg = avgRatings[dishId] || { count: 0, avg: 0 };
 
     const newAvg = {
       count: avg.count + 1,
-      avg: (avg.count * avg.avg + rating) / (avg.count + 1)
+      avg: (avg.count * avg.avg + rating) / (avg.count + 1),
     };
 
-    return ({
-      userRatings: {...userRatings, [dishId]: rating},
-      avgRatings: {...avgRatings, [dishId]: newAvg}
-    });
+    return {
+      userRatings: { ...userRatings, [dishId]: rating },
+      avgRatings: { ...avgRatings, [dishId]: newAvg },
+    };
   });
 
-  const {userRatings, avgRatings} = await doRequest('POST', `/ratings/${encodeURIComponent(dishId)}`, {rating});
-  await updateData(() => ({userRatings, avgRatings}));
+  const { userRatings, avgRatings } = await doRequest('POST', `/ratings/${encodeURIComponent(dishId)}`, { rating });
+  await updateData(() => ({ userRatings, avgRatings }));
 }
 
 /**
@@ -84,14 +84,14 @@ export async function setRating(dishId, rating) {
  * @return {Promise<void>}
  */
 export async function deleteRating(dishId) {
-  await updateData(({userRatings}) => {
+  await updateData(({ userRatings }) => {
     const newRatings = userRatings || {};
     delete newRatings[dishId];
-    return ({userRatings: newRatings});
+    return { userRatings: newRatings };
   });
 
-  const {userRatings, avgRatings} = await doRequest('DELETE', `/ratings/${encodeURIComponent(dishId)}`);
-  await updateData(() => ({userRatings, avgRatings}));
+  const { userRatings, avgRatings } = await doRequest('DELETE', `/ratings/${encodeURIComponent(dishId)}`);
+  await updateData(() => ({ userRatings, avgRatings }));
 }
 
 /**
@@ -100,16 +100,15 @@ export async function deleteRating(dishId) {
  * @return {Promise<void>}
  */
 export async function toggleFavorite(dishId, favorite) {
-  await updateData(({favorites}) => ({favorites: {...favorites, [dishId]: favorite}}));
+  await updateData(({ favorites }) => ({ favorites: { ...favorites, [dishId]: favorite } }));
 
-  const favorites = await doRequest('POST', `/favorites/${encodeURIComponent(dishId)}`, {favorite});
-  await updateData(() => ({favorites}));
+  const favorites = await doRequest('POST', `/favorites/${encodeURIComponent(dishId)}`, { favorite });
+  await updateData(() => ({ favorites }));
 }
 
 async function fetchBothRatings() {
   return await doRequest('GET', '/both-ratings');
 }
-
 
 /**
  * @param {'GET'|'POST'|'DELETE'} method
@@ -118,14 +117,14 @@ async function fetchBothRatings() {
  * @return {Promise<*>}
  */
 async function doRequest(method, endpoint, params) {
-  const data = {...params, authCookie: getAuthCookie()};
+  const data = { ...params, authCookie: getAuthCookie() };
 
   startLoading();
   let response = null;
   try {
     response = await browser.runtime.sendMessage({
-      contentScriptQuery: "request",
-      args: {method, endpoint, data}
+      contentScriptQuery: 'request',
+      args: { method, endpoint, data },
     });
   } catch (error) {
     console.error(error);
@@ -135,7 +134,7 @@ async function doRequest(method, endpoint, params) {
   const [error, result] = response || ['error'];
 
   if (error) {
-    throw error
+    throw error;
   }
 
   return result;
