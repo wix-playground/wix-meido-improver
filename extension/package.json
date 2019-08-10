@@ -9,6 +9,11 @@
     "prettier": "prettier ./src/\\*\\*/\\*.{js,css} --single-quote --trailing-comma=es5 --print-width=120",
     "zip": "zip -r extension.zip ./*"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "lint-staged": {
     "*.{js,css}": [
       "npm run lint:fix",
@@ -27,6 +32,7 @@
     "file-loader": "^4.2.0",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.2.0",
+    "husky": "^3.0.3",
     "image-webpack-loader": "^5.0.0",
     "lint-staged": "^9.2.1",
     "mini-css-extract-plugin": "^0.8.0",
