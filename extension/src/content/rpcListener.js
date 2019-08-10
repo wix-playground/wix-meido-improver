@@ -1,4 +1,7 @@
-function inIframe() {
+import {PostMessageClient, PostMessageServer} from "../modules/postMessageRPC";
+import {refreshOrderedDishesCache} from "../modules/orders";
+
+export function inIframe() {
   try {
     return window.self !== window.top;
   } catch (e) {

@@ -1,3 +1,5 @@
+import {PostMessageClient, PostMessageServer} from "../modules/postMessageRPC";
+
 let loaded = false;
 const server = new PostMessageServer({
   childLoaded: () => loaded = true,
@@ -22,7 +24,7 @@ const waitLoaded = () => {
 
 
 let queue = Promise.resolve();
-const callInQueue = (fn) =>
+export const callInQueue = (fn) =>
   new Promise((resolve, reject) => {
     queue = queue.then(
       () => Promise.resolve(fn()).then(resolve, reject)
@@ -69,24 +71,24 @@ async function getRpcClient(src) {
   return client;
 }
 
-async function isLoggedIn() {
+export async function isLoggedIn() {
   const client = await getRpcClient();
   return client.request('isLoggedIn');
 }
 
-async function openContractor(contractorName) {
+export async function openContractor(contractorName) {
   const client = await getRpcClient('https://wix.getmeido.com/order');
   await client.request('openContractor', contractorName);
   await waitLoaded();
 }
 
-async function clickOneClickBuy(dishId) {
+export async function clickOneClickBuy(dishId) {
   const client = await getRpcClient();
   await client.request('clickOneClickBuy', dishId);
   await waitLoaded();
 }
 
-async function confirmOrder(date) {
+export async function confirmOrder(date) {
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
   const day = date.getDate();
@@ -101,12 +103,12 @@ async function confirmOrder(date) {
   await client.request('confirmOrder', dateStr);
 }
 
-async function removeOrder(orderId, dishId) {
+export async function removeOrder(orderId, dishId) {
   const client = await getRpcClient();
   await client.request('removeOrder', orderId, dishId);
 }
 
-async function callRefreshOrderedDishesCache() {
+export async function callRefreshOrderedDishesCache() {
   const client = await getRpcClient();
   await client.request('callRefreshOrderedDishesCache');
 }

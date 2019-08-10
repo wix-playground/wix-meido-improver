@@ -1,4 +1,5 @@
 /.idea
+/extension/dist
 .DS_store
 *.zip
 node_modules

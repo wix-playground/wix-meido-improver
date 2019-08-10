@@ -2,7 +2,7 @@ function randomStr() {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
-class PostMessageClient {
+export class PostMessageClient {
   constructor(targetWindow) {
     this.targetWindow = targetWindow;
     this.dispatches = new Map();
@@ -59,7 +59,7 @@ class PostMessageClient {
   }
 }
 
-class PostMessageServer {
+export class PostMessageServer {
   constructor(handlers) {
     this.handlers = handlers;
     this.handleMessage = this.handleMessage.bind(this)

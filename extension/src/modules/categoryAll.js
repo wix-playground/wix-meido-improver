@@ -1,7 +1,7 @@
 const CATEGORIES_LIST_CLASS = '__ITDXER_menu-item__categories';
 const CATEGORY_CLASS = '__ITDXER_menu-item__category';
 
-function addCategoryAll() {
+export function addCategoryAll() {
   const categoryTabs = document.querySelector('.suppliers .container .nav.nav-tabs.new-tabs');
   if (categoryTabs) {
     const li = document.createElement('li');

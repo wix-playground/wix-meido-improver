@@ -1,3 +1,9 @@
+import {clearData} from "../modules/localStorage.js";
+import {DAY_NAMES, setOptions, getOptions} from "./storage.js";
+
+import './styles.css';
+import {resetOptions} from "./storage";
+
 function createInputsTr(selectedDayName, enteredTime, onRemoveClick) {
   const tr = document.createElement('tr');
   const tdDay = document.createElement('td');
@@ -81,7 +87,7 @@ form.addEventListener('submit', async event => {
 
 document.getElementById('clear-cache').addEventListener('click', () => clearData());
 document.getElementById('reset').addEventListener('click', async () => {
-  await setOptions(DEFAULT_OPTIONS);
+  await resetOptions();
   location.reload(true);
 });
 

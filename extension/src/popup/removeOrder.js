@@ -1,4 +1,6 @@
-async function tryRemoveOrder(orderId, dishId) {
+import {callInQueue, isLoggedIn, removeOrder, callRefreshOrderedDishesCache} from "./rpcClient";
+
+export async function tryRemoveOrder(orderId, dishId) {
   await callInQueue(async () => {
     if (!await isLoggedIn()) {
       throw new Error('Open Meido to login');
@@ -15,17 +17,17 @@ async function tryRemoveOrder(orderId, dishId) {
 
 const removingButtons = {};
 
-function isRemovingButton(orderId) {
+export function isRemovingButton(orderId) {
   return !!removingButtons[orderId];
 }
 
-function startRemovingButton(orderId, button) {
+export function startRemovingButton(orderId, button) {
   removingButtons[orderId] = true;
   button.classList.add('spinning');
   button.disabled = true;
 }
 
-function stopRemovingButton(orderId, button) {
+export function stopRemovingButton(orderId, button) {
   delete removingButtons[orderId];
   button.classList.remove('spinning');
   button.disabled = false;

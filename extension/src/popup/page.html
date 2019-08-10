@@ -2,7 +2,6 @@
 <head>
   <title>Your orders for the week</title>
   <meta charset="utf8">
-  <link href="styles.css" rel="stylesheet">
 </head>
 <body>
 <div class="title">
@@ -12,7 +11,7 @@
   </div>
   <button class="prev-week" title="Previous week">⮃</button>
   <div class="title-text">
-    <img src="../icons/icon48.png" alt="extension icon"/>
+    <img src="../../static/icons/icon48.png" alt="extension icon"/>
     <div>
       Your orders for week
       <br/>
@@ -35,17 +34,5 @@
   <a id="openOptions">Preferences</a>
   <a href="https://wix.getmeido.com/order" target="_blank">Open Meido</a>
 </div>
-
-<script src="../node_modules/webextension-polyfill/dist/browser-polyfill.min.js"></script>
-<script src="../options/storage.js"></script>
-<script src="../modules/escapeHtml.js"></script>
-<script src="../modules/localStorage.js"></script>
-<script src="../modules/orders.js"></script>
-<script src="../modules/notifications.js"></script>
-<script src="../modules/postMessageRPC.js"></script>
-<script src="rpcClient.js"></script>
-<script src="makeOrder.js"></script>
-<script src="removeOrder.js"></script>
-<script src="script.js"></script>
 </body>
 </html>

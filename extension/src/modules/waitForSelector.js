@@ -3,7 +3,7 @@
  * @param {string} selector
  * @return {Promise<HTMLElement>}
  */
-function waitForSelector(selector) {
+export function waitForSelector(selector) {
   return new Promise(resolve => {
     const el = document.querySelector(selector);
     if (el) {
@@ -19,7 +19,7 @@ function waitForSelector(selector) {
  * @param {string} selector
  * @return {Promise<HTMLElement>}
  */
-function waitForEmptySelector(selector) {
+export function waitForEmptySelector(selector) {
   return new Promise(resolve => {
     const el = document.querySelector(selector);
     if (el) {

@@ -1,9 +1,19 @@
+import browser from "webextension-polyfill";
+import {escapeHtml} from "../modules/escapeHtml.js";
+import {DAY_NAMES, MONTH_NAMES} from "../options/storage";
+import {getDateByDayIndex, getWeekDayIndex, getWorkingWeekOrders, isSameDay} from "../modules/notifications";
+import {isRemovingButton, startRemovingButton, stopRemovingButton, tryRemoveOrder} from "./removeOrder";
+import {isLoadingButton, makeOrder, startLoadingButton, stopLoadingButton} from "./makeOrder";
+import {subscribeForStorageChanges} from "../modules/localStorage";
+
+import './styles.css';
+
+
 const button = document.getElementById('openOptions');
 button.addEventListener('click', event => {
   event.preventDefault();
   browser.runtime.openOptionsPage();
 });
-
 
 let weekShift = 0;
 let warningsCount = 0;

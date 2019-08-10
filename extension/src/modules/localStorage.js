@@ -1,3 +1,5 @@
+import browser from "webextension-polyfill";
+
 const STORAGE_KEY = '__ITDXER_storage';
 
 /**
@@ -21,7 +23,7 @@ const STORAGE_KEY = '__ITDXER_storage';
 /**
  * @return {Promise<UserData>}
  */
-async function getData() {
+export async function getData() {
   let data = null;
 
   try {
@@ -59,7 +61,7 @@ function fillDefaults(data) {
 /**
  * @return {Promise<void>}
  */
-async function clearData() {
+export async function clearData() {
   await browser.storage.local.remove('userData');
 }
 
@@ -67,7 +69,7 @@ async function clearData() {
  * @param {UserData} data
  * @return {Promise<void>}
  */
-async function saveData(data) {
+export async function saveData(data) {
   await browser.storage.local.set({userData: data});
 }
 
@@ -75,7 +77,7 @@ async function saveData(data) {
  * @param {Function} fn
  * @return {Promise<void>}
  */
-async function updateData(fn) {
+export async function updateData(fn) {
   const prevData = await getData();
   await saveData({...prevData, ...fn(prevData)});
 }
@@ -83,7 +85,7 @@ async function updateData(fn) {
 /**
  * @param {Function} handler
  */
-function subscribeForStorageChanges(handler) {
+export function subscribeForStorageChanges(handler) {
   browser.storage.onChanged.addListener(async changes => {
     if (changes.userData) {
       const {newValue, oldValue} = changes.userData;
@@ -95,19 +97,19 @@ function subscribeForStorageChanges(handler) {
 let loading = 0;
 const loadingListeners = [];
 
-function subscribeForLoadingChanges(fn) {
+export function subscribeForLoadingChanges(fn) {
   loadingListeners.push(fn);
 }
-function startLoading() {
+export function startLoading() {
   loading++;
   loadingListeners.forEach(fn => fn(loading));
 }
 
-function stopLoading() {
+export function stopLoading() {
   loading--;
   loadingListeners.forEach(fn => fn(loading));
 }
 
-function isLoading() {
+export function isLoading() {
   return loading > 0;
 }

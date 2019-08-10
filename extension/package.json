@@ -4,6 +4,24 @@
     "webextension-polyfill": "^0.4.0"
   },
   "scripts": {
-    "make": "zip -r extension.zip ./*"
+    "premake": "rm -rf ./dist",
+    "make": "webpack --mode production",
+    "watch": "npm run make -- --watch",
+    "zip": "zip -r extension.zip ./*"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
+    "babel-loader": "^8.0.5",
+    "copy-webpack-plugin": "^5.0.2",
+    "css-loader": "^2.1.1",
+    "file-loader": "^4.2.0",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
+    "image-webpack-loader": "^5.0.0",
+    "mini-css-extract-plugin": "^0.8.0",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.39.1",
+    "webpack-cli": "^3.3.6"
   }
 }

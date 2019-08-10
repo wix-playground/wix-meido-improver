@@ -1,5 +1,7 @@
-const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+import browser from "webextension-polyfill";
+
+export const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+export const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const DEFAULT_OPTIONS = {
   enableNotifications: true,
   notifications: [
@@ -12,7 +14,7 @@ const DEFAULT_OPTIONS = {
 };
 
 
-async function getOptions() {
+export async function getOptions() {
   const items = await browser.storage.sync.get('options')
     .catch(() => browser.storage.local.get('options'));
 
@@ -22,7 +24,11 @@ async function getOptions() {
   });
 }
 
-async function setOptions(options) {
+export async function setOptions(options) {
   return await browser.storage.sync.set({options})
     .catch(() => browser.storage.local.set({options}));
+}
+
+export async function resetOptions() {
+  await setOptions(DEFAULT_OPTIONS);
 }

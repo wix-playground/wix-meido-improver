@@ -1,3 +1,19 @@
+import {getData, subscribeForLoadingChanges, subscribeForStorageChanges, updateData} from "../modules/localStorage";
+import {DISH_COUNT_CLASS, invalidateOrderedDishesCache, renderOrderedDishes} from "../modules/orders";
+import {addCategoryAll} from "../modules/categoryAll";
+
+import './fixes.css';
+import './styles/categoryAll.css';
+import './styles/filters.css';
+import './styles/oneClickBuy.css';
+import './styles/orderButton.css';
+import './styles/rating.css';
+import './styles/spinner.css';
+import {inIframe} from "./rpcListener";
+import {highlight, unHighlight} from "../modules/highlight";
+import {deleteRating, setRating, toggleFavorite} from "../modules/database";
+import {waitForEmptySelector, waitForSelector} from "../modules/waitForSelector";
+
 const HEART_CLASS = '__ITDXER_heart';
 const RATING_CLASS = '__ITDXER_rating';
 const FILTERS_CLASS = '__ITDXER_filters';
@@ -19,8 +35,8 @@ window.addEventListener('DOMContentLoaded', () => {
     addOneClickBuy();
 
     subscribeForStorageChanges(render);
-    renderOrderedDishes(renderWithData);
-    renderWithData();
+    void renderOrderedDishes(renderWithData);
+    void renderWithData();
     renderOrderTable();
     addRemoveCartButtonListener();
   }

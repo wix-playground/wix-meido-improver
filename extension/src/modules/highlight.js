@@ -7,7 +7,7 @@ const CLASS_NAME = '__HIGHLIGHTED';
  * @param {string[]} keywords
  * @return {boolean}
  */
-function highlight(elem, keywords) {
+export function highlight(elem, keywords) {
   let found = false;
 
   // Sort longer matches first to avoid
@@ -47,7 +47,7 @@ function highlight(elem, keywords) {
 /**
  * @param {HTMLElement} elem
  */
-function unHighlight(elem) {
+export function unHighlight(elem) {
   [...elem.querySelectorAll('.' + CLASS_NAME)]
     .forEach(mark => {
       const newTextNode = document.createTextNode(mark.textContent);

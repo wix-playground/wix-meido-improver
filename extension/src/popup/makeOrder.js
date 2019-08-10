@@ -1,4 +1,13 @@
-async function makeOrder(newDate, contractorName, dishId) {
+import {
+  callInQueue,
+  isLoggedIn,
+  openContractor,
+  clickOneClickBuy,
+  confirmOrder,
+  callRefreshOrderedDishesCache
+} from "./rpcClient";
+
+export async function makeOrder(newDate, contractorName, dishId) {
   await callInQueue(async () => {
     if (!await isLoggedIn()) {
       throw new Error('Open Meido to login');
@@ -18,17 +27,17 @@ async function makeOrder(newDate, contractorName, dishId) {
 
 const loadingButtons = {};
 
-function isLoadingButton(weekDayIndex) {
+export function isLoadingButton(weekDayIndex) {
   return !!loadingButtons[weekDayIndex];
 }
 
-function startLoadingButton(weekDayIndex, button) {
+export function startLoadingButton(weekDayIndex, button) {
   loadingButtons[weekDayIndex] = true;
   button.classList.add('spinning');
   button.disabled = true;
 }
 
-function stopLoadingButton(weekDayIndex, button) {
+export function stopLoadingButton(weekDayIndex, button) {
   delete loadingButtons[weekDayIndex];
   button.classList.remove('spinning');
   button.disabled = false;

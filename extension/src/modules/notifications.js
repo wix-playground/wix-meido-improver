@@ -1,8 +1,13 @@
-async function clearAlarms() {
+import browser from "webextension-polyfill";
+import {DAY_NAMES} from "../options/storage";
+import {getData} from "./localStorage";
+
+
+export async function clearAlarms() {
   return await browser.alarms.clearAll();
 }
 
-async function createAlarms(options) {
+export async function createAlarms(options) {
   if (!options.enableNotifications) {
     return;
   }
@@ -20,7 +25,7 @@ async function createAlarms(options) {
   )
 }
 
-function getDateByDayIndex(baseDate, newDayIndex, time = '00:00') {
+export function getDateByDayIndex(baseDate, newDayIndex, time = '00:00') {
   const [hh, mm] = time.split(':');
   const date = new Date(baseDate);
 
@@ -35,11 +40,11 @@ function getDateByDayIndex(baseDate, newDayIndex, time = '00:00') {
   return date;
 }
 
-function getWeekDayIndex(date) {
+export function getWeekDayIndex(date) {
   return (date.getDay() + 6) % 7;
 }
 
-async function getWorkingWeekOrders(date) {
+export async function getWorkingWeekOrders(date) {
   const {orderedDishesInvalidated, ...data} = await getData();
   const orderedDishes = data.orderedDishes || {};
   const updatedDate = orderedDishes.updatedDate;
@@ -56,13 +61,13 @@ async function getWorkingWeekOrders(date) {
   return {updatedDate, ordersPerDay, nextWeekOrdersPerDay, orderedDishesInvalidated};
 }
 
-function isSameDay(dateOne, dateTwo) {
+export function isSameDay(dateOne, dateTwo) {
   return dateOne.getFullYear() === dateTwo.getFullYear()
     && dateOne.getMonth() === dateTwo.getMonth()
     && dateOne.getDate() === dateTwo.getDate();
 }
 
-function getWorkingWeekDays(date) {
+export function getWorkingWeekDays(date) {
   const monday = getDateByDayIndex(date, 0, '00:00');
   return new Array(5)
     .fill(null)

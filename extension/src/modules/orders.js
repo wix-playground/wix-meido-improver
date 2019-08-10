@@ -1,4 +1,7 @@
-const DISH_COUNT_CLASS = '__ITDXER_dish_count';
+import {unescapeHtml} from "../modules/escapeHtml.js";
+import {getData, startLoading, stopLoading, updateData} from './localStorage';
+
+export const DISH_COUNT_CLASS = '__ITDXER_dish_count';
 const CONTRACTOR_COUNT_CLASS = '__ITDXER_contractor_count';
 
 /**
@@ -82,7 +85,7 @@ async function fetchOrderedDishes(orders) {
   );
 }
 
-async function refreshOrderedDishesCache() {
+export async function refreshOrderedDishesCache() {
   startLoading();
   try {
     const orders = await fetchOrders();
@@ -112,7 +115,7 @@ async function refreshOrderedDishesCache() {
   stopLoading();
 }
 
-async function invalidateOrderedDishesCache() {
+export async function invalidateOrderedDishesCache() {
   await updateData(() => ({
     orderedDishesInvalidated: true
   }));
@@ -135,7 +138,7 @@ function isDateBeforeYesterday(date) {
   return new Date(date) < yesterday;
 }
 
-async function renderOrderedDishes(callback) {
+export async function renderOrderedDishes(callback) {
   const allDishes = await getOrderedDishes();
   const dishIdsByContractor = allDishes.reduce(
     (by, {dishId, contractorName}) => ({

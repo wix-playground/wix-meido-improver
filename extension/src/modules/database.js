@@ -1,5 +1,8 @@
-fixFavoritesDataStructure();
-syncRatings();
+import browser from "webextension-polyfill";
+import {startLoading, stopLoading, updateData, getData} from "./localStorage";
+
+void fixFavoritesDataStructure();
+void syncRatings();
 
 async function fixFavoritesDataStructure() {
   const {...data} = await getData();
@@ -57,7 +60,7 @@ async function saveFavorites(favorites) {
  * @param {number} rating
  * @return {Promise<void>}
  */
-async function setRating(dishId, rating) {
+export async function setRating(dishId, rating) {
   await updateData(({userRatings, avgRatings}) => {
     const avg = avgRatings[dishId] || {count: 0, avg: 0};
 
@@ -80,7 +83,7 @@ async function setRating(dishId, rating) {
  * @param {string} dishId
  * @return {Promise<void>}
  */
-async function deleteRating(dishId) {
+export async function deleteRating(dishId) {
   await updateData(({userRatings}) => {
     const newRatings = userRatings || {};
     delete newRatings[dishId];
@@ -96,11 +99,11 @@ async function deleteRating(dishId) {
  * @param { boolean} favorite
  * @return {Promise<void>}
  */
-async function toggleFavorite(dishId, favorite) {
- await updateData(({favorites}) => ({favorites: {...favorites, [dishId]: favorite}}));
+export async function toggleFavorite(dishId, favorite) {
+  await updateData(({favorites}) => ({favorites: {...favorites, [dishId]: favorite}}));
 
   const favorites = await doRequest('POST', `/favorites/${encodeURIComponent(dishId)}`, {favorite});
- await updateData(() => ({favorites}));
+  await updateData(() => ({favorites}));
 }
 
 async function fetchBothRatings() {
