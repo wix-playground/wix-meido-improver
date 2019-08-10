@@ -3,11 +3,11 @@
   "scripts": {
     "premake": "rm -rf ./dist",
     "make": "webpack --mode production",
+    "postmake": "zip -r extension.zip ./*",
     "watch": "npm run make -- --watch",
     "lint": "npm run prettier -- --check",
     "lint:fix": "npm run prettier -- --write",
-    "prettier": "prettier ./src/\\*\\*/\\*.{js,css} --single-quote --trailing-comma=es5 --print-width=120",
-    "zip": "zip -r extension.zip ./*"
+    "prettier": "prettier ./src/\\*\\*/\\*.{js,css} --single-quote --trailing-comma=es5 --print-width=120"
   },
   "husky": {
     "hooks": {
