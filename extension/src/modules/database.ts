@@ -5,9 +5,9 @@ void fixFavoritesDataStructure();
 void syncRatings();
 
 export type DishId = string;
-type Rating = number;
+export type Rating = number;
 
-type AvgRating = {
+export type AvgRating = {
   count: number;
   avg: Rating;
 };
@@ -60,10 +60,6 @@ async function fetchFavorites(): Promise<Favorites> {
   return await doRequest('GET', '/favorites');
 }
 
-/**
- * @param {Object.<string, boolean>} favorites - where "key" (string) is dishId
- * @return {Promise<void>}
- */
 async function saveFavorites(favorites: Favorites): Promise<void> {
   const updatedFavorites = await doRequest('POST', '/favorites', { favorites });
   await updateData(() => ({ favorites: updatedFavorites }));

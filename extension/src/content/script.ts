@@ -9,7 +9,7 @@ import { DISH_COUNT_CLASS, invalidateOrderedDishesCache, renderOrderedDishes } f
 import { addCategoryAll } from '../modules/categoryAll';
 import { inIframe } from './rpcListener';
 import { highlight, unHighlight } from '../modules/highlight';
-import { deleteRating, setRating, toggleFavorite } from '../modules/database';
+import { AvgRating, deleteRating, DishId, Rating, setRating, toggleFavorite } from '../modules/database';
 import { waitForEmptySelector, waitForSelector } from '../modules/waitForSelector';
 
 import './fixes.css';
@@ -143,13 +143,13 @@ function render(data: UserData): void {
       });
   });
 
-  const suppliersContent = document.querySelector('.suppliers > .suppliers-content');
+  const suppliersContent = <HTMLElement>document.querySelector('.suppliers > .suppliers-content');
   if (suppliersContent) {
     renderFilters({ suppliersContent, filterRating, filterOrdered, filterFavorite, filterVegan, filterText });
   }
 }
 
-function renderSpinner(place, loading) {
+function renderSpinner(place: HTMLElement, loading: boolean) {
   let spinner = place.querySelector('.' + SPINNER_CLASS);
 
   if (!spinner) {
@@ -161,7 +161,7 @@ function renderSpinner(place, loading) {
   spinner.classList.toggle('spinning', loading);
 }
 
-function renderHeart(content, dishId, isFavorite) {
+function renderHeart(content: HTMLElement, dishId: DishId, isFavorite: boolean) {
   let heart = content.querySelector('.' + HEART_CLASS);
 
   if (!heart) {
@@ -180,8 +180,8 @@ function renderHeart(content, dishId, isFavorite) {
   button.classList.toggle('checked', isFavorite);
 }
 
-function renderRating(content, dishId, userRating, avgRating) {
-  let ratingElem = content.querySelector('.' + RATING_CLASS);
+function renderRating(content: HTMLElement, dishId: DishId, userRating: Rating, avgRating: AvgRating) {
+  let ratingElem = <HTMLElement>content.querySelector('.' + RATING_CLASS);
 
   if (!ratingElem) {
     ratingElem = document.createElement('div');
@@ -224,7 +224,7 @@ function renderRating(content, dishId, userRating, avgRating) {
     content.appendChild(ratingElem);
   }
 
-  ratingElem.classList.toggle('user-rated', userRating);
+  ratingElem.classList.toggle('user-rated', !!userRating);
 
   if (avgRating) {
     const rounded = (avgRating.avg || 0).toFixed(1);
@@ -233,35 +233,35 @@ function renderRating(content, dishId, userRating, avgRating) {
     ratingElem.title = '0 Ratings';
   }
 
-  const avgRatingElem = ratingElem.querySelector('.avg-rating');
-  const userRatingElem = ratingElem.querySelector('.user-rating');
+  const avgRatingElem = <HTMLElement>ratingElem.querySelector('.avg-rating');
+  const userRatingElem = <HTMLElement>ratingElem.querySelector('.user-rating');
   const avg = (avgRating && avgRating.avg) || 0;
   const user = userRating || 0;
 
   avgRatingElem.style.width = `${(avg / 5) * 100}%`;
   userRatingElem.style.width = `${(user / 5) * 100}%`;
-  content.dataset.avgRating = avg;
+  content.dataset.avgRating = String(avg);
 }
 
-function createStar() {
+function createStar(): HTMLSpanElement {
   const star = document.createElement('span');
   star.innerText = '☆';
   star.className = 'star';
   return star;
 }
 
-function addOneClickBuy() {
+function addOneClickBuy(): void {
   const infos = document.querySelectorAll(
     '.suppliers-content .container .menu-item > .menu-item__content > .menu-item__info'
   );
   [...infos].forEach(itemInfo => {
-    const buy = itemInfo.querySelector('.menu-item__info a.buy');
+    const buy = <HTMLAnchorElement>itemInfo.querySelector('.menu-item__info a.buy');
     const oneClick = createOneClickBuyElement(buy);
     itemInfo.appendChild(oneClick);
   });
 }
 
-function createOneClickBuyElement(buyButton) {
+function createOneClickBuyElement(buyButton: HTMLAnchorElement): HTMLAnchorElement {
   const oneClick = document.createElement('a');
   const dishId = buyButton.href.split('/').pop();
 
@@ -281,8 +281,17 @@ function createOneClickBuyElement(buyButton) {
   return oneClick;
 }
 
-function renderFilters({ suppliersContent, filterRating, filterFavorite, filterVegan, filterOrdered, filterText }) {
-  let filters = suppliersContent.querySelector('.' + FILTERS_CLASS);
+function renderFilters(params: {
+  suppliersContent: HTMLElement;
+  filterRating: boolean;
+  filterFavorite: boolean;
+  filterVegan: boolean;
+  filterOrdered: boolean;
+  filterText: string;
+}) {
+  const { suppliersContent, filterRating, filterFavorite, filterVegan, filterOrdered, filterText } = params;
+
+  let filters: HTMLElement = suppliersContent.querySelector('.' + FILTERS_CLASS);
   if (!filters) {
     filters = createFiltersElement();
     suppliersContent.prepend(filters);
@@ -296,13 +305,13 @@ function renderFilters({ suppliersContent, filterRating, filterFavorite, filterV
   renderSearchInput(filters, filterText);
 }
 
-function createFiltersElement() {
+function createFiltersElement(): HTMLDivElement {
   const filters = document.createElement('div');
   filters.className = FILTERS_CLASS;
   return filters;
 }
 
-function renderRatingCheckbox(filters, filterRating) {
+function renderRatingCheckbox(filters: HTMLElement, filterRating: boolean): void {
   let checkboxLabel = filters.querySelector('.' + CHECKBOX_LABEL_RATING);
 
   if (!checkboxLabel) {
@@ -318,7 +327,7 @@ function renderRatingCheckbox(filters, filterRating) {
   checkboxLabel.querySelector('input').checked = filterRating;
 }
 
-function renderFavoriteCheckbox(filters, filterFavorite) {
+function renderFavoriteCheckbox(filters: HTMLElement, filterFavorite: boolean): void {
   let checkboxLabel = filters.querySelector('.' + CHECKBOX_LABEL_FAVORITE);
 
   if (!checkboxLabel) {
@@ -332,7 +341,7 @@ function renderFavoriteCheckbox(filters, filterFavorite) {
   checkboxLabel.querySelector('input').checked = filterFavorite;
 }
 
-function renderVeganCheckbox(filters, filterVegan) {
+function renderVeganCheckbox(filters: HTMLElement, filterVegan: boolean): void {
   let checkboxLabel = filters.querySelector('.' + CHECKBOX_LABEL_VEGAN);
 
   if (!checkboxLabel) {
@@ -348,7 +357,7 @@ function renderVeganCheckbox(filters, filterVegan) {
   checkboxLabel.querySelector('input').checked = filterVegan;
 }
 
-function renderOrderedCheckbox(filters, filterOrdered) {
+function renderOrderedCheckbox(filters: HTMLElement, filterOrdered: boolean): void {
   let checkboxLabel = filters.querySelector('.' + CHECKBOX_LABEL_ORDERED);
 
   if (!checkboxLabel) {
@@ -364,8 +373,8 @@ function renderOrderedCheckbox(filters, filterOrdered) {
   checkboxLabel.querySelector('input').checked = filterOrdered;
 }
 
-function renderSearchInput(filters, filterText) {
-  let searchInput = filters.querySelector('.' + SEARCH_INPUT_CLASS);
+function renderSearchInput(filters: HTMLElement, filterText: string): void {
+  let searchInput = <HTMLInputElement>filters.querySelector('.' + SEARCH_INPUT_CLASS);
 
   if (!searchInput) {
     searchInput = createSearchInput();
@@ -375,7 +384,7 @@ function renderSearchInput(filters, filterText) {
   searchInput.value = filterText || '';
 }
 
-function createSearchInput() {
+function createSearchInput(): HTMLInputElement {
   const searchInput = document.createElement('input');
 
   searchInput.className = SEARCH_INPUT_CLASS;
@@ -386,31 +395,31 @@ function createSearchInput() {
   return searchInput;
 }
 
-function renderOrderTable() {
+async function renderOrderTable(): Promise<void> {
   if (window.location.pathname.endsWith('/fast')) {
-    waitForSelector('.modal-open .modal-footer button.submit').then(submitButton => {
-      submitButton.style.display = 'none';
+    const submitButton = await waitForSelector('.modal-open .modal-footer button.submit');
 
-      [...document.querySelectorAll('#calendar.table.calendar tbody td')]
-        .map(td => ({ td, label: <HTMLLabelElement>td.querySelector('.btn.available-date') }))
-        .filter(({ label }) => label)
-        .forEach(({ td, label }) => {
-          const orderButton = document.createElement('a');
-          label.style.display = 'inline';
+    submitButton.style.display = 'none';
 
-          orderButton.innerText = 'Order';
-          orderButton.className = ORDER_BUTTON_CLASS;
+    [...document.querySelectorAll('#calendar.table.calendar tbody td')]
+      .map(td => ({ td, label: <HTMLLabelElement>td.querySelector('.btn.available-date') }))
+      .filter(({ label }) => label)
+      .forEach(({ td, label }) => {
+        const orderButton = document.createElement('a');
+        label.style.display = 'inline';
 
-          orderButton.onclick = () => {
-            if (!inIframe()) {
-              void invalidateOrderedDishesCache();
-            }
-            label.click();
-            submitButton.click();
-          };
-          td.appendChild(orderButton);
-        });
-    });
+        orderButton.innerText = 'Order';
+        orderButton.className = ORDER_BUTTON_CLASS;
+
+        orderButton.onclick = () => {
+          if (!inIframe()) {
+            void invalidateOrderedDishesCache();
+          }
+          label.click();
+          submitButton.click();
+        };
+        td.appendChild(orderButton);
+      });
   }
 }
 
@@ -457,13 +466,7 @@ const renderHighlights = (elem: HTMLElement, keywords: string[], shouldHighlight
   }
 };
 
-/**
- *
- * @param {*[]} arr1
- * @param {*[]} arr2
- * @return {number}
- */
-function sortCompareArrays(arr1, arr2) {
+function sortCompareArrays(arr1: number[], arr2: number[]) {
   const longest = Math.max(arr1.length, arr2.length);
   const union = new Array(longest).fill(0).map((_, index) => [arr1[index] || 0, arr2[index] || 0]);
 
