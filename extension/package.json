@@ -1,9 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "premake": "rm -rf ./dist",
+    "premake": "rm -rf ./dist ./dist.zip",
     "make": "webpack --mode production",
-    "postmake": "zip -r -FS dist.zip ./dist/*",
+    "postmake": "cd dist && zip -r ../dist.zip ./*",
     "watch": "npm run make -- --watch",
     "lint": "npm run prettier -- --check",
     "lint:fix": "npm run prettier -- --write",
