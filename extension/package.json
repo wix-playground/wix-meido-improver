@@ -3,6 +3,7 @@
   "scripts": {
     "premake": "rm -rf ./dist",
     "make": "webpack --mode production",
+    "postmake": "zip -r -FS dist.zip ./dist/*",
     "watch": "npm run make -- --watch",
     "lint": "npm run prettier -- --check",
     "lint:fix": "npm run prettier -- --write",
