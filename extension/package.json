@@ -3,7 +3,7 @@
   "scripts": {
     "premake": "rm -rf ./dist ./dist.zip ./src-root.zip",
     "make": "webpack --mode production",
-    "postmake": "npm run zip:dist",
+    "postmake": "#npm run zip:dist && zip:src-root",
     "zip:dist": "cd dist && zip -r ../dist.zip ./*",
     "zip:src-root": "zip -r src-root.zip $(git ls-files ./)",
     "watch": "npm run make -- --watch",
@@ -23,12 +23,13 @@
     ]
   },
   "dependencies": {
+    "classnames": "^2.2.6",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
     "webextension-polyfill": "^0.4.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.3",
-    "@babel/preset-env": "^7.4.3",
-    "babel-loader": "^8.0.5",
+    "@types/react": "^16.9.2",
     "copy-webpack-plugin": "^5.0.2",
     "css-loader": "^2.1.1",
     "file-loader": "^4.2.0",
@@ -38,7 +39,9 @@
     "image-webpack-loader": "^5.0.0",
     "lint-staged": "^9.2.1",
     "mini-css-extract-plugin": "^0.8.0",
+    "node-sass": "^4.12.0",
     "prettier": "^1.18.2",
+    "sass-loader": "^7.2.0",
     "style-loader": "^0.23.1",
     "ts-loader": "^6.0.4",
     "typescript": "^3.5.3",

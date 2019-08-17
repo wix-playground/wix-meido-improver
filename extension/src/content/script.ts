@@ -3,13 +3,13 @@ import {
   subscribeForLoadingChanges,
   subscribeForStorageChanges,
   updateData,
-  UserData,
+  IUserData,
 } from '../modules/localStorage';
 import { DISH_COUNT_CLASS, invalidateOrderedDishesCache, renderOrderedDishes } from '../modules/orders';
 import { addCategoryAll } from '../modules/categoryAll';
 import { inIframe } from './rpcListener';
 import { highlight, unHighlight } from '../modules/highlight';
-import { AvgRating, deleteRating, DishId, Rating, setRating, toggleFavorite } from '../modules/database';
+import { IAvgRating, deleteRating, DishId, Rating, setRating, toggleFavorite } from '../modules/database';
 import { waitForEmptySelector, waitForSelector } from '../modules/waitForSelector';
 
 import './fixes.css';
@@ -66,7 +66,7 @@ function openFirstCategory(): void {
   }
 }
 
-function render(data: UserData): void {
+function render(data: IUserData): void {
   const {
     filterRating,
     filterOrdered,
@@ -180,7 +180,7 @@ function renderHeart(content: HTMLElement, dishId: DishId, isFavorite: boolean) 
   button.classList.toggle('checked', isFavorite);
 }
 
-function renderRating(content: HTMLElement, dishId: DishId, userRating: Rating, avgRating: AvgRating) {
+function renderRating(content: HTMLElement, dishId: DishId, userRating: Rating, avgRating: IAvgRating) {
   let ratingElem = <HTMLElement>content.querySelector('.' + RATING_CLASS);
 
   if (!ratingElem) {

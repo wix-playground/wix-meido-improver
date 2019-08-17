@@ -7,19 +7,27 @@ void syncRatings();
 export type DishId = string;
 export type Rating = number;
 
-export type AvgRating = {
+export interface IAvgRating {
   count: number;
   avg: Rating;
-};
+}
 
-export type Favorites = { [dishId: string]: boolean };
-export type UserRatings = { [dishId: string]: Rating };
-export type AvgRatings = { [dishId: string]: AvgRating };
+export interface IFavorites {
+  [dishId: string]: boolean;
+}
 
-type BothRatings = {
-  userRatings: UserRatings;
-  avgRatings: AvgRatings;
-};
+export interface IUserRatings {
+  [dishId: string]: Rating;
+}
+
+export interface IAvgRatings {
+  [dishId: string]: IAvgRating;
+}
+
+export interface IBothRatings {
+  userRatings: IUserRatings;
+  avgRatings: IAvgRatings;
+}
 
 async function fixFavoritesDataStructure(): Promise<void> {
   const { ...data } = await getData();
@@ -56,11 +64,11 @@ function getAuthCookie(): string {
   return (document.cookie.match(reg) || '')[2];
 }
 
-async function fetchFavorites(): Promise<Favorites> {
+async function fetchFavorites(): Promise<IFavorites> {
   return await doRequest('GET', '/favorites');
 }
 
-async function saveFavorites(favorites: Favorites): Promise<void> {
+async function saveFavorites(favorites: IFavorites): Promise<void> {
   const updatedFavorites = await doRequest('POST', '/favorites', { favorites });
   await updateData(() => ({ favorites: updatedFavorites }));
 }
@@ -102,7 +110,7 @@ export async function toggleFavorite(dishId: DishId, favorite: boolean): Promise
   await updateData(() => ({ favorites }));
 }
 
-async function fetchBothRatings(): Promise<BothRatings> {
+async function fetchBothRatings(): Promise<IBothRatings> {
   return await doRequest('GET', '/both-ratings');
 }
 

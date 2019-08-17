@@ -1,16 +1,16 @@
 import { unescapeHtml } from './escapeHtml';
-import { DishOrder, getData, startLoading, stopLoading, updateData } from './localStorage';
+import { IDishOrder, getData, startLoading, stopLoading, updateData } from './localStorage';
 
 export const DISH_COUNT_CLASS = '__ITDXER_dish_count';
 const CONTRACTOR_COUNT_CLASS = '__ITDXER_contractor_count';
 
-type Order = {
+interface IOrder {
   date: string;
   dateStr: string;
   orderId: string;
-};
+}
 
-async function fetchOrders(): Promise<Order[]> {
+async function fetchOrders(): Promise<IOrder[]> {
   const firstPageText = await fetchOrdersText(1);
   const pagesCount = parsePagesCount(firstPageText);
   const restPages = await Promise.all(
@@ -28,7 +28,7 @@ async function fetchOrdersText(page: number): Promise<string> {
   return await response.text();
 }
 
-function parseOrders(text: string): Order[] {
+function parseOrders(text: string): IOrder[] {
   return [...text.matchAll(/<td>#(\d+)<\/td><td>(\w+\s\d+,\s\d+)<\/td>/g)].map(([all, orderId, dateStr]) => ({
     orderId,
     dateStr,
@@ -41,7 +41,7 @@ function parsePagesCount(text: string): number {
   return Math.ceil(Number(resultCount) / 10);
 }
 
-async function fetchOrderedDishes(orders: Order[]): Promise<DishOrder[]> {
+async function fetchOrderedDishes(orders: IOrder[]): Promise<IDishOrder[]> {
   return await Promise.all(
     orders.map(async ({ orderId, date }) => {
       const response = await fetch(`https://wix.getmeido.com/order/view/id/${orderId}`);
@@ -94,7 +94,7 @@ export async function invalidateOrderedDishesCache(): Promise<void> {
   }));
 }
 
-async function getOrderedDishes(): Promise<DishOrder[]> {
+async function getOrderedDishes(): Promise<IDishOrder[]> {
   let data = await getData();
   if (
     !data.orderedDishes ||

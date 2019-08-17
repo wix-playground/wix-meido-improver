@@ -7,10 +7,10 @@ module.exports = {
     background: './src/background/script.ts',
     content: './src/content/script.ts',
     options: './src/options/script.ts',
-    popup: './src/popup/script.ts',
+    popup: './src/popup/index.tsx',
   },
   resolve: {
-    extensions: ['.ts'],
+    extensions: ['.js', '.ts', '.tsx', '.scss'],
   },
   optimization: {
     minimize: false,
@@ -18,7 +18,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.ts$/,
+        test: /\.ts(x?)$/,
         exclude: /node_modules/,
         use: 'ts-loader',
       },
@@ -27,19 +27,23 @@ module.exports = {
         use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
       {
+        test: /\.module\.scss$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader?modules=true', 'sass-loader'],
+      },
+      {
         test: /\.(jpe?g|png|gif|svg)$/i,
         use: ['file-loader', 'image-webpack-loader'],
       },
       {
         test: /\.html$/,
-        use: { loader: 'html-loader' },
+        use: {loader: 'html-loader'},
       },
     ],
   },
   plugins: [
-    new HtmlWebPackPlugin({ template: './src/options/page.html', filename: 'options.html', chunks: ['options'] }),
-    new HtmlWebPackPlugin({ template: './src/popup/page.html', filename: 'popup.html', chunks: ['popup'] }),
-    new CopyPlugin([{ from: './static' }]),
-    new MiniCssExtractPlugin({ filename: '[name].css' }),
+    new HtmlWebPackPlugin({template: './src/options/page.html', filename: 'options.html', chunks: ['options']}),
+    new HtmlWebPackPlugin({template: './src/popup/page.html', filename: 'popup.html', chunks: ['popup']}),
+    new CopyPlugin([{from: './static'}]),
+    new MiniCssExtractPlugin({filename: '[name].css'}),
   ],
 };

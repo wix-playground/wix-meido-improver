@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "moduleResolution": "node",
     "outDir": "./dist/",
     "module": "es6",
     "target": "es2018",
@@ -10,6 +11,8 @@
       "es2020.string"
     ],
     "esModuleInterop": true,
-    "allowJs": true
+    "allowJs": true,
+    "strictNullChecks": true,
+    "jsx": "react"
   }
 }
