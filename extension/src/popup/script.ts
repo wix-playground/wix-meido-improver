@@ -2,8 +2,20 @@ import browser from 'webextension-polyfill';
 import { escapeHtml } from '../modules/escapeHtml';
 import { DAY_NAMES, MONTH_NAMES } from '../options/storage';
 import { getDateByDayIndex, getWeekDayIndex, getWorkingWeekOrders, isSameDay } from '../modules/notifications';
-import { isRemovingButton, startRemovingButton, stopRemovingButton, tryRemoveOrder } from './removeOrder';
-import { isLoadingButton, makeOrder, startLoadingButton, stopLoadingButton } from './makeOrder';
+import {
+  isRemovingButton,
+  startRemovingButton,
+  stopRemovingButton,
+  subscribeForRemovingLoadingButtonChanges,
+  tryRemoveOrder,
+} from './removeOrder';
+import {
+  isLoadingButton,
+  makeOrder,
+  startLoadingButton,
+  stopLoadingButton,
+  subscribeForLoadingButtonChanges,
+} from './makeOrder';
 import { subscribeForStorageChanges } from '../modules/localStorage';
 
 import './styles.css';
@@ -34,6 +46,8 @@ const nextWeekButtonElem = document.getElementById('next-week');
   theNextWeekElem.addEventListener('click', () => changeWeekAndRender(1));
 
   subscribeForStorageChanges(() => render());
+  subscribeForRemovingLoadingButtonChanges(() => render());
+  subscribeForLoadingButtonChanges(() => render());
   await render();
 })();
 
