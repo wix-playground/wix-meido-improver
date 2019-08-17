@@ -69,7 +69,7 @@ async function fetchFavorites(): Promise<IFavorites> {
 }
 
 async function saveFavorites(favorites: IFavorites): Promise<void> {
-  const updatedFavorites = await doRequest('POST', '/favorites', { favorites });
+  const updatedFavorites = await doRequest<IFavorites>('POST', '/favorites', { favorites });
   await updateData(() => ({ favorites: updatedFavorites }));
 }
 
@@ -99,14 +99,14 @@ export async function deleteRating(dishId: DishId): Promise<void> {
     return { userRatings: newRatings };
   });
 
-  const { userRatings, avgRatings } = await doRequest('DELETE', `/ratings/${encodeURIComponent(dishId)}`);
+  const { userRatings, avgRatings } = await doRequest<IBothRatings>('DELETE', `/ratings/${encodeURIComponent(dishId)}`);
   await updateData(() => ({ userRatings, avgRatings }));
 }
 
 export async function toggleFavorite(dishId: DishId, favorite: boolean): Promise<void> {
   await updateData(({ favorites }) => ({ favorites: { ...favorites, [dishId]: favorite } }));
 
-  const favorites = await doRequest('POST', `/favorites/${encodeURIComponent(dishId)}`, { favorite });
+  const favorites = await doRequest<IFavorites>('POST', `/favorites/${encodeURIComponent(dishId)}`, { favorite });
   await updateData(() => ({ favorites }));
 }
 
@@ -114,7 +114,7 @@ async function fetchBothRatings(): Promise<IBothRatings> {
   return await doRequest('GET', '/both-ratings');
 }
 
-async function doRequest(method: 'GET' | 'POST' | 'DELETE', endpoint: string, params: object = {}) {
+async function doRequest<T>(method: 'GET' | 'POST' | 'DELETE', endpoint: string, params: object = {}) {
   const data = { ...params, authCookie: getAuthCookie() };
 
   startLoading();
@@ -129,11 +129,11 @@ async function doRequest(method: 'GET' | 'POST' | 'DELETE', endpoint: string, pa
   }
   stopLoading();
 
-  const [error, result] = response || ['error', null];
+  const [error, result] = response || ['error', {}];
 
   if (error) {
     throw error;
   }
 
-  return result;
+  return <T>result;
 }
