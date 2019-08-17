@@ -22,12 +22,12 @@ export class PostMessageClient {
   }
 
   handleMessage(event) {
-    if (!event.data || typeof event.data.dishId === 'undefined' || !event.data.jsonrpc || 'method' in event.data) {
+    if (!event.data || typeof event.data.id === 'undefined' || !event.data.jsonrpc || 'method' in event.data) {
       return;
     }
 
-    const dispatch = this.dispatches.get(event.data.dishId);
-    this.dispatches.delete(event.data.dishId);
+    const dispatch = this.dispatches.get(event.data.id);
+    this.dispatches.delete(event.data.id);
 
     if (dispatch) {
       if (event.data.error) {
@@ -125,7 +125,7 @@ export class PostMessageServer {
       }))
       .then(response => ({
         jsonrpc: '2.0',
-        dishId: event.data.dishId,
+        id: event.data.id,
         ...response,
       }))
       .then(response => event.source.postMessage(response, '*'));
