@@ -1,4 +1,4 @@
-import browser from 'webextension-polyfill';
+import { browser } from 'webextension-polyfill-ts';
 import { escapeHtml } from '../modules/escapeHtml';
 import { DAY_NAMES, MONTH_NAMES } from '../options/storage';
 import { getDateByDayIndex, getWeekDayIndex, getWorkingWeekOrders, isSameDay } from '../modules/notifications';

@@ -1,25 +1,21 @@
-import browser from 'webextension-polyfill';
+import { browser } from 'webextension-polyfill-ts';
 import { DAY_NAMES, Options } from '../options/storage';
 import { IDishOrder, getData } from './localStorage';
 
 interface ILargeWorkingWeekOrders {
-  updatedDate: string;
-  ordersPerDay: IDishOrder[];
-  nextWeekOrdersPerDay: IDishOrder[];
+  updatedDate: string | null;
+  ordersPerDay: (IDishOrder | null)[];
+  nextWeekOrdersPerDay: (IDishOrder | null)[];
   orderedDishesInvalidated: boolean;
 }
 
-export interface IWorkingWeek<T> {
-  monday: T;
-  tuesday: T;
-  wednesday: T;
-  thursday: T;
-  friday: T;
-}
+export type IWorkingDay = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday';
+
+export interface IWorkingWeek<T> extends Record<IWorkingDay, T> {}
 
 export interface IWorkingWeekDates extends IWorkingWeek<Date> {}
 
-export interface IWorkingWeekDishOrders extends IWorkingWeek<IDishOrder> {}
+export interface IWorkingWeekDishOrders extends IWorkingWeek<IDishOrder | null> {}
 
 export function weekToList<T>(week: IWorkingWeek<T>): T[] {
   return [week.monday, week.tuesday, week.wednesday, week.thursday, week.friday];
@@ -35,7 +31,10 @@ export function weekFromList<T>(list: T[]): IWorkingWeek<T> {
   };
 }
 
-function mapWeek<R, T>(week: IWorkingWeek<T>, fn: (value: T, weekName: keyof IWorkingWeek<T>) => R): IWorkingWeek<R> {
+export function mapWeek<R, T>(
+  week: IWorkingWeek<T>,
+  fn: (value: T, weekName: keyof IWorkingWeek<T>) => R
+): IWorkingWeek<R> {
   return {
     monday: fn(week.monday, 'monday'),
     tuesday: fn(week.tuesday, 'tuesday'),
@@ -57,11 +56,30 @@ export async function createAlarms(options: Options): Promise<void> {
   await Promise.all(
     options.notifications.map(({ dayName, time }) =>
       browser.alarms.create(`${dayName} ${time}`, {
+        // @ts-ignore
         when: getDateByDayIndex(new Date(), DAY_NAMES[dayName], time).getTime(),
         periodInMinutes: 7 * 24 * 60, // One week
       })
     )
   );
+}
+
+export function getDateByWeekIndex(weekIndex: number, day: IWorkingDay) {
+  const date = getDateByDay(new Date(), day);
+  date.setDate(date.getDate() + 7 * weekIndex);
+  return date;
+}
+
+export function getDateByDay(baseDate: Date, newDay: IWorkingDay, time?: string): Date {
+  const indexes: Record<IWorkingDay, number> = {
+    monday: 0,
+    tuesday: 1,
+    wednesday: 2,
+    thursday: 3,
+    friday: 4,
+  };
+
+  return getDateByDayIndex(baseDate, indexes[newDay], time);
 }
 
 export function getDateByDayIndex(baseDate: Date, newDayIndex: number, time: string = '00:00'): Date {
@@ -97,7 +115,10 @@ export async function getWorkingWeekOrders(date: Date): Promise<ILargeWorkingWee
 }
 
 export function filterWorkingWeekOrders(list: IDishOrder[], date: Date): IWorkingWeekDishOrders {
-  return mapWeek(getWorkingWeekDays(date), weekDate => list.find(order => isSameDay(weekDate, new Date(order.date))));
+  return mapWeek(
+    getWorkingWeekDays(date),
+    weekDate => list.find(order => isSameDay(weekDate, new Date(order.date))) || null
+  );
 }
 
 export function isSameDay(dateOne: Date, dateTwo: Date): boolean {

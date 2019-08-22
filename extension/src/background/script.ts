@@ -1,4 +1,4 @@
-import browser from 'webextension-polyfill';
+import { browser } from 'webextension-polyfill-ts';
 import { clearAlarms, createAlarms, getWorkingWeekOrders } from '../modules/notifications';
 import { getOptions } from '../options/storage';
 
@@ -60,7 +60,7 @@ async function showNotificationIfNoOrder(): Promise<void> {
 async function createNotification(): Promise<void> {
   const buttons = [{ title: 'Open Meido' }, { title: 'Config Notifications' }];
 
-  const notificationOptions = {
+  const notificationOptions: any = {
     type: 'basic',
     title: 'Meido Order',
     message: 'You have no orders for some days next week [Click – open Meido]',

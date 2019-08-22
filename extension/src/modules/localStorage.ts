@@ -1,4 +1,4 @@
-import browser from 'webextension-polyfill';
+import { browser } from 'webextension-polyfill-ts';
 import { IAvgRatings, DishId, IFavorites, IUserRatings } from './database';
 
 const STORAGE_KEY = '__ITDXER_storage';
@@ -48,7 +48,7 @@ export async function getData(): Promise<IUserData> {
   return fillDefaults(data);
 }
 
-function fillDefaults(data: Partial<IUserData>): IUserData {
+function fillDefaults(data: Partial<IUserData> | null): IUserData {
   return {
     filterRating: false,
     filterOrdered: false,
@@ -86,8 +86,8 @@ export function subscribeForStorageChanges(handler: (newData: IUserData, oldValu
   });
 }
 
-let loading = 0;
-const loadingListeners = [];
+let loading: number = 0;
+const loadingListeners: Array<(loading: boolean) => void> = [];
 
 export function subscribeForLoadingChanges(fn: (loading: boolean) => void): void {
   loadingListeners.push(fn);
@@ -95,10 +95,10 @@ export function subscribeForLoadingChanges(fn: (loading: boolean) => void): void
 
 export function startLoading(): void {
   loading++;
-  loadingListeners.forEach(fn => fn(loading));
+  loadingListeners.forEach(fn => fn(loading > 0));
 }
 
 export function stopLoading(): void {
   loading--;
-  loadingListeners.forEach(fn => fn(loading));
+  loadingListeners.forEach(fn => fn(loading > 0));
 }

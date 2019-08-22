@@ -26,9 +26,10 @@
     "classnames": "^2.2.6",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
-    "webextension-polyfill": "^0.4.0"
+    "webextension-polyfill-ts": "^0.9.1"
   },
   "devDependencies": {
+    "@types/classnames": "^2.2.9",
     "@types/react": "^16.9.2",
     "copy-webpack-plugin": "^5.0.2",
     "css-loader": "^2.1.1",

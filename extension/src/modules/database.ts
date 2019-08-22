@@ -1,4 +1,4 @@
-import browser from 'webextension-polyfill';
+import { browser } from 'webextension-polyfill-ts';
 import { startLoading, stopLoading, updateData, getData, saveData } from './localStorage';
 
 void fixFavoritesDataStructure();

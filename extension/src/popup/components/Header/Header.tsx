@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as cs from 'classnames';
+import {default as cs} from 'classnames';
 import styles from './Header.module.scss';
 import {OrdersContext} from "../../context/OrdersContext";
 import img from '../../../../static/icons/icon48.png';
