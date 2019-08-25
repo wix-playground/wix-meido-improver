@@ -101,6 +101,12 @@ export function getWeekDayIndex(date: Date): number {
   return (date.getDay() + 6) % 7;
 }
 
+export function getWeekDay(date: Date): IWorkingDay {
+  const allDays: IWorkingDay[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+
+  return allDays[getWeekDayIndex(date)];
+}
+
 export async function getWorkingWeekOrders(date: Date): Promise<ILargeWorkingWeekOrders> {
   const { orderedDishesInvalidated, ...data } = await getData();
   const { updatedDate, list } = data.orderedDishes || { list: [], updatedDate: null };

@@ -8,21 +8,28 @@ import {
 } from "../../../modules/notifications";
 import {DAY_NAMES, MONTH_NAMES} from "../../../options/storage";
 import {default as cs} from 'classnames';
-import styles from './Order.module.scss';
 import {IDishOrder} from "../../../modules/localStorage";
 import {OrdersContext} from "../../context/OrdersContext";
+import {LoadingContext} from "../../context/LoadingContext";
+import {RpcContext} from "../../context/RpcContext";
+import styles from './Order.module.scss';
 
 interface OrderProps {
   isToday: boolean;
   showRepeat: boolean;
   showRemove: boolean;
-  date: Date,
-  dishName: string,
-  contractorName: string
+  date: Date;
+  dishName: string;
+  contractorName: string;
+  isRemoving: boolean;
+  isOrdering: boolean;
+  isDayOrdering: boolean;
+  onRepeat: () => void;
+  onRemove: () => void;
 }
 
 
-const Order2: React.FunctionComponent<OrderProps> = ({date, dishName, contractorName, isToday, showRepeat, showRemove}: OrderProps) => {
+const Order2: React.FunctionComponent<OrderProps> = ({date, dishName, contractorName, isToday, showRepeat, showRemove, isOrdering, isDayOrdering, isRemoving, onRemove, onRepeat}: OrderProps) => {
   return (
     <div className={cs(styles.week, {[styles.today]: isToday})}>
       <div className={styles.week__name}>
@@ -30,19 +37,34 @@ const Order2: React.FunctionComponent<OrderProps> = ({date, dishName, contractor
         <div className={styles.day}>{date && getDayName(date)}</div>
       </div>
       <div className={styles.week__order}>
-        <div>
-          <div className={styles.order}>{dishName || <i>No order</i>}</div>
-          <div className={styles.contractor}>{contractorName}</div>
-        </div>
+        <div className={styles.dishName}>{dishName || <i>No order</i>}</div>
+        <div className={styles.contractor}>{contractorName}</div>
       </div>
       {showRepeat && (
         <div className={styles.week__repeat}>
-          <button className={styles.repeat} title="Repeat this order for the next week">&nbsp;</button>
+          <button
+            className={cs(styles.repeat, {
+              [styles.spinning]: isOrdering || isDayOrdering,
+              [styles.onlyDayOrdering]: !isOrdering && isDayOrdering
+            })}
+            disabled={isOrdering || isDayOrdering}
+            title="Repeat this order for the next week"
+            onClick={() => onRepeat()}
+          >
+            &nbsp;
+          </button>
         </div>
       )}
       {showRemove && (
         <div className={styles.week__remove}>
-          <button className={styles.remove} title="Remove order">&nbsp;</button>
+          <button
+            className={cs(styles.remove, {[styles.spinning]: isRemoving})}
+            disabled={isRemoving}
+            title="Remove order"
+            onClick={() => onRemove()}
+          >
+            &nbsp;
+          </button>
         </div>
       )}
     </div>
@@ -50,28 +72,19 @@ const Order2: React.FunctionComponent<OrderProps> = ({date, dishName, contractor
 };
 
 interface IOrderInnerProps {
-  order?: IDishOrder;
+  order: IDishOrder;
   forDate: Date;
   showRepeat: boolean;
   showRemove: boolean;
   onRepeat: (order: IDishOrder) => void;
   onRemove: (order: IDishOrder) => void;
+  isRemoving: boolean;
+  isOrdering: boolean;
+  isDayOrdering: boolean;
 }
 
-const OrderInner = ({order, forDate, showRepeat, showRemove}: IOrderInnerProps) => {
-  if (!order) {
-    return (
-      <Order2
-        isToday={false}
-        showRepeat={false}
-        showRemove={false}
-        date={forDate}
-        dishName={''}
-        contractorName={''}
-      />
-    );
-  }
-
+// TODO: combine OrderInner and Order2
+const OrderInner = ({order, forDate, showRepeat, showRemove, isOrdering, isDayOrdering, isRemoving, onRemove, onRepeat}: IOrderInnerProps) => {
   const {dishName, contractorName} = order || {dishName: '', contractorName: ''};
   const date = new Date(order.date);
   const now = new Date();
@@ -84,6 +97,11 @@ const OrderInner = ({order, forDate, showRepeat, showRemove}: IOrderInnerProps) 
       contractorName={contractorName}
       showRepeat={showRepeat}
       showRemove={showRemove}
+      isOrdering={isOrdering}
+      isDayOrdering={isDayOrdering}
+      isRemoving={isRemoving}
+      onRemove={() => onRemove(order)}
+      onRepeat={() => onRepeat(order)}
     />
   )
 };
@@ -104,30 +122,55 @@ function isLessFriday3pm(date: Date) {
   return date <= friday3pm;
 }
 
-export const Order = ({day}: { day: IWorkingDay }) => (
-  <OrdersContext.Consumer>
-    {({weekOrders, weekIndex, nextWeekOrders}) => {
-      const date = getDateByWeekIndex(weekIndex, day);
-      const order: IDishOrder | undefined = (weekOrders && weekOrders[day]) || undefined;
+export const Order = ({day}: { day: IWorkingDay }) => {
+  const {repeatOrder, removeOrder} = React.useContext(RpcContext);
+  const {isRemoving, isOrdering, isOrderingInDay} = React.useContext(LoadingContext);
+  const {weekOrders, weekIndex, nextWeekOrders} = React.useContext(OrdersContext);
 
-      const hasNextWeekOrder = !nextWeekOrders || nextWeekOrders[day] !== null;
-      const showRepeat = order
-        ? !hasNextWeekOrder && isLessFriday3pm(new Date())
-        : false;
-      const showRemove = order
-        ? new Date < getDateByDay(date, 'friday', '15:00')
-        : false;
+  const date = getDateByWeekIndex(weekIndex, day);
+  const order: IDishOrder | undefined = (weekOrders && weekOrders[day]) || undefined;
+  const isToday = isSameDay(date, new Date());
 
-      return (
-        <OrderInner
-          order={order}
-          forDate={date}
-          showRepeat={showRepeat}
-          showRemove={showRemove}
-          onRepeat={() => void 0}
-          onRemove={() => void 0}
-        />
-      );
-    }}
-  </OrdersContext.Consumer>
-);
+  if (!order) {
+    return (
+      <Order2
+        isToday={isToday}
+        showRepeat={false}
+        showRemove={false}
+        date={date}
+        dishName={''}
+        contractorName={''}
+        isOrdering={false}
+        isDayOrdering={false}
+        isRemoving={false}
+        onRemove={() => void 0}
+        onRepeat={() => void 0}
+      />
+    );
+  }
+
+  const hasNextWeekOrder = !nextWeekOrders || nextWeekOrders[day] !== null;
+  const showRepeat = order
+    ? !hasNextWeekOrder && isLessFriday3pm(new Date())
+    : false;
+
+  const a = getDateByDay(date, 'friday', '15:00');
+  a.setDate(a.getDate() - 7);
+  const showRemove = order
+    ? new Date() < a
+    : false;
+
+  return (
+    <OrderInner
+      order={order}
+      forDate={date}
+      showRepeat={showRepeat}
+      showRemove={showRemove}
+      onRepeat={() => repeatOrder(order)}
+      onRemove={() => removeOrder(order)}
+      isRemoving={isRemoving(order.orderId)}
+      isOrdering={isOrdering(order.orderId)}
+      isDayOrdering={isOrderingInDay(day)}
+    />
+  );
+};

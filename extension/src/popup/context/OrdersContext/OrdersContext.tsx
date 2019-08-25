@@ -63,7 +63,7 @@ export class OrdersContextProvider extends React.Component<{ children: React.Rea
       <OrdersContext.Provider value={{
         weekOrders: filterWorkingWeekOrders(ordersList, currentWeek),
         nextWeekOrders: filterWorkingWeekOrders(ordersList, nextWeek),
-        updatedDate: updatedDateStr === null ? null : new Date(updatedDateStr || ''), // TODO: remove `|| ''`
+        updatedDate: updatedDateStr ? new Date(updatedDateStr || '') : null, // TODO: remove `|| ''`
         weekIndex,
         setWeekIndex: weekIndex => this.setState({weekIndex})
       }}>

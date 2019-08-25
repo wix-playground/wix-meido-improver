@@ -48,7 +48,7 @@ async function fetchOrderedDishes(orders: IOrder[]): Promise<IDishOrder[]> {
       const text = await response.text();
 
       const [, dishName = '', contractorName = ''] = text.match(/<td>(.*)<br>\s*\(Поставщик: <b>(.*)<\/b>\)/) || [];
-      const [, dishId = ''] = text.match(/<td data-product-id="(\d+)"/) || [];
+      const [, dishId = ''] = text.match(/data-product-id="(\d+)"/) || [];
 
       return {
         dishName: unescapeHtml(dishName).trim(),

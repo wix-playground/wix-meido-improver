@@ -1,19 +1,8 @@
 import * as React from 'react';
-import {getData, IDishOrder, IUserData, subscribeForStorageChanges} from "../../../modules/localStorage";
-import {filterWorkingWeekOrders, IWorkingWeek, IWorkingWeekDishOrders} from "../../../modules/notifications";
+import {IWorkingWeek} from "../../../modules/notifications";
 
 
-interface ILoadingState {
-  removing: {
-    [key: string]: boolean
-  },
-  ordering: {
-    [key: string]: boolean
-  },
-  orderingDay: IWorkingWeek<boolean>
-}
-
-interface IOrdersContext {
+interface ILoadingContext {
   startRemoving: (orderId: string) => void;
   stopRemoving: (orderId: string) => void;
   isRemoving: (orderId: string) => boolean;
@@ -21,19 +10,21 @@ interface IOrdersContext {
   stopOrdering: (orderId: string, weekDay: keyof IWorkingWeek<null>) => void;
   isOrdering: (orderId: string) => boolean,
   isOrderingInDay: (weekDay: keyof IWorkingWeek<null>) => boolean,
+  isSomethingLoading: () => boolean,
 }
 
-export const LoadingContext = React.createContext<IOrdersContext>({
+export const LoadingContext = React.createContext<ILoadingContext>({
   startRemoving: () => undefined,
   stopRemoving: () => undefined,
   isRemoving: () => false,
   startOrdering: () => undefined,
   stopOrdering: () => undefined,
-  isOrdering: ()=> false,
-  isOrderingInDay: ()=> false,
+  isOrdering: () => false,
+  isOrderingInDay: () => false,
+  isSomethingLoading: () => false,
 });
 
-export function LoadingContextProvider({children}) {
+export function LoadingContextProvider({children}: { children: React.ReactNode }) {
   const [removingState, setRemovingState] = React.useState<{ [key: string]: boolean }>({});
   const [orderingState, seOrderingState] = React.useState<{ [key: string]: boolean }>({});
   const [orderingDayState, seOrderingDayState] = React.useState<{ [key: string]: boolean }>({
@@ -59,6 +50,7 @@ export function LoadingContextProvider({children}) {
       },
       isOrdering: orderId => !!orderingState[orderId],
       isOrderingInDay: weekDay => !!orderingDayState[weekDay],
+      isSomethingLoading: () => [removingState, orderingState, orderingDayState].some(state => Object.values(state).includes(true))
     }}>
       {children}
     </LoadingContext.Provider>

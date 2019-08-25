@@ -19,7 +19,6 @@ import {
 import { subscribeForStorageChanges } from '../modules/localStorage';
 
 import './styles.css';
-import styles from './styles.module.scss';
 
 const button = document.getElementById('openOptions');
 button.addEventListener('click', event => {
