@@ -5,9 +5,9 @@ import {LoadingContextProvider} from "../context/LoadingContext";
 import {RpcContextProvider} from "../context/RpcContext";
 import {MessageContextProvider} from "../context/MessagesContext";
 import {IntlProvider} from 'react-intl'
-import './App.module.scss';
+import './PopupApp.module.scss';
 
-export const App = () => (
+export const PopupApp = () => (
   <MessageContextProvider>
     <LoadingContextProvider>
       <RpcContextProvider>

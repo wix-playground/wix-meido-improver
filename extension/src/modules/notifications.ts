@@ -1,5 +1,5 @@
 import { browser } from 'webextension-polyfill-ts';
-import { DAY_NAMES, Options } from '../options/storage';
+import { DAY_NAMES, IOptions } from '../options/storage';
 import { IDishOrder, getData } from './localStorage';
 
 interface ILargeWorkingWeekOrders {
@@ -48,7 +48,7 @@ export async function clearAlarms() {
   return await browser.alarms.clearAll();
 }
 
-export async function createAlarms(options: Options): Promise<void> {
+export async function createAlarms(options: IOptions): Promise<void> {
   if (!options.enableNotifications) {
     return;
   }

@@ -1,12 +1,14 @@
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CleanTerminalPlugin = require('clean-terminal-webpack-plugin');
+
 
 module.exports = {
   entry: {
     background: './src/background/script.ts',
     content: './src/content/script.ts',
-    options: './src/options/script.ts',
+    options: './src/options/index.tsx',
     popup: './src/popup/index.tsx',
   },
   resolve: {
@@ -41,6 +43,7 @@ module.exports = {
     ],
   },
   plugins: [
+    new CleanTerminalPlugin(),
     new HtmlWebPackPlugin({template: './src/options/page.html', filename: 'options.html', chunks: ['options']}),
     new HtmlWebPackPlugin({template: './src/popup/page.html', filename: 'popup.html', chunks: ['popup']}),
     new CopyPlugin([{from: './static'}]),
