@@ -44,6 +44,10 @@ async function createRpc(
 
   await waitLoaded();
 
+  if (!iframe.contentWindow) {
+    throw new Error('IFrame loading failed');
+  }
+
   const client = new PostMessageClient(iframe.contentWindow);
   client.mount(window);
 
