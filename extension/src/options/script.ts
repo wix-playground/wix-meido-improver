@@ -57,11 +57,17 @@ enableNotificationsInput.addEventListener('change', event => {
   table.classList.toggle('notifications-enabled', checked);
 });
 
-function appendTrInputs(dayName, time) {
-  const onRemoveClick = event => {
+function appendTrInputs(dayName: string, time: string) {
+  const onRemoveClick = (event: Event) => {
     event.preventDefault();
-    const button = event.currentTarget;
+    const button = <HTMLElement | null>event.currentTarget;
+    if (!button || !button.parentElement) {
+      return;
+    }
     const tr = button.parentElement.parentElement;
+    if (!tr || !tr.parentElement) {
+      return;
+    }
     tr.parentElement.removeChild(tr);
   };
   const tr = createInputsTr(dayName, time, onRemoveClick);
@@ -69,10 +75,12 @@ function appendTrInputs(dayName, time) {
 }
 
 const addButton = document.getElementById('add');
-addButton.addEventListener('click', event => {
-  event.preventDefault();
-  appendTrInputs(DAY_NAMES[0], '12:00');
-});
+if (addButton) {
+  addButton.addEventListener('click', event => {
+    event.preventDefault();
+    appendTrInputs(DAY_NAMES[0], '12:00');
+  });
+}
 
 form.addEventListener('submit', async event => {
   event.preventDefault();
@@ -85,15 +93,23 @@ form.addEventListener('submit', async event => {
   };
 
   await setOptions(options);
-  changesSavedElem.classList.add('shown');
-  setTimeout(() => changesSavedElem.classList.remove('shown'), 1000);
+  if (changesSavedElem) {
+    changesSavedElem.classList.add('shown');
+    setTimeout(() => changesSavedElem.classList.remove('shown'), 1000);
+  }
 });
 
-document.getElementById('clear-cache').addEventListener('click', () => clearData());
-document.getElementById('reset').addEventListener('click', async () => {
-  await resetOptions();
-  location.reload(true);
-});
+const clearCache = document.getElementById('clear-cache');
+if (clearCache) {
+  clearCache.addEventListener('click', () => clearData());
+}
+const reset = document.getElementById('reset');
+if (reset) {
+  reset.addEventListener('click', async () => {
+    await resetOptions();
+    location.reload(true);
+  });
+}
 
 (async () => {
   const { enableNotifications, notifications } = await getOptions();

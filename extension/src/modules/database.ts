@@ -36,6 +36,7 @@ async function fixFavoritesDataStructure(): Promise<void> {
   Object.entries(data).forEach(([key, value]) => {
     if (parseInt(key).toString() === key) {
       favorites[key] = value;
+      // @ts-ignore
       delete data[key];
     }
   });

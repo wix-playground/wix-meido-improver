@@ -97,7 +97,7 @@ function render(data: IUserData): void {
       .map((item: HTMLElement) => {
         const content = <HTMLElement>item.querySelector('.menu-item__content');
         const button = <HTMLAnchorElement>content.querySelector('a.btn.buy');
-        const dishId = button.href.split('/').pop();
+        const dishId = button.href.split('/').pop() || '';
         const orderedElem = <HTMLElement>content.querySelector('.' + DISH_COUNT_CLASS);
         const orderedTimes = orderedElem ? parseInt(orderedElem.innerText) : 0;
 
@@ -136,7 +136,7 @@ function render(data: IUserData): void {
         }
         item.style.order = String(order + 1);
 
-        setTimeout(() => renderHighlights(content, [].concat(...filters), includesFilters > 0), 0);
+        setTimeout(() => renderHighlights(content, (<string[]>[]).concat(...filters), includesFilters > 0), 0);
 
         renderHeart(content, dishId, isFavorite);
         renderRating(content, dishId, userRatings[dishId], avgRatings[dishId]);
@@ -176,6 +176,9 @@ function renderHeart(content: HTMLElement, dishId: DishId, isFavorite: boolean) 
   }
 
   const button = heart.querySelector('button');
+  if (!button) {
+    return;
+  }
   button.onclick = () => toggleFavorite(dishId, !isFavorite);
   button.classList.toggle('checked', isFavorite);
 }
@@ -291,7 +294,7 @@ function renderFilters(params: {
 }) {
   const { suppliersContent, filterRating, filterFavorite, filterVegan, filterOrdered, filterText } = params;
 
-  let filters: HTMLElement = suppliersContent.querySelector('.' + FILTERS_CLASS);
+  let filters: HTMLElement | null = suppliersContent.querySelector('.' + FILTERS_CLASS);
   if (!filters) {
     filters = createFiltersElement();
     suppliersContent.prepend(filters);
@@ -318,27 +321,36 @@ function renderRatingCheckbox(filters: HTMLElement, filterRating: boolean): void
     checkboxLabel = createCheckboxInLabel(
       '&nbsp;<span style="color: #ffd900;">★️</span> rating',
       CHECKBOX_LABEL_RATING,
-      event => updateData(() => ({ filterRating: event.target.checked }))
+      (event: Event) =>
+        updateData(() => ({ filterRating: event.target ? (<HTMLInputElement>event.target).checked : false }))
     );
 
     filters.append(checkboxLabel);
   }
 
-  checkboxLabel.querySelector('input').checked = filterRating;
+  const input = checkboxLabel.querySelector('input');
+  if (!input) {
+    return;
+  }
+  input.checked = filterRating;
 }
 
 function renderFavoriteCheckbox(filters: HTMLElement, filterFavorite: boolean): void {
   let checkboxLabel = filters.querySelector('.' + CHECKBOX_LABEL_FAVORITE);
 
   if (!checkboxLabel) {
-    checkboxLabel = createCheckboxInLabel('&nbsp;<span>❤️</span> favorite', CHECKBOX_LABEL_FAVORITE, event =>
-      updateData(() => ({ filterFavorite: event.target.checked }))
+    checkboxLabel = createCheckboxInLabel('&nbsp;<span>❤️</span> favorite', CHECKBOX_LABEL_FAVORITE, (event: Event) =>
+      updateData(() => ({ filterFavorite: event.target ? (<HTMLInputElement>event.target).checked : false }))
     );
 
     filters.append(checkboxLabel);
   }
 
-  checkboxLabel.querySelector('input').checked = filterFavorite;
+  const input = checkboxLabel.querySelector('input');
+  if (!input) {
+    return;
+  }
+  input.checked = filterFavorite;
 }
 
 function renderVeganCheckbox(filters: HTMLElement, filterVegan: boolean): void {
@@ -348,13 +360,18 @@ function renderVeganCheckbox(filters: HTMLElement, filterVegan: boolean): void {
     checkboxLabel = createCheckboxInLabel(
       '&nbsp;<img alt="vegan" src="/images/vegan.png" style="height: 1em"/> vegetarian',
       CHECKBOX_LABEL_VEGAN,
-      event => updateData(() => ({ filterVegan: event.target.checked }))
+      (event: Event) =>
+        updateData(() => ({ filterVegan: event.target ? (<HTMLInputElement>event.target).checked : false }))
     );
 
     filters.append(checkboxLabel);
   }
 
-  checkboxLabel.querySelector('input').checked = filterVegan;
+  const input = checkboxLabel.querySelector('input');
+  if (!input) {
+    return;
+  }
+  input.checked = filterVegan;
 }
 
 function renderOrderedCheckbox(filters: HTMLElement, filterOrdered: boolean): void {
@@ -364,13 +381,18 @@ function renderOrderedCheckbox(filters: HTMLElement, filterOrdered: boolean): vo
     checkboxLabel = createCheckboxInLabel(
       `&nbsp;<div class="${CHECKBOX_ICON_ORDERED}">n</div> ordered`,
       CHECKBOX_LABEL_ORDERED,
-      event => updateData(() => ({ filterOrdered: event.target.checked }))
+      (event: Event) =>
+        updateData(() => ({ filterOrdered: event.target ? (<HTMLInputElement>event.target).checked : false }))
     );
 
     filters.append(checkboxLabel);
   }
 
-  checkboxLabel.querySelector('input').checked = filterOrdered;
+  const input = checkboxLabel.querySelector('input');
+  if (!input) {
+    return;
+  }
+  input.checked = filterOrdered;
 }
 
 function renderSearchInput(filters: HTMLElement, filterText: string): void {
@@ -429,7 +451,7 @@ function addRemoveCartButtonListener() {
   );
 }
 
-function createCheckboxInLabel(labelHTML, className, onChange) {
+function createCheckboxInLabel(labelHTML: string, className: string, onChange: (event: Event) => void) {
   const label = document.createElement('label');
   const checkbox = document.createElement('input');
   checkbox.type = 'checkbox';

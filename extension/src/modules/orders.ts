@@ -20,7 +20,7 @@ async function fetchOrders(): Promise<IOrder[]> {
       .map(pageNumber => fetchOrdersText(pageNumber))
   );
 
-  return [].concat(...[firstPageText, ...restPages].map(parseOrders));
+  return (<IOrder[]>[]).concat(...[firstPageText, ...restPages].map(parseOrders));
 }
 
 async function fetchOrdersText(page: number): Promise<string> {
@@ -37,7 +37,7 @@ function parseOrders(text: string): IOrder[] {
 }
 
 function parsePagesCount(text: string): number {
-  const [, resultCount] = text.match(/Displaying 1-10 of (\d+) results/);
+  const [, resultCount = '0'] = text.match(/Displaying 1-10 of (\d+) results/) || [];
   return Math.ceil(Number(resultCount) / 10);
 }
 
@@ -105,7 +105,7 @@ async function getOrderedDishes(): Promise<IDishOrder[]> {
     data = await getData();
   }
 
-  return data.orderedDishes.list || [];
+  return (data.orderedDishes && data.orderedDishes.list) || [];
 }
 
 function isDateBeforeYesterday(date: Date): boolean {
@@ -121,7 +121,7 @@ export async function renderOrderedDishes(): Promise<void> {
       ...by,
       [contractorName]: [...(by[contractorName] || []), dishId],
     }),
-    {}
+    <{ [key: string]: string[] }>{}
   );
 
   const contractorTab = document.querySelectorAll('.suppliers .restaurants__nav li a');
@@ -134,11 +134,11 @@ export async function renderOrderedDishes(): Promise<void> {
       countElem.innerText = String(count);
       countElem.className = CONTRACTOR_COUNT_CLASS;
       countElem.title = `You made ${count} orders in this restaurant`;
-      link.parentNode.insertBefore(countElem, link.nextSibling);
+      link.parentNode && link.parentNode.insertBefore(countElem, link.nextSibling);
     }
   });
 
-  const activeContractorTab: HTMLElement = document.querySelector('.suppliers .restaurants__nav li.active a');
+  const activeContractorTab: HTMLElement | null = document.querySelector('.suppliers .restaurants__nav li.active a');
 
   if (activeContractorTab) {
     const activeContractorName = activeContractorTab.innerText.trim();
@@ -153,15 +153,18 @@ export async function renderOrderedDishes(): Promise<void> {
 
     const contents = document.querySelectorAll('.tab-content > .tab-pane > .menu-item > .menu-item__content');
     [...contents].forEach(content => {
-      const button: HTMLAnchorElement = content.querySelector('a.btn.buy');
-      const dishId = button.href.split('/').pop();
+      const button: HTMLAnchorElement | null = content.querySelector('a.btn.buy');
+      const dishId = button ? button.href.split('/').pop() : '';
 
       if (dishesCount.has(dishId)) {
         const countElem = document.createElement('div');
         countElem.innerText = dishesCount.get(dishId);
         countElem.className = DISH_COUNT_CLASS;
         countElem.title = `You bought this dish ${dishesCount.get(dishId)} times`;
-        content.querySelector('.menu-item__info').append(countElem);
+        const info: Element | null = content.querySelector('.menu-item__info');
+        if (info) {
+          info.append(countElem);
+        }
       }
     });
   }
