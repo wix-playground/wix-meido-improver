@@ -15,33 +15,3 @@ export async function tryRemoveOrder(orderId: string, dishId: DishId): Promise<v
     }
   });
 }
-
-const removingButtons = {};
-const removingButtonsListener = [];
-
-export function isRemovingButton(orderId: string): boolean {
-  return !!removingButtons[orderId];
-}
-
-export function startRemovingButton(orderId: string, button: HTMLButtonElement): void {
-  toggleRemovingLoadingButton(orderId, button, true);
-}
-
-export function stopRemovingButton(orderId: string, button: HTMLButtonElement): void {
-  toggleRemovingLoadingButton(orderId, button, false);
-}
-
-export function subscribeForRemovingLoadingButtonChanges(fn: () => void): void {
-  removingButtonsListener.push(fn);
-}
-
-function toggleRemovingLoadingButton(orderId: string, button: HTMLButtonElement, loading: boolean): void {
-  if (loading) {
-    removingButtons[orderId] = true;
-  } else {
-    delete removingButtons[orderId];
-  }
-  button.classList.toggle('spinning', loading);
-  button.disabled = loading;
-  removingButtonsListener.forEach(listener => listener());
-}

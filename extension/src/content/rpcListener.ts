@@ -12,7 +12,7 @@ export function inIframe(): boolean {
 if (inIframe()) {
   const server = new PostMessageServer({
     isLoggedIn: () => !window.location.href.includes('wix.getmeido.com/auth'),
-    openContractor: contractorName => {
+    openContractor: (contractorName: string) => {
       const all = [...document.querySelectorAll('.restaurants__nav > li > a')];
       const found = all.find(link => (<HTMLAnchorElement>link).innerText.trim() === contractorName.trim());
       if (!found) {
@@ -20,23 +20,27 @@ if (inIframe()) {
       }
       (<HTMLAnchorElement>found).click();
     },
-    clickOneClickBuy: dishId => {
-      const button: HTMLButtonElement = document.querySelector(`.__ITDXER_oneClickBuy[data-dish-id="${dishId}"]`);
+    clickOneClickBuy: (dishId: string) => {
+      const button: HTMLButtonElement | null = document.querySelector(
+        `.__ITDXER_oneClickBuy[data-dish-id="${dishId}"]`
+      );
       if (!button) {
         return Promise.reject(new Error(`Dish with id "${dishId}" not found`));
       }
       button.click();
     },
-    confirmOrder: dateStr => {
-      const input = document.querySelector(`input[value="${dateStr}"]`);
+    confirmOrder: (dateStr: string) => {
+      const input: HTMLInputElement | null = document.querySelector(`input[value="${dateStr}"]`);
       if (!input) {
         return Promise.reject(
           new Error(`Can't make an order for ${dateStr}. Probably you already made an order, or it's a holiday`)
         );
       }
-      (<HTMLButtonElement>input.nextSibling.nextSibling).click();
+      if (input.nextSibling && input.nextSibling.nextSibling) {
+        (<HTMLButtonElement>input.nextSibling.nextSibling).click();
+      }
     },
-    removeOrder: async (orderId, dishId) => {
+    removeOrder: async (orderId: string, dishId: string) => {
       const removeFormData = new FormData();
       removeFormData.append('product_id', dishId);
 

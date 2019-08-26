@@ -11,7 +11,7 @@ server.mount(window);
 const waitLoaded = () => {
   loaded = false;
 
-  const wait = () =>
+  const wait: () => Promise<void> = () =>
     new Promise(resolve => {
       if (loaded) {
         return resolve();
@@ -24,7 +24,7 @@ const waitLoaded = () => {
 };
 
 let queue = Promise.resolve();
-export const callInQueue = fn =>
+export const callInQueue = (fn: (...args: any[]) => any) =>
   new Promise((resolve, reject) => {
     queue = queue.then(() => Promise.resolve(fn()).then(resolve, reject));
   });
@@ -50,8 +50,8 @@ async function createRpc(
   return { client, iframe };
 }
 
-let client = null;
-let iframe = null;
+let client: PostMessageClient | null = null;
+let iframe: HTMLIFrameElement | null = null;
 
 async function getRpcClient(src?: string): Promise<PostMessageClient> {
   let justCreated = false;

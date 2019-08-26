@@ -31,7 +31,7 @@ export interface IBothRatings {
 
 async function fixFavoritesDataStructure(): Promise<void> {
   const { ...data } = await getData();
-  const favorites = {};
+  const favorites: IFavorites = {};
 
   Object.entries(data).forEach(([key, value]) => {
     if (parseInt(key).toString() === key) {

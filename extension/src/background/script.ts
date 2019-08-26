@@ -68,17 +68,17 @@ async function createNotification(): Promise<void> {
   };
 
   try {
-    await browser.notifications.create(null, { ...notificationOptions, buttons });
+    await browser.notifications.create(undefined, { ...notificationOptions, buttons });
   } catch (e) {
-    await browser.notifications.create(null, notificationOptions);
+    await browser.notifications.create(undefined, notificationOptions);
   }
 }
 
-async function doRequest(method, endpoint, data) {
+async function doRequest(method: 'GET' | 'POST', endpoint: string, data: any) {
   const isGetMethod = method.toUpperCase() === 'GET';
   const searchParams = new URLSearchParams(isGetMethod ? data : {}).toString();
   const body = isGetMethod ? null : JSON.stringify(data);
-  const headers = isGetMethod ? {} : { 'Content-Type': 'application/json' };
+  const headers = isGetMethod ? [] : [['Content-Type', 'application/json']];
 
   const url = 'https://www.wix.com/_serverless/wix-meido-improver' + endpoint + '?' + searchParams;
   const response = await fetch(url, { method, body, headers });
