@@ -115,9 +115,11 @@ async function render(): Promise<void> {
       });
     }
 
+    const prevFriday3pm = getDateByDayIndex(date, 4, '15:00');
+    prevFriday3pm.setDate(prevFriday3pm.getDate() - 7);
+
     const removeButton = <HTMLButtonElement>weekElem.querySelector('.remove');
-    const nextMonday = getDateByDayIndex(nextWeekDay, 0);
-    const hideRemoveButton = !order || date < nextMonday;
+    const hideRemoveButton = !order || new Date() >= prevFriday3pm;
     removeButton.disabled = hideRemoveButton;
     removeButton.classList.toggle('hidden', hideRemoveButton);
 
