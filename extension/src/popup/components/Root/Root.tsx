@@ -13,33 +13,35 @@ export const Root = () => {
   const {updatedDate} = React.useContext(OrdersContext);
   return (
     <React.Fragment>
-      <Header/>
+      <div className={styles.root}>
+        <Header/>
 
-      {errorMessage !== null
-        ? <div className={styles.error}>{errorMessage}</div>
-        : isSomethingLoading() && <div className={styles.warning}>Do not close this popup</div>
-      }
+        <div className={styles.orders}>
+          {updatedDate === null
+            ? (<div className={styles.notLoaded}>
+                <a href="https://wix.getmeido.com/order" target="_blank" className={styles.link}>
+                  Open Meido to load data
+                </a>
+              </div>
+            )
+            : (
+              <React.Fragment>
+                <Order day={'monday'}/>
+                <Order day={'tuesday'}/>
+                <Order day={'wednesday'}/>
+                <Order day={'thursday'}/>
+                <Order day={'friday'}/>
+              </React.Fragment>
+            )}
+        </div>
 
-      <div className={styles.orders}>
-        {updatedDate === null
-          ? (<div className={styles.notLoaded}>
-              <a href="https://wix.getmeido.com/order" target="_blank" className={styles.link}>
-                Open Meido to load data
-              </a>
-            </div>
-          )
-          : (
-            <React.Fragment>
-              <Order day={'monday'}/>
-              <Order day={'tuesday'}/>
-              <Order day={'wednesday'}/>
-              <Order day={'thursday'}/>
-              <Order day={'friday'}/>
-            </React.Fragment>
-          )}
+        {errorMessage !== null
+          ? <div className={styles.error}>{errorMessage}</div>
+          : isSomethingLoading() && <div className={styles.warning}>Do not close this popup</div>
+        }
+
+        <Footer/>
       </div>
-
-      <Footer/>
     </React.Fragment>
   )
 };

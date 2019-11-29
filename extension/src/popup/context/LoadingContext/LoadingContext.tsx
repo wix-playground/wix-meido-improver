@@ -37,16 +37,16 @@ export function LoadingContextProvider({children}: { children: React.ReactNode }
 
   return (
     <LoadingContext.Provider value={{
-      startRemoving: orderId => setRemovingState({[orderId]: true}),
-      stopRemoving: orderId => setRemovingState({[orderId]: false}),
+      startRemoving: orderId => setRemovingState({...removingState, [orderId]: true}),
+      stopRemoving: orderId => setRemovingState({...removingState, [orderId]: false}),
       isRemoving: orderId => !!removingState[orderId],
       startOrdering: (orderId, weekDay) => {
-        seOrderingState({[orderId]: true});
-        seOrderingDayState({[weekDay]: true});
+        seOrderingState({...orderingState, [orderId]: true});
+        seOrderingDayState({...orderingDayState, [weekDay]: true});
       },
       stopOrdering: (orderId, weekDay) => {
-        seOrderingState({[orderId]: false});
-        seOrderingDayState({[weekDay]: false});
+        seOrderingState({...orderingState, [orderId]: false});
+        seOrderingDayState({...orderingDayState, [weekDay]: false});
       },
       isOrdering: orderId => !!orderingState[orderId],
       isOrderingInDay: weekDay => !!orderingDayState[weekDay],
