@@ -3,45 +3,41 @@ import {Order} from "../Order";
 import {Header} from "../Header";
 import {Footer} from "../Footer";
 import {MessageContext} from "../../context/MessagesContext";
-import {LoadingContext} from "../../context/LoadingContext";
-import styles from './Root.module.scss';
 import {OrdersContext} from "../../context/OrdersContext";
+import styles from './Root.module.scss';
 
 export const Root = () => {
-  const {errorMessage} = React.useContext(MessageContext);
-  const {isSomethingLoading} = React.useContext(LoadingContext);
+  const {errorMessage, statusMessage} = React.useContext(MessageContext);
   const {updatedDate} = React.useContext(OrdersContext);
   return (
     <React.Fragment>
-      <div className={styles.root}>
-        <Header/>
+      <Header/>
 
-        <div className={styles.orders}>
-          {updatedDate === null
-            ? (<div className={styles.notLoaded}>
-                <a href="https://wix.getmeido.com/order" target="_blank" className={styles.link}>
-                  Open Meido to load data
-                </a>
-              </div>
-            )
-            : (
-              <React.Fragment>
-                <Order day={'monday'}/>
-                <Order day={'tuesday'}/>
-                <Order day={'wednesday'}/>
-                <Order day={'thursday'}/>
-                <Order day={'friday'}/>
-              </React.Fragment>
-            )}
-        </div>
-
-        {errorMessage !== null
-          ? <div className={styles.error}>{errorMessage}</div>
-          : isSomethingLoading() && <div className={styles.warning}>Do not close this popup</div>
-        }
-
-        <Footer/>
+      <div className={styles.orders}>
+        {updatedDate === null
+          ? (<div className={styles.notLoaded}>
+              <a href="https://wix.getmeido.com/order" target="_blank" className={styles.link}>
+                Open Meido to load data
+              </a>
+            </div>
+          )
+          : (
+            <React.Fragment>
+              <Order day={'monday'}/>
+              <Order day={'tuesday'}/>
+              <Order day={'wednesday'}/>
+              <Order day={'thursday'}/>
+              <Order day={'friday'}/>
+            </React.Fragment>
+          )}
       </div>
+
+      {errorMessage !== null
+        ? <div className={styles.error}>{errorMessage}</div>
+        : statusMessage && <div className={styles.warning}>{statusMessage}</div>
+      }
+
+      <Footer/>
     </React.Fragment>
   )
 };

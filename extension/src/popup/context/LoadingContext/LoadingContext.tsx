@@ -10,7 +10,6 @@ interface ILoadingContext {
   stopOrdering: (orderId: string, weekDay: keyof IWorkingWeek<null>) => void;
   isOrdering: (orderId: string) => boolean,
   isOrderingInDay: (weekDay: keyof IWorkingWeek<null>) => boolean,
-  isSomethingLoading: () => boolean,
 }
 
 export const LoadingContext = React.createContext<ILoadingContext>({
@@ -21,7 +20,6 @@ export const LoadingContext = React.createContext<ILoadingContext>({
   stopOrdering: () => undefined,
   isOrdering: () => false,
   isOrderingInDay: () => false,
-  isSomethingLoading: () => false,
 });
 
 export function LoadingContextProvider({children}: { children: React.ReactNode }) {
@@ -50,7 +48,6 @@ export function LoadingContextProvider({children}: { children: React.ReactNode }
       },
       isOrdering: orderId => !!orderingState[orderId],
       isOrderingInDay: weekDay => !!orderingDayState[weekDay],
-      isSomethingLoading: () => [removingState, orderingState, orderingDayState].some(state => Object.values(state).includes(true))
     }}>
       {children}
     </LoadingContext.Provider>

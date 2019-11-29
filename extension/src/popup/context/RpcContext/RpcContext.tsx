@@ -19,7 +19,7 @@ export const RpcContext = React.createContext<IRpcContext>({
 
 export function RpcContextProvider({children}: { children: React.ReactNode }) {
   const {startRemoving, stopRemoving, startOrdering, stopOrdering} = React.useContext(LoadingContext);
-  const {showError, hideError} = React.useContext(MessageContext);
+  const {showError, hideError, showStatus} = React.useContext(MessageContext);
 
   return (
     <RpcContext.Provider value={{
@@ -34,7 +34,7 @@ export function RpcContextProvider({children}: { children: React.ReactNode }) {
         const nextWeekDay = getDateByDayIndex(new Date(), weekDayIndex);
         nextWeekDay.setDate(nextWeekDay.getDate() + 7);
         try {
-          await makeOrder(nextWeekDay, contractorName, dishId);
+          await makeOrder(nextWeekDay, contractorName, dishId, showStatus);
         } catch (error) {
           showError(error);
         } finally {
@@ -45,7 +45,7 @@ export function RpcContextProvider({children}: { children: React.ReactNode }) {
         hideError();
         startRemoving(orderId);
         try {
-          await tryRemoveOrder(orderId, dishId);
+          await tryRemoveOrder(orderId, dishId, showStatus);
         } catch (error) {
           showError(error);
         } finally {
