@@ -73,7 +73,6 @@ const Order2: React.FunctionComponent<OrderProps> = ({date, dishName, contractor
 
 interface IOrderInnerProps {
   order: IDishOrder;
-  forDate: Date;
   showRepeat: boolean;
   showRemove: boolean;
   onRepeat: (order: IDishOrder) => void;
@@ -84,7 +83,7 @@ interface IOrderInnerProps {
 }
 
 // TODO: combine OrderInner and Order2
-const OrderInner = ({order, forDate, showRepeat, showRemove, isOrdering, isDayOrdering, isRemoving, onRemove, onRepeat}: IOrderInnerProps) => {
+const OrderInner = ({order, showRepeat, showRemove, isOrdering, isDayOrdering, isRemoving, onRemove, onRepeat}: IOrderInnerProps) => {
   const {dishName, contractorName} = order || {dishName: '', contractorName: ''};
   const date = new Date(order.date);
   const now = new Date();
@@ -154,16 +153,15 @@ export const Order = ({day}: { day: IWorkingDay }) => {
     ? !hasNextWeekOrder && isLessFriday3pm(new Date())
     : false;
 
-  const a = getDateByDay(date, 'friday', '15:00');
-  a.setDate(a.getDate() - 7);
+  const prevFriday = getDateByDay(date, 'friday', '15:00');
+  prevFriday.setDate(prevFriday.getDate() - 7);
   const showRemove = order
-    ? new Date() < a
+    ? new Date() < prevFriday
     : false;
 
   return (
     <OrderInner
       order={order}
-      forDate={date}
       showRepeat={showRepeat}
       showRemove={showRemove}
       onRepeat={() => repeatOrder(order)}

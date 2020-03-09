@@ -3,7 +3,7 @@
   "scripts": {
     "premake": "rm -rf ./dist ./dist.zip ./src-root.zip",
     "make": "webpack --mode production",
-    "postmake": "#npm run zip:dist && zip:src-root",
+    "postmake": "npm run zip:dist && zip:src-root",
     "zip:dist": "cd dist && zip -r ../dist.zip ./*",
     "zip:src-root": "zip -r src-root.zip $(git ls-files ./)",
     "watch": "npm run make -- --watch",

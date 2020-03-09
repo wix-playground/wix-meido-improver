@@ -32,10 +32,8 @@ export const Root = () => {
           )}
       </div>
 
-      {errorMessage !== null
-        ? <div className={styles.error}>{errorMessage}</div>
-        : statusMessage && <div className={styles.warning}>{statusMessage}</div>
-      }
+      {statusMessage !== null && <div className={styles.warning}>{statusMessage}</div>}
+      {errorMessage !== null && <div className={styles.error}>{errorMessage}</div>}
 
       <Footer/>
     </React.Fragment>

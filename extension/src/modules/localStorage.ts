@@ -42,7 +42,7 @@ export async function getData(): Promise<IUserData> {
       data = userDataItems.userData;
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 
   return fillDefaults(data);

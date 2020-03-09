@@ -29,7 +29,7 @@ async function fetchOrdersText(page: number): Promise<string> {
 }
 
 function parseOrders(text: string): IOrder[] {
-  return [...text.matchAll(/<td>#(\d+)<\/td><td>(\w+\s\d+,\s\d+)<\/td>/g)].map(([all, orderId, dateStr]) => ({
+  return [...text.matchAll(/<td>#(\d+)<\/td><td>(\w+\s\d+,\s\d+)<\/td>/g)].map(([, orderId, dateStr]) => ({
     orderId,
     dateStr,
     date: new Date(dateStr).toISOString(),
@@ -65,8 +65,7 @@ export async function refreshOrderedDishesCache(): Promise<void> {
   startLoading();
   try {
     const orders = await fetchOrders();
-
-    let data = await getData();
+    const data = await getData();
     const list = (data.orderedDishes && data.orderedDishes.list) || [];
     const oldOrdersIds = new Set(list.map(({ orderId }) => orderId));
 

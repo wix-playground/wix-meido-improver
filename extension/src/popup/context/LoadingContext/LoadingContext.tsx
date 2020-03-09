@@ -24,8 +24,8 @@ export const LoadingContext = React.createContext<ILoadingContext>({
 
 export function LoadingContextProvider({children}: { children: React.ReactNode }) {
   const [removingState, setRemovingState] = React.useState<{ [key: string]: boolean }>({});
-  const [orderingState, seOrderingState] = React.useState<{ [key: string]: boolean }>({});
-  const [orderingDayState, seOrderingDayState] = React.useState<{ [key: string]: boolean }>({
+  const [orderingState, setOrderingState] = React.useState<{ [key: string]: boolean }>({});
+  const [orderingDayState, setOrderingDayState] = React.useState<{ [key: string]: boolean }>({
     friday: false,
     monday: false,
     thursday: false,
@@ -39,12 +39,12 @@ export function LoadingContextProvider({children}: { children: React.ReactNode }
       stopRemoving: orderId => setRemovingState({...removingState, [orderId]: false}),
       isRemoving: orderId => !!removingState[orderId],
       startOrdering: (orderId, weekDay) => {
-        seOrderingState({...orderingState, [orderId]: true});
-        seOrderingDayState({...orderingDayState, [weekDay]: true});
+        setOrderingState({...orderingState, [orderId]: true});
+        setOrderingDayState({...orderingDayState, [weekDay]: true});
       },
       stopOrdering: (orderId, weekDay) => {
-        seOrderingState({...orderingState, [orderId]: false});
-        seOrderingDayState({...orderingDayState, [weekDay]: false});
+        setOrderingState({...orderingState, [orderId]: false});
+        setOrderingDayState({...orderingDayState, [weekDay]: false});
       },
       isOrdering: orderId => !!orderingState[orderId],
       isOrderingInDay: weekDay => !!orderingDayState[weekDay],

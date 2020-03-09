@@ -13,7 +13,7 @@ export const PopupApp = () => (
       <RpcContextProvider>
         <OrdersContextProvider>
           <IntlProvider locale={'en'}>
-          <Root/>
+            <Root/>
           </IntlProvider>
         </OrdersContextProvider>
       </RpcContextProvider>
