@@ -9,7 +9,15 @@ import { DISH_COUNT_CLASS, invalidateOrderedDishesCache, addOrderedDishes } from
 import { addCategoryAll } from '../modules/categoryAll';
 import { inIframe } from './rpcListener';
 import { highlight, unHighlight } from '../modules/highlight';
-import { IAvgRating, deleteRating, DishId, Rating, setRating, toggleFavorite } from '../modules/database';
+import {
+  IAvgRating,
+  deleteRating,
+  DishId,
+  Rating,
+  setRating,
+  toggleFavorite,
+  getAuthCookie,
+} from '../modules/database';
 import { waitForEmptySelector, waitForSelector } from '../modules/waitForSelector';
 import { browser } from 'webextension-polyfill-ts';
 
@@ -37,6 +45,12 @@ const PARTIALLY_MATCHED_CLASS = '__ITDXER_first_partially_matched';
 const SPINNER_CLASS = '__ITDXER_spinner';
 const SIDEBAR_IFRAME_CLASS = '__ITDXER_sidebar_iframe';
 const SIDEBAR_BUTTON_CLASS = '__ITDXER_sidebar_button';
+
+if (!window.location.href.includes('/auth/login') && !getAuthCookie() && document.cookie.includes('PHPSESSID')) {
+  // Remove session cookie at all;
+  document.cookie = 'PHPSESSID=; Max-Age=0; Path=/';
+  window.location.reload();
+}
 
 window.addEventListener('DOMContentLoaded', () => {
   if (window.location.href.startsWith('https://wix.getmeido.com/order')) {

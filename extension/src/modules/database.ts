@@ -65,7 +65,7 @@ async function syncRatings(): Promise<void> {
   await updateData(() => ({ userRatings, avgRatings }));
 }
 
-function getAuthCookie(): string {
+export function getAuthCookie(): string {
   const reg = /(^|; )([a-z0-9]{32}=[^;]*)/;
   return (document.cookie.match(reg) || '')[2];
 }
