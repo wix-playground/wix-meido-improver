@@ -1,6 +1,6 @@
 import { browser } from 'webextension-polyfill-ts';
-import { clearAlarms, createAlarms, getWorkingWeekOrders } from '../modules/notifications';
-import { getOptions } from '../options/storage';
+import { clearAlarms, createAlarms, getWorkingWeekOrders } from './modules/notifications';
+import { getOptions } from './options/storage';
 
 browser.runtime.onInstalled.addListener(async () => {
   await clearAlarms();

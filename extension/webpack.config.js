@@ -6,7 +6,7 @@ const CleanTerminalPlugin = require('clean-terminal-webpack-plugin');
 
 module.exports = {
   entry: {
-    background: './src/background/script.ts',
+    background: './src/background.ts',
     content: './src/content/script.ts',
     options: './src/options/index.tsx',
     popup: './src/popup/index.tsx',

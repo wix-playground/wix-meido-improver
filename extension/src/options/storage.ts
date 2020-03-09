@@ -44,11 +44,3 @@ export async function getOptions(): Promise<IOptions> {
     ...items.options,
   };
 }
-
-export async function setOptions(options: IOptions): Promise<void> {
-  await browser.storage.sync.set({ options }).catch(() => browser.storage.local.set({ options }));
-}
-
-export async function resetOptions(): Promise<void> {
-  await setOptions(DEFAULT_OPTIONS);
-}

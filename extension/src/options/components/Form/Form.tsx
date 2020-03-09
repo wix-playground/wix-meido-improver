@@ -6,10 +6,17 @@ import styles from './Form.module.scss';
 
 
 export const Form = () => {
-  const {options, setOptions} = React.useContext(OptionsContext);
+  const {options, setOptions, resetOptions} = React.useContext(OptionsContext);
   const [enableNotifications, setEnableNotifications] = React.useState<boolean>(options.enableNotifications);
   const [notifications, setNotifications] = React.useState<INotification[]>(options.notifications);
   const [showChangesSaved, setShowChangesSaved] = React.useState(false);
+
+  const resetForm = (): void => {
+    setEnableNotifications(options.enableNotifications);
+    setNotifications(options.notifications);
+  }
+
+  React.useEffect(() => resetForm(), [JSON.stringify(options)]);
 
   function changeNotifications(index: number, newNotification: INotification): INotification[] {
     const newList = [...notifications];
@@ -25,13 +32,18 @@ export const Form = () => {
     setNotifications(changeNotifications(index, {...notifications[index], time}));
   }
 
+  const showSaved = () => {
+    // setEnableNotifications(options.enableNotifications);
+    // setNotifications(options.notifications);
+    setShowChangesSaved(true);
+    setTimeout(() => setShowChangesSaved(false), 1000);
+  };
+
   return (
     <form className={styles.form} onSubmit={async event => {
       event.preventDefault();
-      console.log('onSubmit');
       await setOptions({enableNotifications, notifications});
-      setShowChangesSaved(true);
-      setTimeout(() => setShowChangesSaved(false), 1000);
+      showSaved();
     }}>
       <p className={styles.enableNotificationsWrapper}>
         <label>
@@ -98,6 +110,15 @@ export const Form = () => {
       </p>
 
       <p className={styles.submitWrapper}>
+        <button
+          type="button"
+          onClick={async () => {
+            resetForm();
+            await resetOptions();
+            showSaved();
+          }}>
+          Reset to defaults
+        </button>
         <input type="submit" value="Save" className={styles.submit}/>
       </p>
     </form>
