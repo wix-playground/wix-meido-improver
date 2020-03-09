@@ -1,8 +1,13 @@
 import { browser } from 'webextension-polyfill-ts';
 import { startLoading, stopLoading, updateData, getData, saveData } from './localStorage';
 
-void fixFavoritesDataStructure();
-void syncRatings();
+(async () => {
+  try {
+    await Promise.all([fixFavoritesDataStructure(), syncRatings()]);
+  } catch (error) {
+    console.error(error);
+  }
+})();
 
 export type DishId = string;
 export type Rating = number;

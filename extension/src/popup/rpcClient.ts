@@ -108,6 +108,6 @@ export async function removeOrder(orderId: string, dishId: DishId): Promise<void
 }
 
 export async function callRefreshOrderedDishesCache(): Promise<void> {
-  const client = await getRpcClient();
+  const client = await getRpcClient('https://wix.getmeido.com/order');
   await client.request('callRefreshOrderedDishesCache');
 }

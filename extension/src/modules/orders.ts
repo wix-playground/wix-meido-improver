@@ -82,6 +82,8 @@ export async function refreshOrderedDishesCache(): Promise<void> {
       },
     }));
   } catch (error) {
+    debugger;
+    console.trace('puh!');
     console.error(error);
   }
   stopLoading();
@@ -143,28 +145,30 @@ export async function addOrderedDishes(): Promise<void> {
     const activeContractorName = activeContractorTab.innerText.trim();
     const activeDishes = dishIdsByContractor[activeContractorName];
     const dishesCount = new Map();
-    activeDishes.forEach(dishId => {
-      if (!dishesCount.has(dishId)) {
-        dishesCount.set(dishId, 0);
-      }
-      dishesCount.set(dishId, dishesCount.get(dishId) + 1);
-    });
-
-    const contents = document.querySelectorAll('.tab-content > .tab-pane > .menu-item > .menu-item__content');
-    [...contents].forEach(content => {
-      const button: HTMLAnchorElement | null = content.querySelector('a.btn.buy');
-      const dishId = button ? button.href.split('/').pop() : '';
-
-      if (dishesCount.has(dishId)) {
-        const countElem = document.createElement('div');
-        countElem.innerText = dishesCount.get(dishId);
-        countElem.className = DISH_COUNT_CLASS;
-        countElem.title = `You bought this dish ${dishesCount.get(dishId)} times`;
-        const info: Element | null = content.querySelector('.menu-item__info');
-        if (info) {
-          info.append(countElem);
+    if (activeDishes) {
+      activeDishes.forEach(dishId => {
+        if (!dishesCount.has(dishId)) {
+          dishesCount.set(dishId, 0);
         }
-      }
-    });
+        dishesCount.set(dishId, dishesCount.get(dishId) + 1);
+      });
+
+      const contents = document.querySelectorAll('.tab-content > .tab-pane > .menu-item > .menu-item__content');
+      [...contents].forEach(content => {
+        const button: HTMLAnchorElement | null = content.querySelector('a.btn.buy');
+        const dishId = button ? button.href.split('/').pop() : '';
+
+        if (dishesCount.has(dishId)) {
+          const countElem = document.createElement('div');
+          countElem.innerText = dishesCount.get(dishId);
+          countElem.className = DISH_COUNT_CLASS;
+          countElem.title = `You bought this dish ${dishesCount.get(dishId)} times`;
+          const info: Element | null = content.querySelector('.menu-item__info');
+          if (info) {
+            info.append(countElem);
+          }
+        }
+      });
+    }
   }
 }

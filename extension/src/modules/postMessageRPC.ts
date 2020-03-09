@@ -70,6 +70,12 @@ export class PostMessageClient {
   _dispatch(method: string, id: string, ...params: any[]) {
     return new Promise((resolve, reject) => {
       this.dispatches.set(id, { resolve, reject });
+      setTimeout(() => {
+        if (this.dispatches.has(id)) {
+          reject(new Error('RPC Timeout :( Please, reload page'));
+          this.dispatches.delete(id);
+        }
+      }, 10000);
 
       try {
         const message = {
@@ -151,6 +157,6 @@ export class PostMessageServer {
         id: event.data.id,
         ...response,
       }))
-      .then(response => event.source.postMessage(response, '*'));
+      .then(response => event.source && event.source.postMessage(response, '*'));
   }
 }

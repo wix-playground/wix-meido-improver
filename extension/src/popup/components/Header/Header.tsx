@@ -63,7 +63,7 @@ export const Header = () => {
           {updatedDate !== null && (
             <div className={styles.updatedDate}>
               Last update
-              &nbsp;
+              {' '}
               <RelativeTime date={updatedDate}/>
             </div>
           )}
