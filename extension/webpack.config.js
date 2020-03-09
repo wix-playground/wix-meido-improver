@@ -30,7 +30,7 @@ module.exports = {
       },
       {
         test: /\.module\.scss$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader?modules=true', 'sass-loader'],
+        use: [MiniCssExtractPlugin.loader, 'css-loader?modules=true&localIdentName=[name]__[local]--[hash:base64:5]', 'sass-loader'],
       },
       {
         test: /\.(jpe?g|png|gif|svg)$/i,

@@ -22,10 +22,14 @@ export const LoadingContext = React.createContext<ILoadingContext>({
   isOrderingInDay: () => false,
 });
 
+const startFinishReducer: React.Reducer<{ [key: string]: boolean }, { type: 'start' | 'finish', key: string }> = (state, {type, key}) => {
+  return {...state, [key]: type === 'start'};
+}
+
 export function LoadingContextProvider({children}: { children: React.ReactNode }) {
-  const [removingState, setRemovingState] = React.useState<{ [key: string]: boolean }>({});
-  const [orderingState, setOrderingState] = React.useState<{ [key: string]: boolean }>({});
-  const [orderingDayState, setOrderingDayState] = React.useState<{ [key: string]: boolean }>({
+  const [removingState, dispatchRemovingState] = React.useReducer(startFinishReducer, {});
+  const [orderingState, dispatchOrderingState] = React.useReducer(startFinishReducer, {});
+  const [orderingDayState, dispatchOrderingDayState] = React.useReducer(startFinishReducer, {
     friday: false,
     monday: false,
     thursday: false,
@@ -35,19 +39,19 @@ export function LoadingContextProvider({children}: { children: React.ReactNode }
 
   return (
     <LoadingContext.Provider value={{
-      startRemoving: orderId => setRemovingState({...removingState, [orderId]: true}),
-      stopRemoving: orderId => setRemovingState({...removingState, [orderId]: false}),
-      isRemoving: orderId => !!removingState[orderId],
+      startRemoving: orderId => dispatchRemovingState({type: 'start', key: orderId}),
+      stopRemoving: orderId => dispatchRemovingState({type: 'finish', key: orderId}),
+      isRemoving: orderId => removingState[orderId],
       startOrdering: (orderId, weekDay) => {
-        setOrderingState({...orderingState, [orderId]: true});
-        setOrderingDayState({...orderingDayState, [weekDay]: true});
+        dispatchOrderingState({type: "start", key: orderId});
+        dispatchOrderingDayState({type: "start", key: weekDay});
       },
       stopOrdering: (orderId, weekDay) => {
-        setOrderingState({...orderingState, [orderId]: false});
-        setOrderingDayState({...orderingDayState, [weekDay]: false});
+        dispatchOrderingState({type: "finish", key: orderId});
+        dispatchOrderingDayState({type: "finish", key: weekDay});
       },
-      isOrdering: orderId => !!orderingState[orderId],
-      isOrderingInDay: weekDay => !!orderingDayState[weekDay],
+      isOrdering: orderId => orderingState[orderId],
+      isOrderingInDay: weekDay => orderingDayState[weekDay],
     }}>
       {children}
     </LoadingContext.Provider>
