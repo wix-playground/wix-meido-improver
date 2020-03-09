@@ -56,9 +56,8 @@ export async function createAlarms(options: IOptions): Promise<void> {
   await Promise.all(
     options.notifications.map(({ dayName, time }) =>
       browser.alarms.create(`${dayName} ${time}`, {
-        // @ts-ignore
-        when: getDateByDayIndex(new Date(), DAY_NAMES[dayName], time).getTime(),
-        periodInMinutes: 7 * 24 * 60, // One week
+        when: getDateByDayIndex(new Date(), DAY_NAMES.findIndex(day => day === dayName), time).getTime(),
+        periodInMinutes: 60 * 24 * 7, // One week
       })
     )
   );
@@ -85,7 +84,6 @@ export function getDateByDay(baseDate: Date, newDay: IWorkingDay, time?: string)
 export function getDateByDayIndex(baseDate: Date, newDayIndex: number, time: string = '00:00'): Date {
   const [hh, mm] = time.split(':');
   const date = new Date(baseDate);
-
   date.setHours(Number(hh));
   date.setMinutes(Number(mm));
   date.setSeconds(0);

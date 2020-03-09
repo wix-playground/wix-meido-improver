@@ -21,16 +21,16 @@ browser.alarms.onAlarm.addListener(async () => {
 
 browser.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
   if (buttonIndex === 0) {
-    browser.tabs.create({ url: 'https://wix.getmeido.com/order' });
+    void browser.tabs.create({ url: 'https://wix.getmeido.com/order' });
   }
 
   if (buttonIndex === 1) {
-    browser.runtime.openOptionsPage();
+    void browser.runtime.openOptionsPage();
   }
 });
 
 browser.notifications.onClicked.addListener(() => {
-  browser.tabs.create({ url: 'https://wix.getmeido.com/order' });
+  void browser.tabs.create({ url: 'https://wix.getmeido.com/order' });
 });
 
 browser.runtime.onMessage.addListener(async request => {

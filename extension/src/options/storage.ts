@@ -10,7 +10,7 @@ export interface IOptions {
   notifications: INotification[];
 }
 
-export const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+export const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as const;
 export const MONTH_NAMES = [
   'January',
   'February',
