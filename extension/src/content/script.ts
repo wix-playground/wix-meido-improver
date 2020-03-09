@@ -11,6 +11,7 @@ import { inIframe } from './rpcListener';
 import { highlight, unHighlight } from '../modules/highlight';
 import { IAvgRating, deleteRating, DishId, Rating, setRating, toggleFavorite } from '../modules/database';
 import { waitForEmptySelector, waitForSelector } from '../modules/waitForSelector';
+import { browser } from 'webextension-polyfill-ts';
 
 import './fixes.css';
 import './styles/categoryAll.css';
@@ -19,6 +20,7 @@ import './styles/oneClickBuy.css';
 import './styles/orderButton.css';
 import './styles/rating.css';
 import './styles/spinner.css';
+import './styles/popupIframe.css';
 
 const HEART_CLASS = '__ITDXER_heart';
 const RATING_CLASS = '__ITDXER_rating';
@@ -36,6 +38,7 @@ const SPINNER_CLASS = '__ITDXER_spinner';
 
 window.addEventListener('DOMContentLoaded', () => {
   if (window.location.href.startsWith('https://wix.getmeido.com/order')) {
+    addPopupIframe();
     addCategoryAll();
     openFirstCategory();
     addOneClickBuy();
@@ -49,6 +52,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
   subscribeForLoadingChanges(loading => renderSpinner(document.body, loading));
 });
+
+function addPopupIframe() {
+  const iframe = document.createElement('iframe');
+  iframe.className = 'popup-iframe';
+  iframe.src = browser.extension.getURL('popup.html');
+  document.body.appendChild(iframe);
+}
 
 async function renderWithData(): Promise<void> {
   const data = await getData();

@@ -1,0 +1,16 @@
+.popup-iframe {
+  width: 450px;
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  background-color: #f5fff5;
+  border: 0 none;
+  box-shadow: 0 0 10px #aaaaaa;
+  z-index: 1000;
+}
+
+html {
+  margin-right: 450px;
+}

@@ -32,5 +32,6 @@
     "alarms",
     "notifications",
     "storage"
-  ]
+  ],
+  "web_accessible_resources": ["popup.html"]
 }
