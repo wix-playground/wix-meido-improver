@@ -12,7 +12,7 @@
 }
 
 .enableNotificationsWrapper,
-.submitWrapper{
+.submitWrapper {
   text-align: center;
 }
 
@@ -27,8 +27,8 @@
   height: 0;
   overflow: hidden;
   transition: all 0.4s;
-}
 
-.changesSaved.shown {
-  height: 20px;
+  &.shown {
+    height: 20px;
+  }
 }

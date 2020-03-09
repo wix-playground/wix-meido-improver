@@ -9,6 +9,7 @@ export const Form = () => {
   const {options, setOptions} = React.useContext(OptionsContext);
   const [enableNotifications, setEnableNotifications] = React.useState<boolean>(options.enableNotifications);
   const [notifications, setNotifications] = React.useState<INotification[]>(options.notifications);
+  const [showChangesSaved, setShowChangesSaved] = React.useState(false);
 
   function changeNotifications(index: number, newNotification: INotification): INotification[] {
     const newList = [...notifications];
@@ -17,15 +18,21 @@ export const Form = () => {
   }
 
   function changeNotificationDay(index: number, dayName: string) {
-    return changeNotifications(index, {...notifications[index], dayName})
+    setNotifications(changeNotifications(index, {...notifications[index], dayName}));
   }
 
   function changeNotificationTime(index: number, time: string) {
-    return changeNotifications(index, {...notifications[index], time})
+    setNotifications(changeNotifications(index, {...notifications[index], time}));
   }
 
   return (
-    <form className={styles.form}>
+    <form className={styles.form} onSubmit={async event => {
+      event.preventDefault();
+      console.log('onSubmit');
+      await setOptions({enableNotifications, notifications});
+      setShowChangesSaved(true);
+      setTimeout(() => setShowChangesSaved(false), 1000);
+    }}>
       <p className={styles.enableNotificationsWrapper}>
         <label>
           <input
@@ -41,15 +48,14 @@ export const Form = () => {
         <tr>
           <th>Day</th>
           <th>Time</th>
+          <th/>
         </tr>
         </thead>
         <tbody>
         {notifications.map(({dayName, time}, index) => (
           <tr>
             <td>
-              <select
-                onChange={event => changeNotificationDay(index, event.target.value)}
-              >
+              <select onChange={event => changeNotificationDay(index, event.target.value)}>
                 {DAY_NAMES.map(day => (
                   <option value={day} selected={day === dayName}>{day}</option>
                 ))}
@@ -61,6 +67,15 @@ export const Form = () => {
                 value={time}
                 onChange={event => changeNotificationTime(index, event.target.value)}
               />
+            </td>
+            <td>
+              <button
+                type="button"
+                title="Remove"
+                onClick={() => setNotifications(notifications.filter((_, itemIndex) => itemIndex !== index))}
+              >
+                x
+              </button>
             </td>
           </tr>
         ))}
@@ -78,7 +93,7 @@ export const Form = () => {
         </tr>
       </table>
 
-      <p className={styles.changesSaved}>
+      <p className={[styles.changesSaved, showChangesSaved && styles.shown].filter(Boolean).join(' ')}>
         Changes saved!
       </p>
 
@@ -87,4 +102,4 @@ export const Form = () => {
       </p>
     </form>
   )
-}
+};
