@@ -5,7 +5,7 @@ import {
   updateData,
   IUserData,
 } from '../modules/localStorage';
-import { DISH_COUNT_CLASS, invalidateOrderedDishesCache, renderOrderedDishes } from '../modules/orders';
+import { DISH_COUNT_CLASS, invalidateOrderedDishesCache, addOrderedDishes } from '../modules/orders';
 import { addCategoryAll } from '../modules/categoryAll';
 import { inIframe } from './rpcListener';
 import { highlight, unHighlight } from '../modules/highlight';
@@ -35,34 +35,49 @@ const CHECKBOX_LABEL_VEGAN = '__ITDXER_checkbox_label_vegan';
 const SEARCH_INPUT_CLASS = '__ITDXER_search_input';
 const PARTIALLY_MATCHED_CLASS = '__ITDXER_first_partially_matched';
 const SPINNER_CLASS = '__ITDXER_spinner';
+const SIDEBAR_IFRAME_CLASS = '__ITDXER_sidebar_iframe';
+const SIDEBAR_BUTTON_CLASS = '__ITDXER_sidebar_button';
 
 window.addEventListener('DOMContentLoaded', () => {
   if (window.location.href.startsWith('https://wix.getmeido.com/order')) {
-    addPopupIframe();
     addCategoryAll();
     openFirstCategory();
     addOneClickBuy();
 
-    subscribeForStorageChanges(render);
-    void renderOrderedDishes().then(() => renderWithData());
-    void renderWithData();
-    renderOrderTable();
+    subscribeForStorageChanges(renderAll);
+    void addOrderedDishes().then(async () => renderAll(await getData()));
+    void getData().then(renderAll);
+    void renderOrderTable();
     addRemoveCartButtonListener();
   }
 
   subscribeForLoadingChanges(loading => renderSpinner(document.body, loading));
 });
 
-function addPopupIframe() {
-  const iframe = document.createElement('iframe');
-  iframe.className = 'popup-iframe';
-  iframe.src = browser.extension.getURL('popup.html');
-  document.body.appendChild(iframe);
+async function renderAll(data: IUserData): Promise<void> {
+  renderSidebar(data.showSidebar);
+  render(data);
 }
 
-async function renderWithData(): Promise<void> {
-  const data = await getData();
-  render(data);
+function renderSidebar(showSidebar: boolean) {
+  let iframe = document.querySelector<HTMLIFrameElement>('.' + SIDEBAR_IFRAME_CLASS);
+  if (!iframe) {
+    iframe = document.createElement('iframe');
+    iframe.className = SIDEBAR_IFRAME_CLASS;
+    iframe.src = browser.extension.getURL('popup.html');
+    document.body.appendChild(iframe);
+  }
+
+  let button = document.querySelector<HTMLButtonElement>('.' + SIDEBAR_BUTTON_CLASS);
+  if (!button) {
+    button = document.createElement('button');
+    button.className = SIDEBAR_BUTTON_CLASS;
+    button.title = 'Close/Hide sidebar';
+    button.onclick = () => updateData(({ showSidebar }) => ({ showSidebar: !showSidebar }));
+    document.body.appendChild(button);
+  }
+
+  document.body.classList.toggle('show-sidebar', showSidebar);
 }
 
 function openFirstCategory(): void {

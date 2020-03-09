@@ -22,6 +22,7 @@ export interface IUserData {
   filterFavorite: boolean;
   filterVegan: boolean;
   filterText: string;
+  showSidebar: boolean;
   userRatings: IUserRatings;
   avgRatings: IAvgRatings;
   favorites: IFavorites;
@@ -55,6 +56,7 @@ function fillDefaults(data: Partial<IUserData> | null): IUserData {
     filterFavorite: false,
     filterVegan: false,
     filterText: '',
+    showSidebar: true,
     userRatings: {},
     avgRatings: {},
     favorites: {},

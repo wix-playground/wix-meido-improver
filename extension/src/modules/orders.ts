@@ -113,7 +113,7 @@ function isDateBeforeYesterday(date: Date): boolean {
   return new Date(date) < yesterday;
 }
 
-export async function renderOrderedDishes(): Promise<void> {
+export async function addOrderedDishes(): Promise<void> {
   const allDishes = await getOrderedDishes();
   const dishIdsByContractor = allDishes.reduce(
     (by, { dishId, contractorName }) => ({
