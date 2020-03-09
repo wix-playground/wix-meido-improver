@@ -71,12 +71,27 @@
   padding: 0;
   flex: 1;
   cursor: pointer;
-  text-shadow: 0 1px 0 orange;
+  position: relative;
+
+  &:hover  {
+    background: rgba(0, 0, 0, 0.1);
+  }
+  &:after {
+    content: ' ';
+    border: solid currentColor;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 20%;
+    transform: rotate(-45deg);
+  }
 }
 
-.nextPrevWeek:hover  {
-  background: rgba(0, 0, 0, 0.1);
+.prevWeek {
+  &:after {
+    transform: rotate(135deg);
+  }
 }
+
 
 .updatedDate {
   font-size: 0.6em;

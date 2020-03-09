@@ -7,10 +7,10 @@ import {FormattedRelativeTime} from 'react-intl'
 
 type IUnit = 'day' | 'hour' | 'minute' | 'second';
 
-function bestUnit(date: Date): {unit: IUnit, value: number} {
+function bestUnit(date: Date): { unit: IUnit, value: number } {
   const ms = Date.now() - date.getTime();
 
-  const v: {unit: IUnit, diff: number}[] = [
+  const v: { unit: IUnit, diff: number }[] = [
     {unit: 'day', diff: 24 * 60 * 60 * 1000},
     {unit: 'hour', diff: 60 * 60 * 1000},
     {unit: 'minute', diff: 60 * 1000},
@@ -51,11 +51,10 @@ export const Header = () => {
         </button>
       </div>
       <button
-        className={styles.nextPrevWeek}
+        className={`${styles.nextPrevWeek} ${styles.prevWeek}`}
         title="Previous week"
-        onClick={() => setWeekIndex(weekIndex - 1)}>
-        ⮃
-      </button>
+        onClick={() => setWeekIndex(weekIndex - 1)}
+      />
       <div className={styles.titleText}>
         <img className={styles.img} src={img} alt="extension icon"/>
         <div>
@@ -74,9 +73,8 @@ export const Header = () => {
       <button
         className={styles.nextPrevWeek}
         title="Next week"
-        onClick={() => setWeekIndex(weekIndex + 1)}>
-        ⮁
-      </button>
+        onClick={() => setWeekIndex(weekIndex + 1)}
+      />
     </div>
   )
 };
