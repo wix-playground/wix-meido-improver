@@ -29,9 +29,9 @@ body.show-sidebar .__ITDXER_sidebar_iframe {
   right: -10px;
   box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
   background-color: orange;
-  border-color: orange;
   color: #fff;
   cursor: pointer;
+  border: 0 none;
 }
 
 .__ITDXER_sidebar_button:after {

@@ -29,8 +29,8 @@ export const OptionsProvider = ({children}: { children: React.ReactNode }) => {
 
 function useStorageSync<Value>(key: string, defaultValue: Value): [Value, (value: Value) => Promise<void>, () => Promise<void>] {
   const [value, setValue] = React.useState<Value>(defaultValue);
-  const getStorageValue = (): Promise<Value> => browser.storage.sync.get(key).then(items => items[key]);
-  const setStorageValue = (value: Value): Promise<void> => browser.storage.sync.set({[key]: value}).then(() => setValue(value));
+  const getStorageValue = (): Promise<Value> => browser.storage.sync.get(key).catch(() => browser.storage.local.get(key)).then(items => items[key]);
+  const setStorageValue = (value: Value): Promise<void> => browser.storage.sync.set({[key]: value}).catch(() => browser.storage.local.set({[key]: value})).then(() => setValue(value));
   const resetValue = () => setStorageValue(defaultValue);
 
   React.useEffect(() => {
