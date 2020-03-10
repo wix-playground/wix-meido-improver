@@ -14,11 +14,13 @@ export function highlight(elem: HTMLElement | ChildNode, keywords: string[]): bo
     const keywordRegex = RegExp(keywords.map(escapeRegExp).join('|'), 'gi');
     if (child.nodeType !== NODE_TYPE_TEXT) {
       highlight(child, keywords);
+    } else if (child.textContent === null) {
+      return;
     } else if (keywordRegex.test(child.textContent)) {
       const frag = document.createDocumentFragment();
       let lastIdx = 0;
       child.textContent.replace(keywordRegex, (match, idx) => {
-        const part = document.createTextNode(child.textContent.slice(lastIdx, idx));
+        const part = document.createTextNode((child.textContent || '').slice(lastIdx, idx));
         const highlighted = document.createElement('span');
         highlighted.textContent = match;
         highlighted.className = CLASS_NAME;
@@ -33,7 +35,9 @@ export function highlight(elem: HTMLElement | ChildNode, keywords: string[]): bo
       });
       const end = document.createTextNode(child.textContent.slice(lastIdx));
       frag.appendChild(end);
-      child.parentNode.replaceChild(frag, child);
+      if (child.parentNode) {
+        child.parentNode.replaceChild(frag, child);
+      }
     }
   });
 
@@ -42,9 +46,11 @@ export function highlight(elem: HTMLElement | ChildNode, keywords: string[]): bo
 
 export function unHighlight(elem: HTMLElement): void {
   [...elem.querySelectorAll('.' + CLASS_NAME)].forEach(mark => {
-    const newTextNode = document.createTextNode(mark.textContent);
-    mark.parentNode.insertBefore(newTextNode, mark);
-    mark.parentNode.removeChild(mark);
+    if (mark.textContent !== null && mark.parentNode !== null) {
+      const newTextNode = document.createTextNode(mark.textContent);
+      mark.parentNode.insertBefore(newTextNode, mark);
+      mark.parentNode.removeChild(mark);
+    }
   });
 }
 
@@ -55,7 +61,7 @@ function unionTextNodes(elem: HTMLElement | ChildNode): void {
     if (child.nodeType !== NODE_TYPE_TEXT) {
       unionTextNodes(child);
     } else {
-      if (child.nodeType === NODE_TYPE_TEXT) {
+      if (child.nodeType === NODE_TYPE_TEXT && child.textContent !== null && child.parentNode !== null) {
         const next = elem.childNodes[i + 1];
         if (next && next.nodeType === NODE_TYPE_TEXT) {
           child.textContent += next.textContent;

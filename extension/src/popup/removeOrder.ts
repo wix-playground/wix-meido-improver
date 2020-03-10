@@ -1,47 +1,29 @@
 import { callInQueue, isLoggedIn, removeOrder, callRefreshOrderedDishesCache } from './rpcClient';
 import { DishId } from '../modules/database';
 
-export async function tryRemoveOrder(orderId: string, dishId: DishId): Promise<void> {
+export async function tryRemoveOrder(
+  orderId: string,
+  dishId: DishId,
+  showStatus: (status: string | null) => void
+): Promise<void> {
+  const setStatus = (status: string | null) => showStatus(status && `[Delete ${orderId}] ${status}`);
+
   await callInQueue(async () => {
+    setStatus(`Checking authentication`);
     if (!(await isLoggedIn())) {
+      setStatus(null);
       throw new Error('Open Meido to login');
     }
+
     try {
+      setStatus(`Removing`);
       await removeOrder(orderId, dishId);
     } catch (error) {
       throw error;
     } finally {
+      setStatus(`Updating cache`);
       await callRefreshOrderedDishesCache();
+      setStatus(null);
     }
   });
-}
-
-const removingButtons = {};
-const removingButtonsListener = [];
-
-export function isRemovingButton(orderId: string): boolean {
-  return !!removingButtons[orderId];
-}
-
-export function startRemovingButton(orderId: string, button: HTMLButtonElement): void {
-  toggleRemovingLoadingButton(orderId, button, true);
-}
-
-export function stopRemovingButton(orderId: string, button: HTMLButtonElement): void {
-  toggleRemovingLoadingButton(orderId, button, false);
-}
-
-export function subscribeForRemovingLoadingButtonChanges(fn: () => void): void {
-  removingButtonsListener.push(fn);
-}
-
-function toggleRemovingLoadingButton(orderId: string, button: HTMLButtonElement, loading: boolean): void {
-  if (loading) {
-    removingButtons[orderId] = true;
-  } else {
-    delete removingButtons[orderId];
-  }
-  button.classList.toggle('spinning', loading);
-  button.disabled = loading;
-  removingButtonsListener.forEach(listener => listener());
 }

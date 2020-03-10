@@ -1,0 +1,30 @@
+.warning,
+.error {
+  background: red;
+  color: #fff;
+  padding: 20px 15px 15px;
+}
+
+.warning {
+  background: orange;
+}
+
+.orders {
+  padding-top: 20px;
+  padding-bottom: 10px;
+  min-height: 200px;
+}
+
+.notLoaded {
+  font-size: 1rem;
+  text-align: center;
+  margin-top: 50px;
+}
+
+.link {
+  padding: 5px 10px;
+  background-color: red;
+  border-radius: 5px;
+  display: inline-block;
+  color: #fff;
+}

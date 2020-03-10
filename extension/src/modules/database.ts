@@ -1,33 +1,47 @@
-import browser from 'webextension-polyfill';
+import { browser } from 'webextension-polyfill-ts';
 import { startLoading, stopLoading, updateData, getData, saveData } from './localStorage';
 
-void fixFavoritesDataStructure();
-void syncRatings();
+(async () => {
+  try {
+    await Promise.all([fixFavoritesDataStructure(), syncRatings()]);
+  } catch (error) {
+    console.error(error);
+  }
+})();
 
 export type DishId = string;
 export type Rating = number;
 
-export type AvgRating = {
+export interface IAvgRating {
   count: number;
   avg: Rating;
-};
+}
 
-export type Favorites = { [dishId: string]: boolean };
-export type UserRatings = { [dishId: string]: Rating };
-export type AvgRatings = { [dishId: string]: AvgRating };
+export interface IFavorites {
+  [dishId: string]: boolean;
+}
 
-type BothRatings = {
-  userRatings: UserRatings;
-  avgRatings: AvgRatings;
-};
+export interface IUserRatings {
+  [dishId: string]: Rating;
+}
+
+export interface IAvgRatings {
+  [dishId: string]: IAvgRating;
+}
+
+export interface IBothRatings {
+  userRatings: IUserRatings;
+  avgRatings: IAvgRatings;
+}
 
 async function fixFavoritesDataStructure(): Promise<void> {
   const { ...data } = await getData();
-  const favorites = {};
+  const favorites: IFavorites = {};
 
   Object.entries(data).forEach(([key, value]) => {
     if (parseInt(key).toString() === key) {
       favorites[key] = value;
+      // @ts-ignore
       delete data[key];
     }
   });
@@ -51,17 +65,17 @@ async function syncRatings(): Promise<void> {
   await updateData(() => ({ userRatings, avgRatings }));
 }
 
-function getAuthCookie(): string {
+export function getAuthCookie(): string {
   const reg = /(^|; )([a-z0-9]{32}=[^;]*)/;
   return (document.cookie.match(reg) || '')[2];
 }
 
-async function fetchFavorites(): Promise<Favorites> {
+async function fetchFavorites(): Promise<IFavorites> {
   return await doRequest('GET', '/favorites');
 }
 
-async function saveFavorites(favorites: Favorites): Promise<void> {
-  const updatedFavorites = await doRequest('POST', '/favorites', { favorites });
+async function saveFavorites(favorites: IFavorites): Promise<void> {
+  const updatedFavorites = await doRequest<IFavorites>('POST', '/favorites', { favorites });
   await updateData(() => ({ favorites: updatedFavorites }));
 }
 
@@ -91,22 +105,22 @@ export async function deleteRating(dishId: DishId): Promise<void> {
     return { userRatings: newRatings };
   });
 
-  const { userRatings, avgRatings } = await doRequest('DELETE', `/ratings/${encodeURIComponent(dishId)}`);
+  const { userRatings, avgRatings } = await doRequest<IBothRatings>('DELETE', `/ratings/${encodeURIComponent(dishId)}`);
   await updateData(() => ({ userRatings, avgRatings }));
 }
 
 export async function toggleFavorite(dishId: DishId, favorite: boolean): Promise<void> {
   await updateData(({ favorites }) => ({ favorites: { ...favorites, [dishId]: favorite } }));
 
-  const favorites = await doRequest('POST', `/favorites/${encodeURIComponent(dishId)}`, { favorite });
+  const favorites = await doRequest<IFavorites>('POST', `/favorites/${encodeURIComponent(dishId)}`, { favorite });
   await updateData(() => ({ favorites }));
 }
 
-async function fetchBothRatings(): Promise<BothRatings> {
+async function fetchBothRatings(): Promise<IBothRatings> {
   return await doRequest('GET', '/both-ratings');
 }
 
-async function doRequest(method: 'GET' | 'POST' | 'DELETE', endpoint: string, params: object = {}) {
+async function doRequest<T>(method: 'GET' | 'POST' | 'DELETE', endpoint: string, params: object = {}) {
   const data = { ...params, authCookie: getAuthCookie() };
 
   startLoading();
@@ -121,11 +135,11 @@ async function doRequest(method: 'GET' | 'POST' | 'DELETE', endpoint: string, pa
   }
   stopLoading();
 
-  const [error, result] = response || ['error', null];
+  const [error, result] = response || ['error', {}];
 
   if (error) {
     throw error;
   }
 
-  return result;
+  return <T>result;
 }

@@ -1,0 +1,34 @@
+.buttons {
+  display: flex;
+  width: 100%;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  position: sticky;
+  top: 100%;
+  background-color: #ffffff;
+}
+
+.buttons a {
+  flex: 1 1;
+  display: inline-block;
+  padding: 7px;
+  text-align: center;
+  color: #fff;
+  background: #54ae53;
+  border: 2px solid #54ae53;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 15px 20px;
+}
+
+.buttons a:first-child {
+  margin-right: 10px;
+}
+
+.buttons a:last-child {
+  margin-left: 10px;
+}
+
+.buttons a.openOptions {
+  background: #fff;
+  color: #54ae53;
+}

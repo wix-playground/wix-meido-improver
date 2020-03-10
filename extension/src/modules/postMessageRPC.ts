@@ -9,20 +9,41 @@ function randomStr(): string {
   );
 }
 
-export class PostMessageClient {
-  private readonly targetWindow: {
-    postMessage: (message: any, origin: string) => void;
-  };
-  private dispatches: Map<string, { resolve: (any) => void; reject: (any) => void }>;
+interface IWindow {
+  postMessage: (message: any, origin: string) => void;
+  addEventListener: (eventName: string, handler: (event: IRpcEvent) => void) => void;
+  removeEventListener: (eventName: string, handler: (event: IRpcEvent) => void) => void;
+}
 
-  constructor(targetWindow) {
+interface IRpcEvent {
+  data: {
+    id: string;
+    jsonrpc: string;
+    method: string;
+    params?: any[];
+    error?: any;
+    result?: any;
+  };
+  source: IWindow;
+}
+
+export class PostMessageClient {
+  private readonly targetWindow: IWindow;
+  private dispatches: Map<string, { resolve: (...props: any[]) => void; reject: (...props: any[]) => void }>;
+
+  constructor(targetWindow: IWindow) {
     this.targetWindow = targetWindow;
     this.dispatches = new Map();
     this.handleMessage = this.handleMessage.bind(this);
   }
 
-  handleMessage(event) {
-    if (!event.data || typeof event.data.id === 'undefined' || !event.data.jsonrpc || 'method' in event.data) {
+  handleMessage(event: IRpcEvent) {
+    if (
+      !event.data ||
+      typeof event.data.id === 'undefined' ||
+      !event.data.jsonrpc ||
+      typeof event.data.method !== 'undefined'
+    ) {
       return;
     }
 
@@ -38,17 +59,23 @@ export class PostMessageClient {
     }
   }
 
-  mount(window) {
+  mount(window: IWindow) {
     window.addEventListener('message', this.handleMessage);
   }
 
-  unmount(window) {
+  unmount(window: IWindow) {
     window.removeEventListener('message', this.handleMessage);
   }
 
-  _dispatch(method: string, id: string, ...params) {
+  _dispatch(method: string, id: string, ...params: any[]) {
     return new Promise((resolve, reject) => {
       this.dispatches.set(id, { resolve, reject });
+      setTimeout(() => {
+        if (this.dispatches.has(id)) {
+          reject(new Error('RPC Timeout :( Please, reload page'));
+          this.dispatches.delete(id);
+        }
+      }, 10000);
 
       try {
         const message = {
@@ -65,30 +92,32 @@ export class PostMessageClient {
     });
   }
 
-  request(method: string, ...params) {
+  request(method: string, ...params: any[]) {
     return this._dispatch(method, randomStr(), ...params);
   }
 }
 
-export class PostMessageServer {
-  private readonly handlers: {
-    [handler: string]: (any) => any;
-  };
+interface IHandlers {
+  [handler: string]: (...args: any[]) => any;
+}
 
-  constructor(handlers) {
+export class PostMessageServer {
+  private readonly handlers: IHandlers;
+
+  constructor(handlers: IHandlers) {
     this.handlers = handlers;
     this.handleMessage = this.handleMessage.bind(this);
   }
 
-  mount(window) {
+  mount(window: IWindow) {
     window.addEventListener('message', this.handleMessage);
   }
 
-  unmount(window) {
+  unmount(window: IWindow) {
     window.removeEventListener('message', this.handleMessage);
   }
 
-  callHandler(message) {
+  callHandler(message: IRpcEvent) {
     if (
       message.data &&
       message.data.method &&
@@ -108,7 +137,7 @@ export class PostMessageServer {
     }
   }
 
-  handleMessage(event) {
+  handleMessage(event: IRpcEvent) {
     const resultPromise = this.callHandler(event);
     if (!resultPromise) {
       return;
@@ -128,6 +157,6 @@ export class PostMessageServer {
         id: event.data.id,
         ...response,
       }))
-      .then(response => event.source.postMessage(response, '*'));
+      .then(response => event.source && event.source.postMessage(response, '*'));
   }
 }

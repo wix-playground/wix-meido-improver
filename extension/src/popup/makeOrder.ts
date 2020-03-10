@@ -8,50 +8,36 @@ import {
 } from './rpcClient';
 import { DishId } from '../modules/database';
 
-export async function makeOrder(newDate: Date, contractorName: string, dishId: DishId): Promise<void> {
+export async function makeOrder(
+  newDate: Date,
+  contractorName: string,
+  dishId: DishId,
+  showStatus: (status: string | null) => void
+): Promise<void> {
+  const setStatus = (status: string | null) => showStatus(status && `[${newDate.toDateString()}] ${status}`);
+
   await callInQueue(async () => {
+    setStatus(`Checking authentication`);
     if (!(await isLoggedIn())) {
+      setStatus(null);
       throw new Error('Open Meido to login');
     }
 
     try {
+      setStatus(`Opening contractor "${contractorName}"`);
       await openContractor(contractorName);
+
+      setStatus(`Add dish "${dishId}" to shopping cart`);
       await clickOneClickBuy(dishId);
+
+      setStatus(`Confirming order`);
       await confirmOrder(newDate);
     } catch (error) {
       throw error;
     } finally {
+      setStatus(`Updating cache`);
       await callRefreshOrderedDishesCache();
+      setStatus(null);
     }
   });
-}
-
-const loadingButtons = {};
-const loadingButtonsListeners = [];
-
-export function isLoadingButton(weekDayIndex: number): boolean {
-  return !!loadingButtons[weekDayIndex];
-}
-
-export function startLoadingButton(weekDayIndex: number, button: HTMLButtonElement): void {
-  toggleLoadingButton(weekDayIndex, button, true);
-}
-
-export function stopLoadingButton(weekDayIndex: number, button: HTMLButtonElement): void {
-  toggleLoadingButton(weekDayIndex, button, false);
-}
-
-export function subscribeForLoadingButtonChanges(fn: () => void): void {
-  loadingButtonsListeners.push(fn);
-}
-
-function toggleLoadingButton(weekDayIndex: number, button: HTMLButtonElement, loading: boolean): void {
-  if (loading) {
-    loadingButtons[weekDayIndex] = true;
-  } else {
-    delete loadingButtons[weekDayIndex];
-  }
-  button.classList.toggle('spinning', loading);
-  button.disabled = loading;
-  loadingButtonsListeners.forEach(listener => listener());
 }

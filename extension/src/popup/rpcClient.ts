@@ -11,7 +11,7 @@ server.mount(window);
 const waitLoaded = () => {
   loaded = false;
 
-  const wait = () =>
+  const wait: () => Promise<void> = () =>
     new Promise(resolve => {
       if (loaded) {
         return resolve();
@@ -24,7 +24,7 @@ const waitLoaded = () => {
 };
 
 let queue = Promise.resolve();
-export const callInQueue = fn =>
+export const callInQueue = (fn: (...args: any[]) => any) =>
   new Promise((resolve, reject) => {
     queue = queue.then(() => Promise.resolve(fn()).then(resolve, reject));
   });
@@ -44,14 +44,18 @@ async function createRpc(
 
   await waitLoaded();
 
+  if (!iframe.contentWindow) {
+    throw new Error('IFrame loading failed');
+  }
+
   const client = new PostMessageClient(iframe.contentWindow);
   client.mount(window);
 
   return { client, iframe };
 }
 
-let client = null;
-let iframe = null;
+let client: PostMessageClient | null = null;
+let iframe: HTMLIFrameElement | null = null;
 
 async function getRpcClient(src?: string): Promise<PostMessageClient> {
   let justCreated = false;
@@ -104,6 +108,6 @@ export async function removeOrder(orderId: string, dishId: DishId): Promise<void
 }
 
 export async function callRefreshOrderedDishesCache(): Promise<void> {
-  const client = await getRpcClient();
+  const client = await getRpcClient('https://wix.getmeido.com/order');
   await client.request('callRefreshOrderedDishesCache');
 }

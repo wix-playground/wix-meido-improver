@@ -1,6 +1,6 @@
-import browser from 'webextension-polyfill';
-import { clearAlarms, createAlarms, getWorkingWeekOrders } from '../modules/notifications';
-import { getOptions } from '../options/storage';
+import { browser } from 'webextension-polyfill-ts';
+import { clearAlarms, createAlarms, getWorkingWeekOrders } from './modules/notifications';
+import { getOptions } from './options/storage';
 
 browser.runtime.onInstalled.addListener(async () => {
   await clearAlarms();
@@ -21,16 +21,16 @@ browser.alarms.onAlarm.addListener(async () => {
 
 browser.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
   if (buttonIndex === 0) {
-    browser.tabs.create({ url: 'https://wix.getmeido.com/order' });
+    void browser.tabs.create({ url: 'https://wix.getmeido.com/order' });
   }
 
   if (buttonIndex === 1) {
-    browser.runtime.openOptionsPage();
+    void browser.runtime.openOptionsPage();
   }
 });
 
 browser.notifications.onClicked.addListener(() => {
-  browser.tabs.create({ url: 'https://wix.getmeido.com/order' });
+  void browser.tabs.create({ url: 'https://wix.getmeido.com/order' });
 });
 
 browser.runtime.onMessage.addListener(async request => {
@@ -60,7 +60,7 @@ async function showNotificationIfNoOrder(): Promise<void> {
 async function createNotification(): Promise<void> {
   const buttons = [{ title: 'Open Meido' }, { title: 'Config Notifications' }];
 
-  const notificationOptions = {
+  const notificationOptions: any = {
     type: 'basic',
     title: 'Meido Order',
     message: 'You have no orders for some days next week [Click – open Meido]',
@@ -68,17 +68,17 @@ async function createNotification(): Promise<void> {
   };
 
   try {
-    await browser.notifications.create(null, { ...notificationOptions, buttons });
+    await browser.notifications.create(undefined, { ...notificationOptions, buttons });
   } catch (e) {
-    await browser.notifications.create(null, notificationOptions);
+    await browser.notifications.create(undefined, notificationOptions);
   }
 }
 
-async function doRequest(method, endpoint, data) {
+async function doRequest(method: 'GET' | 'POST', endpoint: string, data: any) {
   const isGetMethod = method.toUpperCase() === 'GET';
   const searchParams = new URLSearchParams(isGetMethod ? data : {}).toString();
   const body = isGetMethod ? null : JSON.stringify(data);
-  const headers = isGetMethod ? {} : { 'Content-Type': 'application/json' };
+  const headers = isGetMethod ? [] : [['Content-Type', 'application/json']];
 
   const url = 'https://www.wix.com/_serverless/wix-meido-improver' + endpoint + '?' + searchParams;
   const response = await fetch(url, { method, body, headers });

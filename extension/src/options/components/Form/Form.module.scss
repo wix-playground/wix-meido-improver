@@ -1,0 +1,35 @@
+.form {
+  margin-top: 40px;
+}
+
+.table {
+  margin: auto;
+  opacity: 0.3;
+}
+
+.table.notificationsEnabled {
+  opacity: 1;
+}
+
+.enableNotificationsWrapper,
+.submitWrapper {
+  text-align: center;
+}
+
+.submit {
+  font-size: 1em;
+  font-weight: 700;
+}
+
+.changesSaved {
+  text-align: center;
+  font-weight: 700;
+  color: green;
+  height: 0;
+  overflow: hidden;
+  transition: all 0.4s;
+
+  &.shown {
+    height: 20px;
+  }
+}

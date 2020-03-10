@@ -1,6 +1,6 @@
 export function waitForSelector(selector: string): Promise<HTMLElement> {
   return new Promise(resolve => {
-    const el: HTMLElement = document.querySelector(selector);
+    const el: HTMLElement | null = document.querySelector(selector);
     if (el) {
       resolve(el);
     } else {
@@ -11,11 +11,11 @@ export function waitForSelector(selector: string): Promise<HTMLElement> {
 
 export function waitForEmptySelector(selector: string): Promise<HTMLElement> {
   return new Promise(resolve => {
-    const el: HTMLElement = document.querySelector(selector);
+    const el: HTMLElement | null = document.querySelector(selector);
     if (el) {
       setTimeout(() => resolve(waitForEmptySelector(selector)), 100);
     } else {
-      resolve(el);
+      resolve();
     }
   });
 }
