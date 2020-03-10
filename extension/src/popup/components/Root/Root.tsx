@@ -2,6 +2,7 @@ import * as React from 'react';
 import {Order} from "../Order";
 import {Header} from "../Header";
 import {Footer} from "../Footer";
+import {RepeatAllOrders} from "../RepeatAllOrders";
 import {MessageContext} from "../../context/MessagesContext";
 import {OrdersContext} from "../../context/OrdersContext";
 import styles from './Root.module.scss';
@@ -31,6 +32,7 @@ export const Root = () => {
             </React.Fragment>
           )}
       </div>
+      <RepeatAllOrders/>
 
       {statusMessage !== null && <div className={styles.warning}>{statusMessage}</div>}
       {errorMessage !== null && <div className={styles.error}>{errorMessage}</div>}

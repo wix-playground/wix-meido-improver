@@ -116,7 +116,7 @@ function getDayName(date: Date): string {
   return date.getDate() + ' ' + monthName;
 }
 
-function isLessFriday3pm(date: Date) {
+export function isLessFriday3pm(date: Date) {
   const friday3pm = getDateByDay(new Date(), 'friday', '15:00');
   return date <= friday3pm;
 }

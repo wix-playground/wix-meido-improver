@@ -9,7 +9,8 @@ interface ILargeWorkingWeekOrders {
   orderedDishesInvalidated: boolean;
 }
 
-export type IWorkingDay = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday';
+export const WORKING_DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const;
+export type IWorkingDay = typeof WORKING_DAYS[number];
 
 export interface IWorkingWeek<T> extends Record<IWorkingDay, T> {}
 
