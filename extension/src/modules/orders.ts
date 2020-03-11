@@ -37,7 +37,7 @@ function parseOrders(text: string): IOrder[] {
 }
 
 function parsePagesCount(text: string): number {
-  const [, resultCount = '0'] = text.match(/Displaying 1-10 of (\d+) results/) || [];
+  const [, resultCount = '1'] = text.match(/Displaying 1-10 of (\d+) results/) || [];
   return Math.ceil(Number(resultCount) / 10);
 }
 
@@ -82,7 +82,6 @@ export async function refreshOrderedDishesCache(): Promise<void> {
       },
     }));
   } catch (error) {
-    debugger;
     console.trace('puh!');
     console.error(error);
   }

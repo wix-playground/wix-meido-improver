@@ -18,7 +18,6 @@ export const RepeatAllOrders: React.FC = () => {
   });
 
   const showRepeat = daysToRepeat.length > 0 && isLessFriday3pm(new Date());
-  console.log("{daysToRepeat, isLoading, showRepeat}", {daysToRepeat, loading, showRepeat}, typeof {daysToRepeat, loading, showRepeat});
 
   return !showRepeat || loading
     ? null
